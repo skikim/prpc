@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% load bootstrap5 %}
+
+{% block content %}
+    <div style="text-align: center; max-width: 500px; margin: 4rem auto">
+        <p>
+            가입일 : {{ user.date_joined }}
+        </p>
+        <h4 style="margin-top: 4rem; font-family: 'NanumSquareB';">
+            ID : {{ user.username }}
+        </h4>
+        {% if request.user == user %}
+            <a href="{% url 'accountapp:update' pk=user.pk %}">
+                <p style="margin-top: 4rem;">회원정보 수정</p>
+            </a>
+            <a href="{% url 'accountapp:delete' pk=user.pk %}">
+                <p>회원 탈퇴</p>
+            </a>
+        {% endif %}
+    </div>
+{% endblock %}

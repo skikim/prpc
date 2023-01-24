@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% load bootstrap5 %}
+
+{% block content %}
+    <div style="text-align: center; max-width: 400px; margin: 4rem auto;">
+        <div style="margin: 4rem">
+            <h3>로그인</h3>
+        </div>
+        <div>
+            <form action="{% url 'accountapp:login' %}" method="post">
+                {% csrf_token %}
+                {% bootstrap_form form %}
+                <input type="submit" value="로그인" class="btn btn-primary rounded-pill col-6 mt-4"/>
+            </form>
+        </div>
+    </div>
+{% endblock %}
