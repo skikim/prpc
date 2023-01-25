@@ -9,6 +9,26 @@
         <h4 style="margin-top: 4rem; font-family: 'NanumSquareB';">
             ID : {{ user.username }}
         </h4>
+        {% if user.profile %}
+            <p style="margin-top: 2rem;">
+               Phone : {{ user.profile.phone_num }}
+            {% if request.user == user %}
+                <a href="{% url 'profileapp:update' pk=user.profile.pk %}">수정</a>
+            {% endif %}
+            </p>
+            <p>
+               birth_date : {{ user.profile.birth_date }}
+            {% if request.user == user %}
+            <a href="{% url 'profileapp:update' pk=user.profile.pk %}">수정</a>
+            {% endif %}
+            </p>
+        {% else %}
+            <a href = "{% url 'profileapp:create' %}">
+               <h2 style = "font-family: 'NanumSquareB'">
+                   회원정보 추가입력
+               </h2>
+            </a>
+        {% endif %}
         {% if request.user == user %}
             <a href="{% url 'accountapp:update' pk=user.pk %}">
                 <p style="margin-top: 4rem;">회원정보 수정</p>
