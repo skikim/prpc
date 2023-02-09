@@ -1,0 +1,124 @@
+{%  extends 'base.html' %}
+{% load bootstrap5 %}
+
+{% block content %}
+{% if user.is_superuser %}
+
+    <div style="text-align: center; max-width:90%; margin: 2rem auto">
+        <div class="mb-4">
+            <h2 style="margin-bottom: 2rem">[예약 환자 메시지 관리]</h2>
+        </div>
+
+        <div>
+            <h4 style="margin-bottom: 2rem">최신 예약 리스트</h4>
+            <div style="text-align: center; margin-bottom: 1rem" >
+                <a href="{% url 'superapp:supercreate2' %}"><p><&nbsp&nbsp이전</p></a>
+            </div>
+
+            <table id="table" class="table table-striped-columns" style="width: 100%" >
+                <tr>
+                    <td>예약자</td>
+                    <td>예약날짜</td>
+                    <td>예약시간</td>
+                    <td>Phone</td>
+                    <td>생년월일</td>
+                    <td>예약상태</td>
+                </tr>
+                {% for book in bookings %}
+                <tr>
+                    <td id="r{{ forloop.counter }}c1" style="cursor: pointer" onclick="input_form(this.id)">{{ book.user.profile.real_name }}</td>
+                    <td id="r{{ forloop.counter }}c2">{{ book.booking_date }}</td>
+                    <td id="r{{ forloop.counter }}c3">{{ book.booking_time }}</td>
+                    <td id="r{{ forloop.counter }}c4">{{ book.user.profile.phone_num }}</td>
+                    <td id="r{{ forloop.counter }}c5">{{ book.user.profile.birth_date }}</td>
+                    <td id="r{{ forloop.counter }}c6">{{ book.booking_status }}</td>
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+    </div>
+
+    <form action="{% url 'superapp:supercreate3' %}" method="post">
+        {%  csrf_token %}
+        {#                    {% bootstrap_form form %}#}
+        <input type="text" id="rec" name="rec" style="display: none;">
+        <input type="text" id="msg" name="msg" style="display: none;">
+        <input type="text" id="name" name="name" style="display: none;">
+        <input type="text" id="date" name="date" style="display: none;">
+        <input type="text" id="time" name="time" style="display: none;">
+
+
+
+
+        {#            <input type="submit" value="확인" class="btn btn-primary rounded-pill col-6 mt-4">#}
+
+        <!-- Modal -->
+
+        <div class="modal" id="modal_post" tabindex="-1">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">문자 보내기</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body" style="text-align: center">
+                        <p id="rec_display"></p>
+                        <p id="date_display"></p>
+                        <p id="time_display"></p>
+                        <div>
+                            <select class="msg_selector" id="msg_selector" name="msg_selector" onchange="change_sel()">
+                                <option value="ok" selected>승인 메세지</option>
+                                <option value="cancel">취소 메세지</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">보내기</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </form>
+
+    <style>
+        td{
+            text-align: center;
+        }
+    </style>
+    <script>
+        function input_form(clicked_id){
+            let row_num = clicked_id.charAt(1)
+            let col_num = clicked_id.charAt(3)
+            let name_cell = table.rows[row_num].cells[0]
+            let date_cell = table.rows[row_num].cells[1]
+            let time_cell = table.rows[row_num].cells[2]
+            let phone_cell = table.rows[row_num].cells[3]
+            let status_cell = table.rows[row_num].cells[4]
+            let selected_name = name_cell.innerText
+            let selected_date = date_cell.innerText
+            let selected_time = time_cell.innerText
+            let selected_phone = phone_cell.innerText
+            let selected_status = status_cell.innerText
+
+            $('#modal_post').modal("show");
+            var selected_msg = document.getElementById('msg_selector').value
+            document.getElementById('rec_display').innerText= 'Phone : ' + selected_phone
+            document.getElementById('date_display').innerText = '예약날짜 :  ' + selected_date
+            document.getElementById('time_display').innerText = '예약시간 :  ' + selected_time
+            document.getElementById('rec').value = selected_phone
+            document.getElementById('name').value = selected_name
+            document.getElementById('date').value = selected_date
+            document.getElementById('time').value = selected_time
+            document.getElementById('msg').value = selected_msg
+        }
+
+        function change_sel(){
+            let selected_msg = document.getElementById('msg_selector').value
+            document.getElementById('msg').value = selected_msg
+        }
+
+    </script>
+{% endif %}
+{% endblock %}

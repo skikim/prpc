@@ -5,8 +5,9 @@ from profileapp.models import Profile
 class ProfileCreationForm(ModelForm):
     class Meta:
         model = Profile
-        fields = ['birth_date', 'phone_num']
+        fields = ['real_name', 'birth_date', 'phone_num']
         labels = {
+            'real_name': ('성명'),
             'birth_date': ('주민번호 앞6자리'),
             'phone_num': ('폰번호')
         }

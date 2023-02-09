@@ -6,18 +6,18 @@
         <p>
             가입일 : {{ user.date_joined }}
         </p>
-        <h4 style="margin-top: 4rem; font-family: 'NanumSquareB';">
+        <h4 style="margin: 4rem 0; font-family: 'NanumSquareB';">
             ID : {{ user.username }}
         </h4>
         {% if user.profile %}
             <p style="margin-top: 2rem;">
-               Phone : {{ user.profile.phone_num }}
+               Phone : {{ user.profile.phone_num }}&nbsp &nbsp &nbsp
             {% if request.user == user %}
                 <a href="{% url 'profileapp:update' pk=user.profile.pk %}">수정</a>
             {% endif %}
             </p>
             <p>
-               birth_date : {{ user.profile.birth_date }}
+               생년월일 : {{ user.profile.birth_date }}&nbsp &nbsp &nbsp
             {% if request.user == user %}
             <a href="{% url 'profileapp:update' pk=user.profile.pk %}">수정</a>
             {% endif %}

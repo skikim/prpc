@@ -2,14 +2,13 @@
 
     <div style="display: flex; justify-content: space-between; align-items: center">
         <div>
-            <a href="">
-                <h4 style="color: cornflowerblue; margin: 1rem">푸른마취통증의학과</h4>
+            <a href="{% url 'articleapp:home' %}">
+                <h4 style="color: cornflowerblue; margin: 1rem 1rem 0rem 1rem">푸른마취통증의학과</h4>
             </a>
         </div>
 
-        <div style="color: cornflowerblue;">
+        <div style="color: cornflowerblue; margin-top: 1rem">
             <span style="margin-right: 1rem;">진료과목</span>
-            <span style="margin-right: 1rem;">예약하기</span>
             <span style="margin-right: 1rem;">찾아오시는 길</span>
 
             {% if not user.is_authenticated %}
@@ -20,6 +19,12 @@
                     <span style="margin-right: 1rem;">회원가입</span>
                 </a>
             {% else %}
+                <a href="{% url 'bookingapp:create' %}">
+                    <span style="margin-right: 1rem;">예약하기</span>
+                </a>
+                <a href="{% url 'bookingapp:detail' pk=user.pk %}">
+                    <span style="margin-right: 1rem;">나의 예약정보</span>
+                </a>
                 <a href="{% url 'accountapp:detail' pk=user.pk %}">
                     <span style="margin-right: 1rem;">내 페이지</span>
                 </a>

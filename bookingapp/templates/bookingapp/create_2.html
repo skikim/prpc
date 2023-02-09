@@ -1,0 +1,1041 @@
+{%  extends 'base.html' %}
+{% load bootstrap5 %}
+
+{% block content %}
+    <div style="text-align: center; max-width: 650px; margin: 4rem auto;">
+        <div style="margin-bottom: 2rem">
+            <h2>[진료 예약 하기]</h2>
+        </div>
+
+        <form action="{% url 'bookingapp:create2' %}" method="post">
+            {%  csrf_token %}
+            {#            {% bootstrap_form form %}#}
+            <input class="date" type="date" id="date" name="date" value="" style="width: 100%; display: none;" required/>
+            <input class="time" id="time" name="time" value="" style="width: 100%; display: none;" required/>
+
+{#            <input type="submit" value="확인" class="btn btn-primary rounded-pill col-6 mt-4">#}
+
+            <!-- Modal -->
+
+            <div class="modal" id="modal_post" tabindex="-1">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">예약 확인</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <p id="booking_date"></p>
+                            <p id="booking_time"></p>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-primary">예약신청</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </form>
+
+{#        <div style="margin-bottom: 2rem">#}
+{#            <h4>[진료예약 현황]</h4>#}
+{#        </div>#}
+        <div>
+            1. 원하는 날짜와 시간의 '예약가능'(파란색) 칸을 클릭하셔서 예약하세요.<br><br>
+            2. 예약신청 하시면 '예약요청'(노란색)으로 바뀝니다.<br><br>
+            3. 근무시간 기준 2시간 이내 승인되며(야간, 토,일, 공휴일 제외) '예약승인'(붉은색)으로 바뀝니다.<br><br>
+            4. 예약취소는 상단의 '나의 예약정보'에서 가능하며, 변경은 먼저 취소 후 새로 예약하셔야 합니다.
+        </div>
+    </div>
+        <div style="text-align: center; margin-bottom: 2rem" >
+            <a href="{% url 'bookingapp:create' %}"><h5><&nbsp&nbsp이전</h5></a>
+        </div>
+    <div>
+    <table id="table" class="table table-striped-columns" style="width:90%">
+    <tr>
+        <td id="r0c0"></td>
+        <td id="r0c1"></td>
+        <td id="r0c2"></td>
+        <td id="r0c3"></td>
+        <td id="r0c4"></td>
+        <td id="r0c5"></td>
+        <td id="r0c6"></td>
+        <td id="r0c7"></td>
+    </tr>
+    <tr>
+        <td id="r1c0"></td>
+        <td id="r1c1"></td>
+        <td id="r1c2"></td>
+        <td id="r1c3"></td>
+        <td id="r1c4"></td>
+        <td id="r1c5"></td>
+        <td id="r1c6"></td>
+        <td id="r1c7"></td>
+    </tr>
+    <tr>
+        <td id="r09:20c0">09:20</td>
+        <td id="r09:20c1" onclick="input_form(this.id)"></td>
+        <td id="r09:20c2" onclick="input_form(this.id)"></td>
+        <td id="r09:20c3" onclick="input_form(this.id)"></td>
+        <td id="r09:20c4" onclick="input_form(this.id)"></td>
+        <td id="r09:20c5" onclick="input_form(this.id)"></td>
+        <td id="r09:20c6" onclick="input_form(this.id)"></td>
+        <td id="r09:20c7" onclick="input_form(this.id)"></td>
+    </tr>
+    <tr>
+        <td id="r09:25c0">09:25</td>
+        <td id="r09:25c1" onclick="input_form(this.id)"></td>
+        <td id="r09:25c2" onclick="input_form(this.id)"></td>
+        <td id="r09:25c3" onclick="input_form(this.id)"></td>
+        <td id="r09:25c4" onclick="input_form(this.id)"></td>
+        <td id="r09:25c5" onclick="input_form(this.id)"></td>
+        <td id="r09:25c6" onclick="input_form(this.id)"></td>
+        <td id="r09:25c7" onclick="input_form(this.id)"></td>
+    </tr>
+    <tr>
+        <td id="r09:30c0">09:30</td>
+        <td id="r09:30c1" onclick="input_form(this.id)"></td>
+        <td id="r09:30c2" onclick="input_form(this.id)"></td>
+        <td id="r09:30c3" onclick="input_form(this.id)"></td>
+        <td id="r09:30c4" onclick="input_form(this.id)"></td>
+        <td id="r09:30c5" onclick="input_form(this.id)"></td>
+        <td id="r09:30c6" onclick="input_form(this.id)"></td>
+        <td id="r09:30c7" onclick="input_form(this.id)"></td>
+    </tr>
+    <tr>
+        <td id="r09:45c0">09:45</td>
+        <td id="r09:45c1" onclick="input_form(this.id)"></td>
+        <td id="r09:45c2" onclick="input_form(this.id)"></td>
+        <td id="r09:45c3" onclick="input_form(this.id)"></td>
+        <td id="r09:45c4" onclick="input_form(this.id)"></td>
+        <td id="r09:45c5" onclick="input_form(this.id)"></td>
+        <td id="r09:45c6" onclick="input_form(this.id)"></td>
+        <td id="r09:45c7" onclick="input_form(this.id)"></td>
+    </tr>
+    <tr>
+        <td id="r09:50c0">09:50</td>
+        <td id="r09:50c1" onclick="input_form(this.id)"></td>
+        <td id="r09:50c2" onclick="input_form(this.id)"></td>
+        <td id="r09:50c3" onclick="input_form(this.id)"></td>
+        <td id="r09:50c4" onclick="input_form(this.id)"></td>
+        <td id="r09:50c5" onclick="input_form(this.id)"></td>
+        <td id="r09:50c6" onclick="input_form(this.id)"></td>
+        <td id="r09:50c7" onclick="input_form(this.id)"></td>
+    </tr>
+    <tr>
+        <td id="r10:05c0">10:05</td>
+        <td id="r10:05c1" onclick="input_form(this.id)"></td>
+        <td id="r10:05c2" onclick="input_form(this.id)"></td>
+        <td id="r10:05c3" onclick="input_form(this.id)"></td>
+        <td id="r10:05c4" onclick="input_form(this.id)"></td>
+        <td id="r10:05c5" onclick="input_form(this.id)"></td>
+        <td id="r10:05c6" onclick="input_form(this.id)"></td>
+        <td id="r10:05c7" onclick="input_form(this.id)"></td>
+    </tr>
+    <tr>
+        <td id="r10:10c0">10:10</td>
+        <td id="r10:10c1" onclick="input_form(this.id)"></td>
+        <td id="r10:10c2" onclick="input_form(this.id)"></td>
+        <td id="r10:10c3" onclick="input_form(this.id)"></td>
+        <td id="r10:10c4" onclick="input_form(this.id)"></td>
+        <td id="r10:10c5" onclick="input_form(this.id)"></td>
+        <td id="r10:10c6" onclick="input_form(this.id)"></td>
+        <td id="r10:10c7" onclick="input_form(this.id)"></td>
+    </tr>
+    <tr>
+        <td id="r10:15c0">10:15</td>
+        <td id="r10:15c1" onclick="input_form(this.id)"></td>
+        <td id="r10:15c2" onclick="input_form(this.id)"></td>
+        <td id="r10:15c3" onclick="input_form(this.id)"></td>
+        <td id="r10:15c4" onclick="input_form(this.id)"></td>
+        <td id="r10:15c5" onclick="input_form(this.id)"></td>
+        <td id="r10:15c6" onclick="input_form(this.id)"></td>
+        <td id="r10:15c7" onclick="input_form(this.id)"></td>
+    </tr>
+    <tr>
+        <td id="r10:30c0">10:30</td>
+        <td id="r10:30c1" onclick="input_form(this.id)"></td>
+        <td id="r10:30c2" onclick="input_form(this.id)"></td>
+        <td id="r10:30c3" onclick="input_form(this.id)"></td>
+        <td id="r10:30c4" onclick="input_form(this.id)"></td>
+        <td id="r10:30c5" onclick="input_form(this.id)"></td>
+        <td id="r10:30c6" onclick="input_form(this.id)"></td>
+        <td id="r10:30c7" onclick="input_form(this.id)"></td>
+    </tr>
+    <tr>
+        <td id="r10:35c0">10:35</td>
+        <td id="r10:35c1" onclick="input_form(this.id)"></td>
+        <td id="r10:35c2" onclick="input_form(this.id)"></td>
+        <td id="r10:35c3" onclick="input_form(this.id)"></td>
+        <td id="r10:35c4" onclick="input_form(this.id)"></td>
+        <td id="r10:35c5" onclick="input_form(this.id)"></td>
+        <td id="r10:35c6" onclick="input_form(this.id)"></td>
+        <td id="r10:35c7" onclick="input_form(this.id)"></td>
+    </tr>
+    <tr>
+        <td id="r10:40c0">10:40</td>
+        <td id="r10:40c1" onclick="input_form(this.id)"></td>
+        <td id="r10:40c2" onclick="input_form(this.id)"></td>
+        <td id="r10:40c3" onclick="input_form(this.id)"></td>
+        <td id="r10:40c4" onclick="input_form(this.id)"></td>
+        <td id="r10:40c5" onclick="input_form(this.id)"></td>
+        <td id="r10:40c6" onclick="input_form(this.id)"></td>
+        <td id="r10:40c7" onclick="input_form(this.id)"></td>
+    </tr>
+    <tr>
+        <td id="r10:50c0">10:50</td>
+        <td id="r10:50c1" onclick="input_form(this.id)"></td>
+        <td id="r10:50c2" onclick="input_form(this.id)"></td>
+        <td id="r10:50c3" onclick="input_form(this.id)"></td>
+        <td id="r10:50c4" onclick="input_form(this.id)"></td>
+        <td id="r10:50c5" onclick="input_form(this.id)"></td>
+        <td id="r10:50c6" onclick="input_form(this.id)"></td>
+        <td id="r10:50c7" onclick="input_form(this.id)"></td>
+    </tr>
+    <tr>
+        <td id="r10:55c0">10:55</td>
+        <td id="r10:55c1" onclick="input_form(this.id)"></td>
+        <td id="r10:55c2" onclick="input_form(this.id)"></td>
+        <td id="r10:55c3" onclick="input_form(this.id)"></td>
+        <td id="r10:55c4" onclick="input_form(this.id)"></td>
+        <td id="r10:55c5" onclick="input_form(this.id)"></td>
+        <td id="r10:55c6" onclick="input_form(this.id)"></td>
+        <td id="r10:55c7" onclick="input_form(this.id)"></td>
+    </tr>
+    <tr>
+        <td id="r11:00c0">11:00</td>
+        <td id="r11:00c1" onclick="input_form(this.id)"></td>
+        <td id="r11:00c2" onclick="input_form(this.id)"></td>
+        <td id="r11:00c3" onclick="input_form(this.id)"></td>
+        <td id="r11:00c4" onclick="input_form(this.id)"></td>
+        <td id="r11:00c5" onclick="input_form(this.id)"></td>
+        <td id="r11:00c6" onclick="input_form(this.id)"></td>
+        <td id="r11:00c7" onclick="input_form(this.id)"></td>
+    </tr>
+    <tr>
+        <td id="r11:15c0">11:15</td>
+        <td id="r11:15c1" onclick="input_form(this.id)"></td>
+        <td id="r11:15c2" onclick="input_form(this.id)"></td>
+        <td id="r11:15c3" onclick="input_form(this.id)"></td>
+        <td id="r11:15c4" onclick="input_form(this.id)"></td>
+        <td id="r11:15c5" onclick="input_form(this.id)"></td>
+        <td id="r11:15c6" onclick="input_form(this.id)"></td>
+        <td id="r11:15c7" onclick="input_form(this.id)"></td>
+    </tr>
+    <tr>
+        <td id="r11:20c0">11:20</td>
+        <td id="r11:20c1" onclick="input_form(this.id)"></td>
+        <td id="r11:20c2" onclick="input_form(this.id)"></td>
+        <td id="r11:20c3" onclick="input_form(this.id)"></td>
+        <td id="r11:20c4" onclick="input_form(this.id)"></td>
+        <td id="r11:20c5" onclick="input_form(this.id)"></td>
+        <td id="r11:20c6" onclick="input_form(this.id)"></td>
+        <td id="r11:20c7" onclick="input_form(this.id)"></td>
+    </tr>
+    <tr>
+        <td id="r11:25c0">11:25</td>
+        <td id="r11:25c1" onclick="input_form(this.id)"></td>
+        <td id="r11:25c2" onclick="input_form(this.id)"></td>
+        <td id="r11:25c3" onclick="input_form(this.id)"></td>
+        <td id="r11:25c4" onclick="input_form(this.id)"></td>
+        <td id="r11:25c5" onclick="input_form(this.id)"></td>
+        <td id="r11:25c6" onclick="input_form(this.id)"></td>
+        <td id="r11:25c7" onclick="input_form(this.id)"></td>
+    </tr>
+    <tr>
+        <td id="r11:35c0">11:35</td>
+        <td id="r11:35c1" onclick="input_form(this.id)"></td>
+        <td id="r11:35c2" onclick="input_form(this.id)"></td>
+        <td id="r11:35c3" onclick="input_form(this.id)"></td>
+        <td id="r11:35c4" onclick="input_form(this.id)"></td>
+        <td id="r11:35c5" onclick="input_form(this.id)"></td>
+        <td id="r11:35c6" onclick="input_form(this.id)"></td>
+        <td id="r11:35c7" onclick="input_form(this.id)"></td>
+    </tr>
+    <tr>
+        <td id="r11:40c0">11:40</td>
+        <td id="r11:40c1" onclick="input_form(this.id)"></td>
+        <td id="r11:40c2" onclick="input_form(this.id)"></td>
+        <td id="r11:40c3" onclick="input_form(this.id)"></td>
+        <td id="r11:40c4" onclick="input_form(this.id)"></td>
+        <td id="r11:40c5" onclick="input_form(this.id)"></td>
+        <td id="r11:40c6" onclick="input_form(this.id)"></td>
+        <td id="r11:40c7" onclick="input_form(this.id)"></td>
+    </tr>
+    <tr>
+        <td id="r11:45c0">11:45</td>
+        <td id="r11:45c1" onclick="input_form(this.id)"></td>
+        <td id="r11:45c2" onclick="input_form(this.id)"></td>
+        <td id="r11:45c3" onclick="input_form(this.id)"></td>
+        <td id="r11:45c4" onclick="input_form(this.id)"></td>
+        <td id="r11:45c5" onclick="input_form(this.id)"></td>
+        <td id="r11:45c6" onclick="input_form(this.id)"></td>
+        <td id="r11:45c7" onclick="input_form(this.id)"></td>
+    </tr>
+    <tr>
+        <td id="r12:00c0">12:00</td>
+        <td id="r12:00c1" onclick="input_form(this.id)"></td>
+        <td id="r12:00c2" onclick="input_form(this.id)"></td>
+        <td id="r12:00c3" onclick="input_form(this.id)"></td>
+        <td id="r12:00c4" onclick="input_form(this.id)"></td>
+        <td id="r12:00c5" onclick="input_form(this.id)"></td>
+        <td id="r12:00c6" onclick="input_form(this.id)"></td>
+        <td id="r12:00c7" onclick="input_form(this.id)"></td>
+    </tr>
+    <tr>
+        <td id="r12:05c0">12:05</td>
+        <td id="r12:05c1" onclick="input_form(this.id)"></td>
+        <td id="r12:05c2" onclick="input_form(this.id)"></td>
+        <td id="r12:05c3" onclick="input_form(this.id)"></td>
+        <td id="r12:05c4" onclick="input_form(this.id)"></td>
+        <td id="r12:05c5" onclick="input_form(this.id)"></td>
+        <td id="r12:05c6" onclick="input_form(this.id)"></td>
+        <td id="r12:05c7" onclick="input_form(this.id)"></td>
+    </tr>
+    <tr>
+        <td id="r12:10c0">12:10</td>
+        <td id="r12:10c1" onclick="input_form(this.id)"></td>
+        <td id="r12:10c2" onclick="input_form(this.id)"></td>
+        <td id="r12:10c3" onclick="input_form(this.id)"></td>
+        <td id="r12:10c4" onclick="input_form(this.id)"></td>
+        <td id="r12:10c5" onclick="input_form(this.id)"></td>
+        <td id="r12:10c6" onclick="input_form(this.id)"></td>
+        <td id="r12:10c7" onclick="input_form(this.id)"></td>
+    </tr>
+    <tr>
+        <td id="r12:20c0">12:20</td>
+        <td id="r12:20c1" onclick="input_form(this.id)"></td>
+        <td id="r12:20c2" onclick="input_form(this.id)"></td>
+        <td id="r12:20c3" onclick="input_form(this.id)"></td>
+        <td id="r12:20c4" onclick="input_form(this.id)"></td>
+        <td id="r12:20c5" onclick="input_form(this.id)"></td>
+        <td id="r12:20c6" onclick="input_form(this.id)"></td>
+        <td id="r12:20c7" onclick="input_form(this.id)"></td>
+    </tr>
+    <tr>
+        <td id="r12:25c0">12:25</td>
+        <td id="r12:25c1" onclick="input_form(this.id)"></td>
+        <td id="r12:25c2" onclick="input_form(this.id)"></td>
+        <td id="r12:25c3" onclick="input_form(this.id)"></td>
+        <td id="r12:25c4" onclick="input_form(this.id)"></td>
+        <td id="r12:25c5" onclick="input_form(this.id)"></td>
+        <td id="r12:25c6" onclick="input_form(this.id)"></td>
+        <td id="r12:25c7" onclick="input_form(this.id)"></td>
+    </tr>
+    <tr>
+        <td id="r12:30c0">12:30</td>
+        <td id="r12:30c1" onclick="input_form(this.id)"></td>
+        <td id="r12:30c2" onclick="input_form(this.id)"></td>
+        <td id="r12:30c3" onclick="input_form(this.id)"></td>
+        <td id="r12:30c4" onclick="input_form(this.id)"></td>
+        <td id="r12:30c5" onclick="input_form(this.id)"></td>
+        <td id="r12:30c6" onclick="input_form(this.id)"></td>
+        <td id="r12:30c7" onclick="input_form(this.id)"></td>
+    </tr>
+
+    <tr>
+        <td id="r13:00c0">점심시간</td>
+        <td id="r13:00c1" onclick="input_form(this.id)"></td>
+        <td id="r13:00c2" onclick="input_form(this.id)"></td>
+        <td id="r13:00c3" onclick="input_form(this.id)"></td>
+        <td id="r13:00c4" onclick="input_form(this.id)"></td>
+        <td id="r13:00c5" onclick="input_form(this.id)"></td>
+        <td id="r13:00c6" onclick="input_form(this.id)"></td>
+        <td id="r13:00c7" onclick="input_form(this.id)"></td>
+    </tr>
+
+    <tr>
+        <td id="r14:20c0">14:20</td>
+        <td id="r14:20c1" onclick="input_form(this.id)"></td>
+        <td id="r14:20c2" onclick="input_form(this.id)"></td>
+        <td id="r14:20c3" onclick="input_form(this.id)"></td>
+        <td id="r14:20c4" onclick="input_form(this.id)"></td>
+        <td id="r14:20c5" onclick="input_form(this.id)"></td>
+        <td id="r14:20c6" onclick="input_form(this.id)"></td>
+        <td id="r14:20c7" onclick="input_form(this.id)"></td>
+    </tr>
+    <tr>
+        <td id="r14:25c0">14:25</td>
+        <td id="r14:25c1" onclick="input_form(this.id)"></td>
+        <td id="r14:25c2" onclick="input_form(this.id)"></td>
+        <td id="r14:25c3" onclick="input_form(this.id)"></td>
+        <td id="r14:25c4" onclick="input_form(this.id)"></td>
+        <td id="r14:25c5" onclick="input_form(this.id)"></td>
+        <td id="r14:25c6" onclick="input_form(this.id)"></td>
+        <td id="r14:25c7" onclick="input_form(this.id)"></td>
+    </tr>
+    <tr>
+        <td id="r14:30c0">14:30</td>
+        <td id="r14:30c1" onclick="input_form(this.id)"></td>
+        <td id="r14:30c2" onclick="input_form(this.id)"></td>
+        <td id="r14:30c3" onclick="input_form(this.id)"></td>
+        <td id="r14:30c4" onclick="input_form(this.id)"></td>
+        <td id="r14:30c5" onclick="input_form(this.id)"></td>
+        <td id="r14:30c6" onclick="input_form(this.id)"></td>
+        <td id="r14:30c7" onclick="input_form(this.id)"></td>
+    </tr>
+    <tr>
+        <td id="r14:45c0">14:45</td>
+        <td id="r14:45c1" onclick="input_form(this.id)"></td>
+        <td id="r14:45c2" onclick="input_form(this.id)"></td>
+        <td id="r14:45c3" onclick="input_form(this.id)"></td>
+        <td id="r14:45c4" onclick="input_form(this.id)"></td>
+        <td id="r14:45c5" onclick="input_form(this.id)"></td>
+        <td id="r14:45c6" onclick="input_form(this.id)"></td>
+        <td id="r14:45c7" onclick="input_form(this.id)"></td>
+    </tr>
+    <tr>
+        <td id="r14:50c0">14:50</td>
+        <td id="r14:50c1" onclick="input_form(this.id)"></td>
+        <td id="r14:50c2" onclick="input_form(this.id)"></td>
+        <td id="r14:50c3" onclick="input_form(this.id)"></td>
+        <td id="r14:50c4" onclick="input_form(this.id)"></td>
+        <td id="r14:50c5" onclick="input_form(this.id)"></td>
+        <td id="r14:50c6" onclick="input_form(this.id)"></td>
+        <td id="r14:50c7" onclick="input_form(this.id)"></td>
+    </tr>
+    <tr>
+        <td id="r15:05c0">15:05</td>
+        <td id="r15:05c1" onclick="input_form(this.id)"></td>
+        <td id="r15:05c2" onclick="input_form(this.id)"></td>
+        <td id="r15:05c3" onclick="input_form(this.id)"></td>
+        <td id="r15:05c4" onclick="input_form(this.id)"></td>
+        <td id="r15:05c5" onclick="input_form(this.id)"></td>
+        <td id="r15:05c6" onclick="input_form(this.id)"></td>
+        <td id="r15:05c7" onclick="input_form(this.id)"></td>
+    </tr>
+    <tr>
+        <td id="r15:10c0">15:10</td>
+        <td id="r15:10c1" onclick="input_form(this.id)"></td>
+        <td id="r15:10c2" onclick="input_form(this.id)"></td>
+        <td id="r15:10c3" onclick="input_form(this.id)"></td>
+        <td id="r15:10c4" onclick="input_form(this.id)"></td>
+        <td id="r15:10c5" onclick="input_form(this.id)"></td>
+        <td id="r15:10c6" onclick="input_form(this.id)"></td>
+        <td id="r15:10c7" onclick="input_form(this.id)"></td>
+    </tr>
+    <tr>
+        <td id="r15:15c0">15:15</td>
+        <td id="r15:15c1" onclick="input_form(this.id)"></td>
+        <td id="r15:15c2" onclick="input_form(this.id)"></td>
+        <td id="r15:15c3" onclick="input_form(this.id)"></td>
+        <td id="r15:15c4" onclick="input_form(this.id)"></td>
+        <td id="r15:15c5" onclick="input_form(this.id)"></td>
+        <td id="r15:15c6" onclick="input_form(this.id)"></td>
+        <td id="r15:15c7" onclick="input_form(this.id)"></td>
+    </tr>
+    <tr>
+        <td id="r15:30c0">15:30</td>
+        <td id="r15:30c1" onclick="input_form(this.id)"></td>
+        <td id="r15:30c2" onclick="input_form(this.id)"></td>
+        <td id="r15:30c3" onclick="input_form(this.id)"></td>
+        <td id="r15:30c4" onclick="input_form(this.id)"></td>
+        <td id="r15:30c5" onclick="input_form(this.id)"></td>
+        <td id="r15:30c6" onclick="input_form(this.id)"></td>
+        <td id="r15:30c7" onclick="input_form(this.id)"></td>
+    </tr>
+    <tr>
+        <td id="r15:35c0">15:35</td>
+        <td id="r15:35c1" onclick="input_form(this.id)"></td>
+        <td id="r15:35c2" onclick="input_form(this.id)"></td>
+        <td id="r15:35c3" onclick="input_form(this.id)"></td>
+        <td id="r15:35c4" onclick="input_form(this.id)"></td>
+        <td id="r15:35c5" onclick="input_form(this.id)"></td>
+        <td id="r15:35c6" onclick="input_form(this.id)"></td>
+        <td id="r15:35c7" onclick="input_form(this.id)"></td>
+    </tr>
+    <tr>
+        <td id="r15:40c0">15:40</td>
+        <td id="r15:40c1" onclick="input_form(this.id)"></td>
+        <td id="r15:40c2" onclick="input_form(this.id)"></td>
+        <td id="r15:40c3" onclick="input_form(this.id)"></td>
+        <td id="r15:40c4" onclick="input_form(this.id)"></td>
+        <td id="r15:40c5" onclick="input_form(this.id)"></td>
+        <td id="r15:40c6" onclick="input_form(this.id)"></td>
+        <td id="r15:40c7" onclick="input_form(this.id)"></td>
+    </tr>
+    <tr>
+        <td id="r15:50c0">15:50</td>
+        <td id="r15:50c1" onclick="input_form(this.id)"></td>
+        <td id="r15:50c2" onclick="input_form(this.id)"></td>
+        <td id="r15:50c3" onclick="input_form(this.id)"></td>
+        <td id="r15:50c4" onclick="input_form(this.id)"></td>
+        <td id="r15:50c5" onclick="input_form(this.id)"></td>
+        <td id="r15:50c6" onclick="input_form(this.id)"></td>
+        <td id="r15:50c7" onclick="input_form(this.id)"></td>
+    </tr>
+    <tr>
+        <td id="r15:55c0">15:55</td>
+        <td id="r15:55c1" onclick="input_form(this.id)"></td>
+        <td id="r15:55c2" onclick="input_form(this.id)"></td>
+        <td id="r15:55c3" onclick="input_form(this.id)"></td>
+        <td id="r15:55c4" onclick="input_form(this.id)"></td>
+        <td id="r15:55c5" onclick="input_form(this.id)"></td>
+        <td id="r15:55c6" onclick="input_form(this.id)"></td>
+        <td id="r15:55c7" onclick="input_form(this.id)"></td>
+    </tr>
+    <tr>
+        <td id="r16:00c0">16:00</td>
+        <td id="r16:00c1" onclick="input_form(this.id)"></td>
+        <td id="r16:00c2" onclick="input_form(this.id)"></td>
+        <td id="r16:00c3" onclick="input_form(this.id)"></td>
+        <td id="r16:00c4" onclick="input_form(this.id)"></td>
+        <td id="r16:00c5" onclick="input_form(this.id)"></td>
+        <td id="r16:00c6" onclick="input_form(this.id)"></td>
+        <td id="r16:00c7" onclick="input_form(this.id)"></td>
+    </tr>
+    <tr>
+        <td id="r16:15c0">16:15</td>
+        <td id="r16:15c1" onclick="input_form(this.id)"></td>
+        <td id="r16:15c2" onclick="input_form(this.id)"></td>
+        <td id="r16:15c3" onclick="input_form(this.id)"></td>
+        <td id="r16:15c4" onclick="input_form(this.id)"></td>
+        <td id="r16:15c5" onclick="input_form(this.id)"></td>
+        <td id="r16:15c6" onclick="input_form(this.id)"></td>
+        <td id="r16:15c7" onclick="input_form(this.id)"></td>
+    </tr>
+    <tr>
+        <td id="r16:20c0">16:20</td>
+        <td id="r16:20c1" onclick="input_form(this.id)"></td>
+        <td id="r16:20c2" onclick="input_form(this.id)"></td>
+        <td id="r16:20c3" onclick="input_form(this.id)"></td>
+        <td id="r16:20c4" onclick="input_form(this.id)"></td>
+        <td id="r16:20c5" onclick="input_form(this.id)"></td>
+        <td id="r16:20c6" onclick="input_form(this.id)"></td>
+        <td id="r16:20c7" onclick="input_form(this.id)"></td>
+    </tr>
+    <tr>
+        <td id="r16:25c0">16:25</td>
+        <td id="r16:25c1" onclick="input_form(this.id)"></td>
+        <td id="r16:25c2" onclick="input_form(this.id)"></td>
+        <td id="r16:25c3" onclick="input_form(this.id)"></td>
+        <td id="r16:25c4" onclick="input_form(this.id)"></td>
+        <td id="r16:25c5" onclick="input_form(this.id)"></td>
+        <td id="r16:25c6" onclick="input_form(this.id)"></td>
+        <td id="r16:25c7" onclick="input_form(this.id)"></td>
+    </tr>
+    <tr>
+        <td id="r16:35c0">16:35</td>
+        <td id="r16:35c1" onclick="input_form(this.id)"></td>
+        <td id="r16:35c2" onclick="input_form(this.id)"></td>
+        <td id="r16:35c3" onclick="input_form(this.id)"></td>
+        <td id="r16:35c4" onclick="input_form(this.id)"></td>
+        <td id="r16:35c5" onclick="input_form(this.id)"></td>
+        <td id="r16:35c6" onclick="input_form(this.id)"></td>
+        <td id="r16:35c7" onclick="input_form(this.id)"></td>
+    </tr>
+    <tr>
+        <td id="r16:40c0">16:40</td>
+        <td id="r16:40c1" onclick="input_form(this.id)"></td>
+        <td id="r16:40c2" onclick="input_form(this.id)"></td>
+        <td id="r16:40c3" onclick="input_form(this.id)"></td>
+        <td id="r16:40c4" onclick="input_form(this.id)"></td>
+        <td id="r16:40c5" onclick="input_form(this.id)"></td>
+        <td id="r16:40c6" onclick="input_form(this.id)"></td>
+        <td id="r16:40c7" onclick="input_form(this.id)"></td>
+    </tr>
+    <tr>
+        <td id="r16:45c0">16:45</td>
+        <td id="r16:45c1" onclick="input_form(this.id)"></td>
+        <td id="r16:45c2" onclick="input_form(this.id)"></td>
+        <td id="r16:45c3" onclick="input_form(this.id)"></td>
+        <td id="r16:45c4" onclick="input_form(this.id)"></td>
+        <td id="r16:45c5" onclick="input_form(this.id)"></td>
+        <td id="r16:45c6" onclick="input_form(this.id)"></td>
+        <td id="r16:45c7" onclick="input_form(this.id)"></td>
+    </tr>
+    <tr>
+        <td id="r17:00c0">17:00</td>
+        <td id="r17:00c1" onclick="input_form(this.id)"></td>
+        <td id="r17:00c2" onclick="input_form(this.id)"></td>
+        <td id="r17:00c3" onclick="input_form(this.id)"></td>
+        <td id="r17:00c4" onclick="input_form(this.id)"></td>
+        <td id="r17:00c5" onclick="input_form(this.id)"></td>
+        <td id="r17:00c6" onclick="input_form(this.id)"></td>
+        <td id="r17:00c7" onclick="input_form(this.id)"></td>
+    </tr>
+    <tr>
+        <td id="r17:05c0">17:05</td>
+        <td id="r17:05c1" onclick="input_form(this.id)"></td>
+        <td id="r17:05c2" onclick="input_form(this.id)"></td>
+        <td id="r17:05c3" onclick="input_form(this.id)"></td>
+        <td id="r17:05c4" onclick="input_form(this.id)"></td>
+        <td id="r17:05c5" onclick="input_form(this.id)"></td>
+        <td id="r17:05c6" onclick="input_form(this.id)"></td>
+        <td id="r17:05c7" onclick="input_form(this.id)"></td>
+    </tr>
+    <tr>
+        <td id="r17:10c0">17:10</td>
+        <td id="r17:10c1" onclick="input_form(this.id)"></td>
+        <td id="r17:10c2" onclick="input_form(this.id)"></td>
+        <td id="r17:10c3" onclick="input_form(this.id)"></td>
+        <td id="r17:10c4" onclick="input_form(this.id)"></td>
+        <td id="r17:10c5" onclick="input_form(this.id)"></td>
+        <td id="r17:10c6" onclick="input_form(this.id)"></td>
+        <td id="r17:10c7" onclick="input_form(this.id)"></td>
+    </tr>
+    <tr>
+        <td id="r17:20c0">17:20</td>
+        <td id="r17:20c1" onclick="input_form(this.id)"></td>
+        <td id="r17:20c2" onclick="input_form(this.id)"></td>
+        <td id="r17:20c3" onclick="input_form(this.id)"></td>
+        <td id="r17:20c4" onclick="input_form(this.id)"></td>
+        <td id="r17:20c5" onclick="input_form(this.id)"></td>
+        <td id="r17:20c6" onclick="input_form(this.id)"></td>
+        <td id="r17:20c7" onclick="input_form(this.id)"></td>
+    </tr>
+    <tr>
+        <td id="r17:25c0">17:25</td>
+        <td id="r17:25c1" onclick="input_form(this.id)"></td>
+        <td id="r17:25c2" onclick="input_form(this.id)"></td>
+        <td id="r17:25c3" onclick="input_form(this.id)"></td>
+        <td id="r17:25c4" onclick="input_form(this.id)"></td>
+        <td id="r17:25c5" onclick="input_form(this.id)"></td>
+        <td id="r17:25c6" onclick="input_form(this.id)"></td>
+        <td id="r17:25c7" onclick="input_form(this.id)"></td>
+    </tr>
+    <tr>
+        <td id="r17:30c0">17:30</td>
+        <td id="r17:30c1" onclick="input_form(this.id)"></td>
+        <td id="r17:30c2" onclick="input_form(this.id)"></td>
+        <td id="r17:30c3" onclick="input_form(this.id)"></td>
+        <td id="r17:30c4" onclick="input_form(this.id)"></td>
+        <td id="r17:30c5" onclick="input_form(this.id)"></td>
+        <td id="r17:30c6" onclick="input_form(this.id)"></td>
+        <td id="r17:30c7" onclick="input_form(this.id)"></td>
+    </tr>
+    <tr>
+        <td id="r17:45c0">17:45</td>
+        <td id="r17:45c1" onclick="input_form(this.id)"></td>
+        <td id="r17:45c2" onclick="input_form(this.id)"></td>
+        <td id="r17:45c3" onclick="input_form(this.id)"></td>
+        <td id="r17:45c4" onclick="input_form(this.id)"></td>
+        <td id="r17:45c5" onclick="input_form(this.id)"></td>
+        <td id="r17:45c6" onclick="input_form(this.id)"></td>
+        <td id="r17:45c7" onclick="input_form(this.id)"></td>
+    </tr>
+    <tr>
+        <td id="r17:50c0">17:50</td>
+        <td id="r17:50c1" onclick="input_form(this.id)"></td>
+        <td id="r17:50c2" onclick="input_form(this.id)"></td>
+        <td id="r17:50c3" onclick="input_form(this.id)"></td>
+        <td id="r17:50c4" onclick="input_form(this.id)"></td>
+        <td id="r17:50c5" onclick="input_form(this.id)"></td>
+        <td id="r17:50c6" onclick="input_form(this.id)"></td>
+        <td id="r17:50c7" onclick="input_form(this.id)"></td>
+    </tr>
+    <tr>
+        <td id="r18:05c0">18:05</td>
+        <td id="r18:05c1" onclick="input_form(this.id)"></td>
+        <td id="r18:05c2" onclick="input_form(this.id)"></td>
+        <td id="r18:05c3" onclick="input_form(this.id)"></td>
+        <td id="r18:05c4" onclick="input_form(this.id)"></td>
+        <td id="r18:05c5" onclick="input_form(this.id)"></td>
+        <td id="r18:05c6" onclick="input_form(this.id)"></td>
+        <td id="r18:05c7" onclick="input_form(this.id)"></td>
+    </tr>
+    <tr>
+        <td id="r18:10c0">18:10</td>
+        <td id="r18:10c1" onclick="input_form(this.id)"></td>
+        <td id="r18:10c2" onclick="input_form(this.id)"></td>
+        <td id="r18:10c3" onclick="input_form(this.id)"></td>
+        <td id="r18:10c4" onclick="input_form(this.id)"></td>
+        <td id="r18:10c5" onclick="input_form(this.id)"></td>
+        <td id="r18:10c6" onclick="input_form(this.id)"></td>
+        <td id="r18:10c7" onclick="input_form(this.id)"></td>
+    </tr>
+    <tr>
+        <td id="r18:15c0">18:15</td>
+        <td id="r18:15c1" onclick="input_form(this.id)"></td>
+        <td id="r18:15c2" onclick="input_form(this.id)"></td>
+        <td id="r18:15c3" onclick="input_form(this.id)"></td>
+        <td id="r18:15c4" onclick="input_form(this.id)"></td>
+        <td id="r18:15c5" onclick="input_form(this.id)"></td>
+        <td id="r18:15c6" onclick="input_form(this.id)"></td>
+        <td id="r18:15c7" onclick="input_form(this.id)"></td>
+    </tr>
+    <tr>
+        <td id="r18:30c0">18:30</td>
+        <td id="r18:30c1" onclick="input_form(this.id)"></td>
+        <td id="r18:30c2" onclick="input_form(this.id)"></td>
+        <td id="r18:30c3" onclick="input_form(this.id)"></td>
+        <td id="r18:30c4" onclick="input_form(this.id)"></td>
+        <td id="r18:30c5" onclick="input_form(this.id)"></td>
+        <td id="r18:30c6" onclick="input_form(this.id)"></td>
+        <td id="r18:30c7" onclick="input_form(this.id)"></td>
+    </tr>
+    <tr>
+        <td id="r18:35c0">18:35</td>
+        <td id="r18:35c1" onclick="input_form(this.id)"></td>
+        <td id="r18:35c2" onclick="input_form(this.id)"></td>
+        <td id="r18:35c3" onclick="input_form(this.id)"></td>
+        <td id="r18:35c4" onclick="input_form(this.id)"></td>
+        <td id="r18:35c5" onclick="input_form(this.id)"></td>
+        <td id="r18:35c6" onclick="input_form(this.id)"></td>
+        <td id="r18:35c7" onclick="input_form(this.id)"></td>
+    </tr>
+    <tr>
+        <td id="r18:40c0">18:40</td>
+        <td id="r18:40c1" onclick="input_form(this.id)"></td>
+        <td id="r18:40c2" onclick="input_form(this.id)"></td>
+        <td id="r18:40c3" onclick="input_form(this.id)"></td>
+        <td id="r18:40c4" onclick="input_form(this.id)"></td>
+        <td id="r18:40c5" onclick="input_form(this.id)"></td>
+        <td id="r18:40c6" onclick="input_form(this.id)"></td>
+        <td id="r18:40c7" onclick="input_form(this.id)"></td>
+    </tr>
+    <tr>
+        <td id="r18:50c0">18:50</td>
+        <td id="r18:50c1" onclick="input_form(this.id)"></td>
+        <td id="r18:50c2" onclick="input_form(this.id)"></td>
+        <td id="r18:50c3" onclick="input_form(this.id)"></td>
+        <td id="r18:50c4" onclick="input_form(this.id)"></td>
+        <td id="r18:50c5" onclick="input_form(this.id)"></td>
+        <td id="r18:50c6" onclick="input_form(this.id)"></td>
+        <td id="r18:50c7" onclick="input_form(this.id)"></td>
+    </tr>
+    <tr>
+        <td id="r18:55c0">18:55</td>
+        <td id="r18:55c1" onclick="input_form(this.id)"></td>
+        <td id="r18:55c2" onclick="input_form(this.id)"></td>
+        <td id="r18:55c3" onclick="input_form(this.id)"></td>
+        <td id="r18:55c4" onclick="input_form(this.id)"></td>
+        <td id="r18:55c5" onclick="input_form(this.id)"></td>
+        <td id="r18:55c6" onclick="input_form(this.id)"></td>
+        <td id="r18:55c7" onclick="input_form(this.id)"></td>
+    </tr>
+    <tr>
+        <td id="r19:00c0">19:00</td>
+        <td id="r19:00c1" onclick="input_form(this.id)"></td>
+        <td id="r19:00c2" onclick="input_form(this.id)"></td>
+        <td id="r19:00c3" onclick="input_form(this.id)"></td>
+        <td id="r19:00c4" onclick="input_form(this.id)"></td>
+        <td id="r19:00c5" onclick="input_form(this.id)"></td>
+        <td id="r19:00c6" onclick="input_form(this.id)"></td>
+        <td id="r19:00c7" onclick="input_form(this.id)"></td>
+    </tr>
+    <tr>
+        <td id="r19:15c0">19:15</td>
+        <td id="r19:15c1" onclick="input_form(this.id)"></td>
+        <td id="r19:15c2" onclick="input_form(this.id)"></td>
+        <td id="r19:15c3" onclick="input_form(this.id)"></td>
+        <td id="r19:15c4" onclick="input_form(this.id)"></td>
+        <td id="r19:15c5" onclick="input_form(this.id)"></td>
+        <td id="r19:15c6" onclick="input_form(this.id)"></td>
+        <td id="r19:15c7" onclick="input_form(this.id)"></td>
+    </tr>
+    <tr>
+        <td id="r19:20c0">19:20</td>
+        <td id="r19:20c1" onclick="input_form(this.id)"></td>
+        <td id="r19:20c2" onclick="input_form(this.id)"></td>
+        <td id="r19:20c3" onclick="input_form(this.id)"></td>
+        <td id="r19:20c4" onclick="input_form(this.id)"></td>
+        <td id="r19:20c5" onclick="input_form(this.id)"></td>
+        <td id="r19:20c6" onclick="input_form(this.id)"></td>
+        <td id="r19:20c7" onclick="input_form(this.id)"></td>
+    </tr>
+    <tr>
+        <td id="r19:25c0">19:25</td>
+        <td id="r19:25c1" onclick="input_form(this.id)"></td>
+        <td id="r19:25c2" onclick="input_form(this.id)"></td>
+        <td id="r19:25c3" onclick="input_form(this.id)"></td>
+        <td id="r19:25c4" onclick="input_form(this.id)"></td>
+        <td id="r19:25c5" onclick="input_form(this.id)"></td>
+        <td id="r19:25c6" onclick="input_form(this.id)"></td>
+        <td id="r19:25c7" onclick="input_form(this.id)"></td>
+    </tr>
+    <tr>
+        <td id="r19:35c0">19:35</td>
+        <td id="r19:35c1" onclick="input_form(this.id)"></td>
+        <td id="r19:35c2" onclick="input_form(this.id)"></td>
+        <td id="r19:35c3" onclick="input_form(this.id)"></td>
+        <td id="r19:35c4" onclick="input_form(this.id)"></td>
+        <td id="r19:35c5" onclick="input_form(this.id)"></td>
+        <td id="r19:35c6" onclick="input_form(this.id)"></td>
+        <td id="r19:35c7" onclick="input_form(this.id)"></td>
+    </tr>
+    <tr>
+        <td id="r19:40c0">19:40</td>
+        <td id="r19:40c1" onclick="input_form(this.id)"></td>
+        <td id="r19:40c2" onclick="input_form(this.id)"></td>
+        <td id="r19:40c3" onclick="input_form(this.id)"></td>
+        <td id="r19:40c4" onclick="input_form(this.id)"></td>
+        <td id="r19:40c5" onclick="input_form(this.id)"></td>
+        <td id="r19:40c6" onclick="input_form(this.id)"></td>
+        <td id="r19:40c7" onclick="input_form(this.id)"></td>
+    </tr>
+    <tr>
+        <td id="r19:45c0">19:45</td>
+        <td id="r19:45c1" onclick="input_form(this.id)"></td>
+        <td id="r19:45c2" onclick="input_form(this.id)"></td>
+        <td id="r19:45c3" onclick="input_form(this.id)"></td>
+        <td id="r19:45c4" onclick="input_form(this.id)"></td>
+        <td id="r19:45c5" onclick="input_form(this.id)"></td>
+        <td id="r19:45c6" onclick="input_form(this.id)"></td>
+        <td id="r19:45c7" onclick="input_form(this.id)"></td>
+    </tr>
+    <tr>
+        <td id="r20:00c0">20:00</td>
+        <td id="r20:00c1" onclick="input_form(this.id)"></td>
+        <td id="r20:00c2" onclick="input_form(this.id)"></td>
+        <td id="r20:00c3" onclick="input_form(this.id)"></td>
+        <td id="r20:00c4" onclick="input_form(this.id)"></td>
+        <td id="r20:00c5" onclick="input_form(this.id)"></td>
+        <td id="r20:00c6" onclick="input_form(this.id)"></td>
+        <td id="r20:00c7" onclick="input_form(this.id)"></td>
+    </tr>
+    <tr>
+        <td id="r20:05c0">20:05</td>
+        <td id="r20:05c1" onclick="input_form(this.id)"></td>
+        <td id="r20:05c2" onclick="input_form(this.id)"></td>
+        <td id="r20:05c3" onclick="input_form(this.id)"></td>
+        <td id="r20:05c4" onclick="input_form(this.id)"></td>
+        <td id="r20:05c5" onclick="input_form(this.id)"></td>
+        <td id="r20:05c6" onclick="input_form(this.id)"></td>
+        <td id="r20:05c7" onclick="input_form(this.id)"></td>
+    </tr>
+    </table>
+    </div>
+
+
+    <style>
+        td{
+            text-align: center;
+        }
+    </style>
+
+
+    <script>
+
+    function dateFormat(date) {
+        let month = date.getMonth() + 1;
+        let day = date.getDate();
+        let hour = date.getHours();
+        let minute = date.getMinutes();
+        let second = date.getSeconds();
+        month = month >= 10 ? month : '0' + month;
+        day = day >= 10 ? day : '0' + day;
+        return date.getFullYear() + '-' + month + '-' + day
+    }
+    var week = new Array( '일', '월', '화', '수', '목', '금', '토');
+    {#var today = new Date();#}
+    {#document.getElementById('r0c1').innerHTML = dateFormat(today)#}
+    {#document.getElementById('r1c1').innerHTML = week[today.getDay()]#}
+
+    var today = new Date();
+    var today_7 = new Date(today.setDate(today.getDate() + 7));
+    document.getElementById('r0c1').innerHTML = dateFormat(today_7)
+    document.getElementById('r1c1').innerHTML = week[today_7.getDay()]
+
+    var today = new Date();
+    var today_8 = new Date(today.setDate(today.getDate() + 8));
+    document.getElementById('r0c2').innerHTML = dateFormat(today_8)
+    document.getElementById('r1c2').innerHTML = week[today_8.getDay()]
+
+    var today = new Date();
+    var today_9 = new Date(today.setDate(today.getDate() + 9));
+    document.getElementById('r0c3').innerHTML = dateFormat(today_9)
+    document.getElementById('r1c3').innerHTML = week[today_9.getDay()]
+
+    var today = new Date();
+    var today_10 = new Date(today.setDate(today.getDate() + 10));
+    document.getElementById('r0c4').innerHTML = dateFormat(today_10)
+    document.getElementById('r1c4').innerHTML = week[today_10.getDay()]
+
+    var today = new Date();
+    var today_11 = new Date(today.setDate(today.getDate() + 11));
+    document.getElementById('r0c5').innerHTML = dateFormat(today_11)
+    document.getElementById('r1c5').innerHTML = week[today_11.getDay()]
+
+    var today = new Date();
+    var today_12 = new Date(today.setDate(today.getDate() + 12));
+    document.getElementById('r0c6').innerHTML = dateFormat(today_12)
+    document.getElementById('r1c6').innerHTML = week[today_12.getDay()]
+
+    var today = new Date();
+    var today_13 = new Date(today.setDate(today.getDate() + 13));
+    document.getElementById('r0c7').innerHTML = dateFormat(today_13)
+    document.getElementById('r1c7').innerHTML = week[today_13.getDay()]
+
+
+
+    function input_objects_8(){
+        {% for inform in inform_today_8 %}
+            {% if inform.booking_status == '예약승인' %}
+                document.getElementById('r{{ inform.booking_time }}c1').style.backgroundColor = 'lightpink'
+                document.getElementById('r{{ inform.booking_time }}c1').style.cursor = 'default'
+                document.getElementById('r{{ inform.booking_time }}c1').innerHTML = '{{ inform.booking_status }}'
+            {% elif inform.booking_status == '예약요청' %}
+                document.getElementById('r{{ inform.booking_time }}c1').style.backgroundColor = 'beige'
+                document.getElementById('r{{ inform.booking_time }}c1').style.cursor = 'default'
+                document.getElementById('r{{ inform.booking_time }}c1').innerHTML = '{{ inform.booking_status }}'
+            {% elif inform.booking_status == '예약불가' %}
+                document.getElementById('r{{ inform.booking_time }}c1').style.cursor = 'default'
+            {% elif inform.booking_status == '예약가능' %}
+                document.getElementById('r{{ inform.booking_time }}c1').style.backgroundColor = 'lightblue'
+                document.getElementById('r{{ inform.booking_time }}c1').style.cursor = 'pointer'
+                document.getElementById('r{{ inform.booking_time }}c1').innerHTML = '{{ inform.booking_status }}'
+            {% endif %}
+        {% endfor %}
+    }
+    function input_objects_9(){
+        {% for inform in inform_today_9 %}
+            {% if inform.booking_status == '예약승인' %}
+                document.getElementById('r{{ inform.booking_time }}c2').style.backgroundColor = 'lightpink'
+                document.getElementById('r{{ inform.booking_time }}c2').style.cursor = 'default'
+                document.getElementById('r{{ inform.booking_time }}c2').innerHTML = '{{ inform.booking_status }}'
+            {% elif inform.booking_status == '예약요청' %}
+                document.getElementById('r{{ inform.booking_time }}c2').style.backgroundColor = 'beige'
+                document.getElementById('r{{ inform.booking_time }}c2').style.cursor = 'default'
+                document.getElementById('r{{ inform.booking_time }}c2').innerHTML = '{{ inform.booking_status }}'
+            {% elif inform.booking_status == '예약불가' %}
+                document.getElementById('r{{ inform.booking_time }}c2').style.cursor = 'default'
+            {% elif inform.booking_status == '예약가능' %}
+                document.getElementById('r{{ inform.booking_time }}c2').style.backgroundColor = 'lightblue'
+                document.getElementById('r{{ inform.booking_time }}c2').style.cursor = 'pointer'
+                document.getElementById('r{{ inform.booking_time }}c2').innerHTML = '{{ inform.booking_status }}'
+            {% endif %}
+        {% endfor %}
+    }
+    function input_objects_10(){
+        {% for inform in inform_today_10 %}
+            {% if inform.booking_status == '예약승인' %}
+                document.getElementById('r{{ inform.booking_time }}c3').style.backgroundColor = 'lightpink'
+                document.getElementById('r{{ inform.booking_time }}c3').style.cursor = 'default'
+                document.getElementById('r{{ inform.booking_time }}c3').innerHTML = '{{ inform.booking_status }}'
+            {% elif inform.booking_status == '예약요청' %}
+                document.getElementById('r{{ inform.booking_time }}c3').style.backgroundColor = 'beige'
+                document.getElementById('r{{ inform.booking_time }}c3').style.cursor = 'default'
+                document.getElementById('r{{ inform.booking_time }}c3').innerHTML = '{{ inform.booking_status }}'
+            {% elif inform.booking_status == '예약불가' %}
+                document.getElementById('r{{ inform.booking_time }}c3').style.cursor = 'default'
+            {% elif inform.booking_status == '예약가능' %}
+                document.getElementById('r{{ inform.booking_time }}c3').style.backgroundColor = 'lightblue'
+                document.getElementById('r{{ inform.booking_time }}c3').style.cursor = 'pointer'
+                document.getElementById('r{{ inform.booking_time }}c3').innerHTML = '{{ inform.booking_status }}'
+            {% endif %}
+        {% endfor %}
+    }
+    function input_objects_11(){
+        {% for inform in inform_today_11 %}
+            {% if inform.booking_status == '예약승인' %}
+                document.getElementById('r{{ inform.booking_time }}c4').style.backgroundColor = 'lightpink'
+                document.getElementById('r{{ inform.booking_time }}c4').style.cursor = 'default'
+                document.getElementById('r{{ inform.booking_time }}c4').innerHTML = '{{ inform.booking_status }}'
+            {% elif inform.booking_status == '예약요청' %}
+                document.getElementById('r{{ inform.booking_time }}c4').style.backgroundColor = 'beige'
+                document.getElementById('r{{ inform.booking_time }}c4').style.cursor = 'default'
+                document.getElementById('r{{ inform.booking_time }}c4').innerHTML = '{{ inform.booking_status }}'
+            {% elif inform.booking_status == '예약불가' %}
+                document.getElementById('r{{ inform.booking_time }}c4').style.cursor = 'default'
+            {% elif inform.booking_status == '예약가능' %}
+                document.getElementById('r{{ inform.booking_time }}c4').style.backgroundColor = 'lightblue'
+                document.getElementById('r{{ inform.booking_time }}c4').style.cursor = 'pointer'
+                document.getElementById('r{{ inform.booking_time }}c4').innerHTML = '{{ inform.booking_status }}'
+            {% endif %}
+        {% endfor %}
+    }
+    function input_objects_12(){
+        {% for inform in inform_today_12 %}
+            {% if inform.booking_status == '예약승인' %}
+                document.getElementById('r{{ inform.booking_time }}c5').style.backgroundColor = 'lightpink'
+                document.getElementById('r{{ inform.booking_time }}c5').style.cursor = 'default'
+                document.getElementById('r{{ inform.booking_time }}c5').innerHTML = '{{ inform.booking_status }}'
+            {% elif inform.booking_status == '예약요청' %}
+                document.getElementById('r{{ inform.booking_time }}c5').style.backgroundColor = 'beige'
+                document.getElementById('r{{ inform.booking_time }}c5').style.cursor = 'default'
+                document.getElementById('r{{ inform.booking_time }}c5').innerHTML = '{{ inform.booking_status }}'
+            {% elif inform.booking_status == '예약불가' %}
+                document.getElementById('r{{ inform.booking_time }}c5').style.cursor = 'default'
+            {% elif inform.booking_status == '예약가능' %}
+                document.getElementById('r{{ inform.booking_time }}c5').style.backgroundColor = 'lightblue'
+                document.getElementById('r{{ inform.booking_time }}c5').style.cursor = 'pointer'
+                document.getElementById('r{{ inform.booking_time }}c5').innerHTML = '{{ inform.booking_status }}'
+            {% endif %}
+        {% endfor %}
+    }
+    function input_objects_13(){
+        {% for inform in inform_today_13 %}
+            {% if inform.booking_status == '예약승인' %}
+                document.getElementById('r{{ inform.booking_time }}c6').style.backgroundColor = 'lightpink'
+                document.getElementById('r{{ inform.booking_time }}c6').style.cursor = 'default'
+                document.getElementById('r{{ inform.booking_time }}c6').innerHTML = '{{ inform.booking_status }}'
+            {% elif inform.booking_status == '예약요청' %}
+                document.getElementById('r{{ inform.booking_time }}c6').style.backgroundColor = 'beige'
+                document.getElementById('r{{ inform.booking_time }}c6').style.cursor = 'default'
+                document.getElementById('r{{ inform.booking_time }}c6').innerHTML = '{{ inform.booking_status }}'
+            {% elif inform.booking_status == '예약불가' %}
+                document.getElementById('r{{ inform.booking_time }}c6').style.cursor = 'default'
+            {% elif inform.booking_status == '예약가능' %}
+                document.getElementById('r{{ inform.booking_time }}c6').style.backgroundColor = 'lightblue'
+                document.getElementById('r{{ inform.booking_time }}c6').style.cursor = 'pointer'
+                document.getElementById('r{{ inform.booking_time }}c6').innerHTML = '{{ inform.booking_status }}'
+            {% endif %}
+        {% endfor %}
+    }
+    function input_objects_14(){
+        {% for inform in inform_today_14 %}
+            {% if inform.booking_status == '예약승인' %}
+                document.getElementById('r{{ inform.booking_time }}c7').style.backgroundColor = 'lightpink'
+                document.getElementById('r{{ inform.booking_time }}c7').style.cursor = 'default'
+                document.getElementById('r{{ inform.booking_time }}c7').innerHTML = '{{ inform.booking_status }}'
+            {% elif inform.booking_status == '예약요청' %}
+                document.getElementById('r{{ inform.booking_time }}c7').style.backgroundColor = 'beige'
+                document.getElementById('r{{ inform.booking_time }}c7').style.cursor = 'default'
+                document.getElementById('r{{ inform.booking_time }}c7').innerHTML = '{{ inform.booking_status }}'
+            {% elif inform.booking_status == '예약불가' %}
+                document.getElementById('r{{ inform.booking_time }}c7').style.cursor = 'default'
+            {% elif inform.booking_status == '예약가능' %}
+                document.getElementById('r{{ inform.booking_time }}c7').style.backgroundColor = 'lightblue'
+                document.getElementById('r{{ inform.booking_time }}c7').style.cursor = 'pointer'
+                document.getElementById('r{{ inform.booking_time }}c7').innerHTML = '{{ inform.booking_status }}'
+            {% endif %}
+        {% endfor %}
+    }
+
+    function input_form(clicked_id){
+        let selected_time = clicked_id.substring(1, 6)
+        let col_num = clicked_id.charAt(7)
+        let date_cell = table.rows[0].cells[col_num]
+        let selected_date = date_cell.innerHTML
+        if (document.getElementById(clicked_id).innerHTML == '예약가능'){
+            $('#modal_post').modal("show");
+            document.getElementById('date').value = selected_date
+            document.getElementById('time').value = selected_time
+            document.getElementById('booking_date').innerHTML = '예약날짜 :  ' + selected_date
+            document.getElementById('booking_time').innerHTML = '예약시간 :  ' + selected_time
+            {#console.log(selected_date)#}
+            {#console.log(selected_time)#}
+        }
+    }
+    function no_booking(){
+        for (i=1; i<8; i++){
+            if (document.getElementsByTagName('r0c'+i).innerHTML = '월'){
+
+            }
+        }
+    }
+    function find_cell(){
+        {#table = document.getElementById('table')#}
+        let td = table.rows[4].cells[4];
+        td.style.backgroundColor = "red"; // 강조
+        td.innerHTML = 'TEST'
+    }
+
+
+    input_objects_8()
+    input_objects_9()
+    input_objects_10()
+    input_objects_11()
+    input_objects_12()
+    input_objects_13()
+    input_objects_14()
+    input_form()
+
+
+
+    </script>
+
+
+{% endblock %}

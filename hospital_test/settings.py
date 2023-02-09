@@ -41,7 +41,7 @@ DEBUG = env('DEBUG')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["*"]
 
 
 # Application definition
@@ -56,6 +56,10 @@ INSTALLED_APPS = [
     'accountapp',
     'bootstrap5',
     'profileapp',
+    'articleapp',
+    'bookingapp',
+    'crispy_forms',
+    'superapp',
 ]
 
 MIDDLEWARE = [
@@ -131,6 +135,8 @@ USE_I18N = True
 
 USE_TZ = True
 
+TIME_INPUT_FORMATS = ('%H:%M')
+DATE_INPUT_FORMATS = ['%Y-%m-%d']
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
@@ -149,5 +155,7 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-LOGIN_REDIRECT_URL = reverse_lazy('accountapp:hello_world')
+LOGIN_REDIRECT_URL = reverse_lazy('articleapp:home')
 LOGOUT_REDIRECT_URL = reverse_lazy('accountapp:login')
+
+CRISPY_TEMPLATE_PACK ="bootstrap5"

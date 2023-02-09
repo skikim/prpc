@@ -1,0 +1,146 @@
+{%  extends 'base.html' %}
+{% load crispy_forms_tags %}
+{% load bootstrap5 %}
+
+
+
+{% block content %}
+{#    <div style="text-align: center; max-width: 400px; margin: 4rem auto;">#}
+{#        <div style="margin: 4rem">#}
+{#            <h3>진료 예약 하기</h3>#}
+{#        </div>#}
+{#        <form action="{% url 'bookingapp:create' %}" method="post">#}
+{#            {%  csrf_token %}#}
+{#            {% bootstrap_form form %}#}
+{#            <input type="submit" value="확인" class="btn btn-primary rounded-pill col-6 mt-4">#}
+{#        </form>#}
+{#    </div>#}
+
+
+
+    <section class="mt-4">
+        <form method="post">
+            {% csrf_token %}
+            <div class="card shadow mb-5 bg-white rounded">
+
+                <!--Card-Body-->
+                <div class="card-body">
+
+                    <!--Card-Title-->
+                    <h4 class="card-title text-center shadow mb-5  rounded">예약 테이블</h4>
+                    <hr>
+
+
+
+
+
+
+                    <div class="col-sm-6 ">
+                        <label>예약일 선택</label><br>
+                        <input oninput="test()" class="browser-default mb-4" type="date" id="date" name="date" style="width: 100%;" required/>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-6 time-select">
+                            <select class="browser-default custom-select mb-4" id="time" name="time" oninput="test()" required>
+                                <option value="" disabled="" selected="">예약시간 선택</option>
+                                <option value="8:00">8:00 AM</option>
+                                <option value="9:00">9:00 AM</option>
+                                <option value="10:00">10:00 AM</option>
+                                <option value="11:00">11:00 AM</option>
+                                <option value="12:00">12:00 PM</option>
+                                <option value="15:00">3:00 PM</option>
+                                <option value="16:00">4:00 PM</option>
+                                <option value="17:00">5:00 PM</option>
+                                <option value="18:00">6:00 PM</option>
+                            </select>
+                        </div>
+
+                    </div>
+
+                    <div style="text-align: right"><button id="btn_book" class="btn btn-primary " type="submit">예약하기</button></div>
+                    <!-- Modal -->
+{#                    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">#}
+{#                        <div class="modal-dialog modal-lg">#}
+{#                            <div class="modal-content">#}
+{#                                <div class="modal-header">#}
+{#                                    <h1 class="modal-title fs-5" id="exampleModalLabel"><strong>[예약 확인]</strong></h1>#}
+{#                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>#}
+{#                                </div>#}
+{#                                <div class="modal-body">#}
+{##}
+{#                                    <p style="color: darkblue">1. 일주일에 1회만 온라인으로 예약 가능합니다. (더 많은 예약이 필요한 경우는 전화로 예약하시기 바랍니다.)</p>#}
+{#                                    <p style="color: darkblue">2. 예약자와 실제로 진료 하시는 분이 일치하지 않으면 취소될 수 있습니다. (예약을 타인에게 대여할 수 없습니다.)</p>#}
+{#                                    <p style="color: darkblue">3. 예약시간에 못 오시게 되면 다른 환자를 위해 가능한 한 빨리 취소해 주시기 바랍니다.</p>#}
+{##}
+{#                                    <p style="text-align: center; margin-top: 4rem; font-size: 1.2rem">예약하시겠습니까?</p>#}
+{##}
+{#                                </div>#}
+{#                                <div class="modal-footer">#}
+{#                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>#}
+{#                                    <button type="submit" class="btn btn-primary">예약하겠습니다.</button>#}
+{#                                </div>#}
+{#                            </div>#}
+{#                        </div>#}
+{#                    </div>#}
+
+
+                </div>
+            </div>
+        </form>
+{#        <div><h3>{{ user.profile.real_name }}</h3></div>#}
+
+        <div>
+            {{ display_booking_list }}
+        </div>
+
+
+
+
+
+        <table>
+            <h2 style="margin-bottom: 2rem" class='text-center'>[최근 예약 승인 대기자]</h2>
+
+            {% for book in bookings %}
+
+                <tr>
+                    <th class='text-center'>예약자</th>
+                    <th class='text-center'>연락처</th>
+                    <th class='text-center'>예약일</th>
+                    <th class='text-center'>예약시간</th>
+                </tr>
+                <tr>
+                    <td id="pt_name" class='text-center'>{{ book.user.profile.real_name }}*</td>
+                    <td id="pt_phone" class='text-center'>{{ book.user.profile.phone_num }}</td>
+                    <td class='text-center'>{{ book.booking_date }}</td>
+                    <td class='text-center'>{{ book.booking_time }}</td>
+                </tr>
+
+            {% endfor %}
+
+        </table>
+    </section>
+    <script>
+        // var today = new Date().toISOString().split('T')[0];
+        // document.getElementsByName("date")[0].setAttribute('min', today);
+
+        const twoWeeksAgo = 14 * 24 * 60 * 60 * 1000;
+        let dateElement = document.querySelector('#date');
+        dateElement.max = new Date(Date.now() + twoWeeksAgo).toISOString().split('T')[0];
+        dateElement.min = new Date().toISOString().split('T')[0];
+
+        var pt_name = document.getElementById('pt_name').innerHTML.substring(0,2)
+        document.getElementById('pt_name').innerHTML = pt_name+'*'
+
+        var pt_phone = document.getElementById('pt_phone').innerHTML.substring(0,10)
+        document.getElementById('pt_phone').innerHTML = pt_phone+'***'
+
+        function test() {
+        const dday = document.querySelector("#date").value;
+        console.log(dday);
+        }
+
+        $('#date').on('input', function(){
+            $('#exampleModal').modal('show');
+        })
+    </script>
+{% endblock %}
