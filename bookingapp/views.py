@@ -64,6 +64,7 @@ def booking(request):
                'inform_today_6': inform_today_6,
                'inform_today_7': inform_today_7,
     }
+
     errors = []
     if request.method == 'POST':
         booking_date = request.POST.get('date')
@@ -74,7 +75,11 @@ def booking(request):
         booking_date_weekday = booking_date_parse.weekday()
         start_date = booking_date_parse - timedelta(days=booking_date_weekday)
         end_date = booking_date_parse + timedelta(days=(5 - booking_date_weekday))
-        request_real_name = request.user.profile.real_name
+        try:
+            request_real_name = request.user.profile.real_name
+        except:
+            return redirect(reverse('accountapp:detail', kwargs={'pk': request.user.pk}))
+
         if Booking.objects.filter(Q(user=user), Q(booking_date__range=(start_date, end_date)), Q(booking_status='예약승인') | Q(booking_status='예약요청')).count() < 1:
             Booking.objects.get(booking_date=booking_date, booking_time=booking_time).delete()
             Booking(booking_date=booking_date, booking_time=booking_time, user=user, booking_status=booking_status).save()

@@ -1,10 +1,6 @@
 from django.contrib.auth.models import User
 from django.db import models
 
-# from datetime import datetime, timedelta, date
-
-from django_pandas.managers import DataFrameManager
-
 # Create your models here.
 
 BOOKING_STATUS = (

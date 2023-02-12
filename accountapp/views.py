@@ -35,8 +35,9 @@ class UserCreateForm:
 class AccountCreateView(CreateView):
     model = User
     form_class = CreateUserForm
-    success_url = reverse_lazy('profileapp:create')
+    success_url = reverse_lazy('accountapp:login')
     template_name = 'accountapp/create.html'
+
 @method_decorator(account_ownership_required, 'get')
 class AccountDetailView(DetailView):
     model = User
@@ -49,7 +50,7 @@ class AccountUpdateView(UpdateView):
     model = User
     # context_object_name = 'target_user'
     form_class = AccountUpdateForm
-    success_url = reverse_lazy('accountapp:hello_world')
+    success_url = reverse_lazy('accountapp:detail')
     template_name = 'accountapp/update.html'
 
 @method_decorator(has_ownership, 'get')

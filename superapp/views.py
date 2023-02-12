@@ -93,7 +93,7 @@ def superbooking(request):
                 return render(request, 'superapp/supercreate.html', {'errors': errors})
         return render(request, 'superapp/supercreate.html', context)
     elif not request.user.is_superuser:
-        return redirect(reverse('articleapp:home'))
+        return redirect(reverse('articleapp:index'))
 
 
 @login_required
@@ -158,12 +158,12 @@ def superbooking2(request):
                 return render(request, 'superapp/supercreate2.html', {'errors': errors})
         return render(request, 'superapp/supercreate2.html', context)
     elif not request.user.is_superuser:
-        return redirect(reverse('articleapp:home'))
+        return redirect(reverse('articleapp:index'))
 
 
 def superbooking3(request):
     if request.user.is_superuser:
-        dict_book = Booking.objects.filter().order_by('-id')[:20:0]
+        dict_book = Booking.objects.filter().order_by('-id')[:40:0]
         context = {
             'bookings': dict_book
         }
@@ -181,7 +181,7 @@ def superbooking3(request):
                 aligo_sms_send(rec, msg_2)
         return render(request, 'superapp/supercreate3.html', context)
     elif not request.user.is_superuser:
-        return redirect(reverse('articleapp:home'))
+        return redirect(reverse('articleapp:index'))
 
 
 # @method_decorator(login_required, 'get')

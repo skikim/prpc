@@ -4,8 +4,8 @@
 {% block content %}
 {% if user.is_superuser %}
 
-    <div style="text-align: center; max-width: 600px; margin: 4rem auto;">
-        <div style="margin-bottom: 2rem">
+    <div style="text-align: center; max-width: 600px; margin: 2rem auto;">
+        <div style="margin-top: 6rem">
             <h2>관리자 페이지</h2>
         </div>
 
@@ -58,8 +58,8 @@
         </div>
     </div>
         <div style="text-align: center; margin-bottom: 2rem; display: flex; justify-content: center; " >
-            <a href="{% url 'superapp:supercreate' %}"><p><&nbsp&nbsp이전&nbsp&nbsp</p></a>
-            <a href="{% url 'superapp:supercreate3' %}"><p>&nbsp&nbsp다음&nbsp&nbsp></p></a>
+            <a href="{% url 'superapp:supercreate' %}"><p>1주차</p></a>&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;
+            <a href="{% url 'superapp:supercreate3' %}"><p>메시지></p></a>
         </div>
     <div>
     <table id="table" class="table table-striped-columns" style="width:90%">
@@ -812,6 +812,11 @@
     <style>
         td{
             text-align: center; cursor: pointer;
+        }
+        @media screen and (max-width: 500px) {
+            html {
+                font-size: 12px;
+            }
         }
     </style>
 

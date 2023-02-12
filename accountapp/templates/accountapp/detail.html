@@ -2,12 +2,15 @@
 {% load bootstrap5 %}
 
 {% block content %}
-    <div style="text-align: center; max-width: 500px; margin: 4rem auto">
+    <div style="text-align: center; max-width: 500px; margin: 6rem auto">
         <p>
             가입일 : {{ user.date_joined }}
         </p>
-        <h4 style="margin: 4rem 0; font-family: 'NanumSquareB';">
+        <h4 style="margin: 4rem 0 2rem 0; font-family: 'NanumSquareB';">
             ID : {{ user.username }}
+        </h4>
+        <h4 style="margin: 2rem 0 4rem 0; font-family: 'NanumSquareB';">
+            이름 : {{ user.profile.real_name }}
         </h4>
         {% if user.profile %}
             <p style="margin-top: 2rem;">
@@ -27,6 +30,7 @@
                <h2 style = "font-family: 'NanumSquareB'">
                    회원정보 추가입력
                </h2>
+                <p style="color: darkred"><strong>(온라인으로 예약하시려면 반드시 회원정보 추가입력을 하셔야 합니다!!!)</strong></p>
             </a>
         {% endif %}
         {% if request.user == user %}

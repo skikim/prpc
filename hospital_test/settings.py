@@ -58,7 +58,6 @@ INSTALLED_APPS = [
     'profileapp',
     'articleapp',
     'bookingapp',
-    'crispy_forms',
     'superapp',
 ]
 
@@ -141,10 +140,10 @@ DATE_INPUT_FORMATS = ['%Y-%m-%d']
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATICFILES_DIRS = [
-    BASE_DIR / 'static'
+    BASE_DIR / 'static',
 ]
 
 MEDIA_URL = 'media/'
@@ -155,7 +154,5 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-LOGIN_REDIRECT_URL = reverse_lazy('articleapp:home')
+LOGIN_REDIRECT_URL = reverse_lazy('articleapp:index')
 LOGOUT_REDIRECT_URL = reverse_lazy('accountapp:login')
-
-CRISPY_TEMPLATE_PACK ="bootstrap5"

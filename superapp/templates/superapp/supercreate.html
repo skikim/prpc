@@ -3,8 +3,8 @@
 
 {% block content %}
 {% if user.is_superuser %}
-    <div style="text-align: center; max-width: 600px; margin: 4rem auto;" xmlns="http://www.w3.org/1999/html">
-        <div style="margin-bottom: 2rem">
+    <div style="text-align: center; max-width: 600px; margin: 2rem auto;" xmlns="http://www.w3.org/1999/html">
+        <div style="margin-top: 6rem">
             <h2>관리자 페이지</h2>
         </div>
 
@@ -59,8 +59,9 @@
 {#            3. 예약취소 및 변경은 상단의 '나의 예약정보'에서 가능합니다.#}
         </div>
     </div>
-        <div style="text-align: center; margin-bottom: 2rem">
-            <a href="{% url 'superapp:supercreate2' %}"><p>다음&nbsp&nbsp></p></a>
+        <div style="text-align: center; margin-bottom: 2rem; display: flex; justify-content: center;">
+            <a href="{% url 'superapp:supercreate2' %}"><p>2주차&nbsp&nbsp></p></a>&emsp;&emsp;&emsp;&emsp;
+            <a href="{% url 'superapp:supercreate3' %}"><p>메시지&nbsp&nbsp></p></a>
         </div>
     <div>
     <table id="table" class="table table-striped-columns" style="width:90%">
@@ -813,6 +814,11 @@
     <style>
         td{
             text-align: center; cursor: pointer;
+        }
+        @media screen and (max-width: 500px) {
+            html {
+                font-size: 12px;
+            }
         }
     </style>
 

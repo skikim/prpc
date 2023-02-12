@@ -2,8 +2,8 @@
 {% load bootstrap5 %}
 
 {% block content %}
-    <div style="text-align: center; max-width: 650px; margin: 4rem auto;">
-        <div style="margin-bottom: 2rem">
+    <div>
+        <div style="margin-top: 8rem; margin-bottom: 2rem; text-align: center">
             <h2>[진료 예약 하기]</h2>
         </div>
 
@@ -41,18 +41,18 @@
 {#        <div style="margin-bottom: 2rem">#}
 {#            <h4>[진료예약 현황]</h4>#}
 {#        </div>#}
-        <div>
-            1. 원하는 날짜와 시간의 '예약가능'(파란색) 칸을 클릭하셔서 예약하세요.<br><br>
-            2. 예약신청 하시면 '예약요청'(노란색)으로 바뀝니다.<br><br>
-            3. 근무시간 기준 2시간 이내 승인되며(야간, 토,일, 공휴일 제외) '예약승인'(붉은색)으로 바뀝니다.<br><br>
-            4. 예약취소는 상단의 '나의 예약정보'에서 가능하며, 변경은 먼저 취소 후 새로 예약하셔야 합니다.
-        </div>
+{#        <div>#}
+{#            1. 원하는 날짜와 시간의 '예약가능'(파란색) 칸을 클릭하셔서 예약하세요.<br><br>#}
+{#            2. 예약신청 하시면 '예약요청'(노란색)으로 바뀝니다.<br><br>#}
+{#            3. 근무시간 기준 2시간 이내 승인되며(야간, 토,일, 공휴일 제외) '예약승인'(붉은색)으로 바뀝니다.<br><br>#}
+{#            4. 예약취소는 상단의 '나의 예약정보'에서 가능하며, 변경은 먼저 취소 후 새로 예약하셔야 합니다.#}
+{#        </div>#}
     </div>
         <div style="text-align: center; margin-bottom: 2rem" >
             <a href="{% url 'bookingapp:create' %}"><h5><&nbsp&nbsp이전</h5></a>
         </div>
     <div>
-    <table id="table" class="table table-striped-columns" style="width:90%">
+    <table id="table" class="table table-striped table-bordered" style="width:90%; margin: 0 auto">
     <tr>
         <td id="r0c0"></td>
         <td id="r0c1"></td>
@@ -802,6 +802,11 @@
     <style>
         td{
             text-align: center;
+        }
+        @media screen and (max-width: 500px) {
+            html {
+                font-size: 12px;
+            }
         }
     </style>
 
