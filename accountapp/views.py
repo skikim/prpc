@@ -1,4 +1,5 @@
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
@@ -18,7 +19,8 @@ has_ownership = [
 
 class AccountCreateView(CreateView):
     model = User
-    form_class = CreateUserForm
+    # form_class = CreateUserForm
+    form_class = UserCreationForm
     success_url = reverse_lazy('accountapp:login')
     template_name = 'accountapp/create.html'
 
