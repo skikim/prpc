@@ -87,3 +87,4 @@ db.sqlite3
 __pycache__/
 media/
 aws_hospital_test.pem
+Dockerfile
