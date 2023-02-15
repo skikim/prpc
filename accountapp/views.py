@@ -19,8 +19,8 @@ has_ownership = [
 
 class AccountCreateView(CreateView):
     model = User
-    # form_class = CreateUserForm
-    form_class = UserCreationForm
+    form_class = CreateUserForm
+    # form_class = UserCreationForm
     success_url = reverse_lazy('accountapp:login')
     template_name = 'accountapp/create.html'
 
