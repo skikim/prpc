@@ -50,3 +50,7 @@ DATABASES = {
 #         'PORT': '3306'
 #     }
 # }
+
+
+STATIC_ROOT = BASE_DIR / 'static/'
+STATICFILES_DIRS = []
