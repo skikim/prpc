@@ -17,7 +17,7 @@ services:
     networks:
       - network
     volumes:
-      - static-volume:/home/prpc/staticfiles
+      - static-volume:/home/prpc/static
       - media-volume:/home/prpc/media
 
   mariadb:
@@ -27,10 +27,10 @@ services:
     volumes:
       - maria-database:/var/lib/mysql
     environment:
-      MYSQL_ROOT_PASSWORD: Iprime103-1403
+      MYSQL_ROOT_PASSWORD: Prpc-8576
       MYSQL_DATABASE: django
-      MYSQL_USER: django
-      MYSQL_PASSWORD: Iprime103-1403
+      MYSQL_USER: prpc8575
+      MYSQL_PASSWORD: Prpc-8576
 
 
 #상기 선언한 network와 volume들을 변수처럼? 명기
