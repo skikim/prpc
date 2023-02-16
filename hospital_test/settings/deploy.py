@@ -47,7 +47,10 @@ DATABASES = {
         'USER': 'prpc8575',
         'PASSWORD': 'Prpc-8576',
         'HOST': 'localhost',
-        'PORT': '3306'
+        'PORT': '3306',
+        'OPTIONS': {
+            'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
+        }
     }
 }
 
