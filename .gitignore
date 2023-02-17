@@ -86,5 +86,5 @@ db.sqlite3
 *.pyc
 __pycache__/
 media/
-aws_hospital_test.pem
 Dockerfile
+docker-compose.yml

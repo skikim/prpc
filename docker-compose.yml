@@ -13,12 +13,15 @@ services:
       - 80:80
 
   prpc_container_gunicorn: #network로 묶이기 때문에 name-space 정보로 넣어줘야한다. django로 넣으면 안된다.
-    image: prpc_test_image:4
+    image: prpc_test_image:8
     networks:
       - network
     volumes:
       - static-volume:/home/prpc/staticfiles
       - media-volume:/home/prpc/media
+    secrets:
+      - MYSQL_PASSWORD
+      - DJANGO_SECRET_KEY
 
   mariadb:
     image: mariadb:10.5
@@ -26,11 +29,15 @@ services:
       - network
     volumes:
       - maria-database:/var/lib/mysql
+    secrets:
+      - MYSQL_PASSWORD
+      - MYSQL_ROOT_PASSWORD
     environment:
-      MYSQL_ROOT_PASSWORD: Prpc-8576
       MYSQL_DATABASE: django
       MYSQL_USER: prpc8575
-      MYSQL_PASSWORD: Prpc-8576
+      MYSQL_PASSWORD_FILE: /run/secrets/MYSQL_PASSWORD
+      MYSQL_ROOT_PASSWORD_FILE: /run/secrets/MYSQL_ROOT_PASSWORD
+
 
 
 #상기 선언한 network와 volume들을 변수처럼? 명기
@@ -41,3 +48,11 @@ volumes:
   static-volume:
   media-volume:
   maria-database:
+
+secrets:
+   DJANGO_SECRET_KEY:
+     external: true
+   MYSQL_PASSWORD:
+     external: true
+   MYSQL_ROOT_PASSWORD:
+     external: true
