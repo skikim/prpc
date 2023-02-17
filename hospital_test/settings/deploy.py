@@ -48,16 +48,11 @@ DATABASES = {
         'PASSWORD': 'Prpc-8576',
         'HOST': 'mariadb',
         'PORT': '3306',
-        # 'OPTIONS': {
-        #     'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
-        # }
     }
 }
 
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-STATICFILES_DIRS = [
-    BASE_DIR / 'static',
-]
+# STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+# STATICFILES_DIRS = []
 
 # STATIC_ROOT = BASE_DIR / 'static/'
 # STATICFILES_DIRS = []
