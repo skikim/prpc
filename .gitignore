@@ -86,5 +86,3 @@ db.sqlite3
 *.pyc
 __pycache__/
 media/
-Dockerfile
-docker-compose.yml
