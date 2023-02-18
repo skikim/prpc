@@ -16,14 +16,14 @@
             <p style="margin-top: 2rem;">
                Phone : {{ user.profile.phone_num }}&nbsp &nbsp &nbsp
             {% if request.user == user %}
-                <a href="{% url 'profileapp:update' pk=user.profile.pk %}">수정</a>
+                <a href="{% url 'profileapp:update' pk=user.profile.pk %}">프로필 수정</a>
             {% endif %}
             </p>
             <p>
                생년월일 : {{ user.profile.birth_date }}&nbsp &nbsp &nbsp
-            {% if request.user == user %}
-            <a href="{% url 'profileapp:update' pk=user.profile.pk %}">수정</a>
-            {% endif %}
+{#            {% if request.user == user %}#}
+{#            <a href="{% url 'profileapp:update' pk=user.profile.pk %}">프로필 수정</a>#}
+{#            {% endif %}#}
             </p>
         {% else %}
             <p style="color: darkred; font-size: 1.2rem"><strong>예약하시려면 '프로필' 입력을 하셔야 합니다.</strong></p>

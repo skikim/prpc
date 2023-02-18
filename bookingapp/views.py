@@ -3,7 +3,7 @@ from datetime import timedelta
 from dateutil.parser import parse
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q
-from django.http import HttpResponse, HttpResponseForbidden
+from django.http import HttpResponseForbidden
 
 from django.shortcuts import render, redirect
 from django.urls import reverse, reverse_lazy
@@ -22,10 +22,18 @@ has_ownership = [
 
 def send_message(msg):
     TARGET_URL = 'https://notify-api.line.me/api/notify'
-    TOKEN = 'xngZHmAg4YXdRgIqMb0Rq9d7jERLOwGe1Es6jd76cJo'		# 발급받은 토큰
+    TOKEN = 'xngZHmAg4YXdRgIqMb0Rq9d7jERLOwGe1Es6jd76cJo'		# 내가 발급받은 토큰
     headers={'Authorization': 'Bearer ' + TOKEN}
     now = datetime.datetime.now()
     data={'message': f"[{now.strftime('%Y-%m-%d %H:%M:%S')}] {str(msg)}"}
+    response = requests.post(TARGET_URL, headers=headers, data=data)
+
+def send_message_2(msg):
+    TARGET_URL = 'https://notify-api.line.me/api/notify'
+    TOKEN = 'QGfhpZOSYthQBxVhEB5UP7lC75XyWCEtMg8VsTwqrqY'  # 장은미씨 발급받은 토큰
+    headers = {'Authorization': 'Bearer ' + TOKEN}
+    now = datetime.datetime.now()
+    data = {'message': f"[{now.strftime('%Y-%m-%d %H:%M:%S')}] {str(msg)}"}
     response = requests.post(TARGET_URL, headers=headers, data=data)
 
     """디스코드 메세지 전송"""
@@ -81,6 +89,7 @@ def booking(request):
             Booking.objects.get(booking_date=booking_date, booking_time=booking_time).delete()
             Booking(booking_date=booking_date, booking_time=booking_time, user=user, booking_status=booking_status).save()
             send_message(f"{request_real_name}님이 {booking_date} {booking_time}의 예약을 요청하셨습니다.")
+            send_message_2(f"{request_real_name}님이 {booking_date} {booking_time}의 예약을 요청하셨습니다.")
             return redirect(reverse('bookingapp:detail', kwargs={'pk': user.pk}))
         else:
             errors.append('온라인 예약은 주 1회만 가능합니다.')
@@ -126,12 +135,14 @@ def booking_2(request):
         try:
             request_real_name = request.user.profile.real_name
         except:
-            return redirect(reverse('accountapp:detail', kwargs={'pk': request.user.pk}))
+            return redirect(reverse('profileapp:create'))
+            # return redirect(reverse('accountapp:detail', kwargs={'pk': request.user.pk}))
 
         if Booking.objects.filter(Q(user=user), Q(booking_date__range=(start_date, end_date)), Q(booking_status='예약승인') | Q(booking_status='예약요청')).count() < 1:
             Booking.objects.get(booking_date=booking_date, booking_time=booking_time).delete()
             Booking(booking_date=booking_date, booking_time=booking_time, user=user, booking_status=booking_status).save()
             send_message(f"{request_real_name}님이 {booking_date} {booking_time}의 예약을 요청하셨습니다.")
+            send_message_2(f"{request_real_name}님이 {booking_date} {booking_time}의 예약을 요청하셨습니다.")
             return redirect(reverse('bookingapp:detail', kwargs={'pk': user.pk}))
         else:
             errors.append('온라인 예약은 주 1회만 가능합니다.')
@@ -161,13 +172,13 @@ class BookingDetailView(DetailView):
             return HttpResponseForbidden()
 
 
-@method_decorator(has_ownership, 'get')
-@method_decorator(has_ownership, 'post')
-class BookingDeleteView(DeleteView):
-    model = Booking
-    context_object_name = 'booking'
-    success_url = reverse_lazy('bookingapp:create')
-    template_name = 'bookingapp/delete.html'
+# @method_decorator(has_ownership, 'get')
+# @method_decorator(has_ownership, 'post')
+# class BookingDeleteView(DeleteView):
+#     model = Booking
+#     context_object_name = 'booking'
+#     success_url = reverse_lazy('bookingapp:create')
+#     template_name = 'bookingapp/delete.html'
 
 @login_required
 @booking_ownership_required
@@ -183,6 +194,7 @@ def booking_delete(request, pk):
         booking.delete()
         old_booking.delete()
         send_message(f"{request_real_name}님이 {booking_date} {booking_time}의 예약을 취소하셨습니다.")
+        send_message_2(f"{request_real_name}님이 {booking_date} {booking_time}의 예약을 취소하셨습니다.")
         Booking(booking_date=booking_date, booking_time=booking_time, booking_status=booking_status).save()
         return redirect(reverse('bookingapp:detail', kwargs={'pk': booking.user.pk}))
     return render(request, 'bookingapp/delete.html', {'booking' : booking})

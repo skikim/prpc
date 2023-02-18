@@ -1,9 +1,6 @@
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
-from django.http import HttpResponse, HttpResponseRedirect
-from django.shortcuts import render
-from django.urls import reverse, reverse_lazy
+from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
 from django.views.generic import CreateView, DetailView, UpdateView, DeleteView
 
@@ -36,7 +33,7 @@ class AccountUpdateView(UpdateView):
     model = User
     # context_object_name = 'target_user'
     form_class = AccountUpdateForm
-    success_url = reverse_lazy('accountapp:detail')
+    success_url = reverse_lazy('accountapp:login')
     template_name = 'accountapp/update.html'
 
 @method_decorator(has_ownership, 'get')
@@ -44,5 +41,5 @@ class AccountUpdateView(UpdateView):
 class AccountDeleteView(DeleteView):
     model = User
     # context_object_name = 'target_user'
-    success_url = reverse_lazy('accountapp:login')
+    success_url = reverse_lazy('articleapp:index')
     template_name = 'accountapp/delete.html'

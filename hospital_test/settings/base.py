@@ -9,11 +9,22 @@ https://docs.djangoproject.com/en/4.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.1/ref/settings/
 """
-import os
-
+import os, environ
 from pathlib import Path
-
 from django.urls import reverse_lazy
+
+
+def read_secret(secret_name):
+    file = open('/run/secrets/' + secret_name)
+    secret = file.read()
+    secret = secret.rstrip().lstrip()
+    file.close()
+    return secret
+
+env = environ.Env(
+    # set casting, default value
+    DEBUG=(bool, False)
+)
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
@@ -37,6 +48,7 @@ INSTALLED_APPS = [
     'articleapp',
     'bookingapp',
     'superapp',
+    'passwordapp',
 ]
 
 MIDDLEWARE = [

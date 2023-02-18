@@ -85,7 +85,7 @@ def superbooking(request):
             start_date = booking_date_parse - timedelta(days=booking_date_weekday)
             end_date = booking_date_parse + timedelta(days=(5 - booking_date_weekday))
             request_real_name = request.user.profile.real_name
-            if Booking.objects.filter(Q(user=user), Q(booking_date__range=(start_date, end_date)), Q(booking_status='예약승인') | Q(booking_status='예약요청')).count() < 2:
+            if Booking.objects.filter(Q(user=user), Q(booking_date__range=(start_date, end_date)), Q(booking_status='예약승인') | Q(booking_status='예약요청')).count() < 1000:
                 Booking(booking_date=booking_date, booking_time=booking_time, user=user, booking_status=booking_status).save()
                 return redirect(reverse('superapp:supercreate'))
             else:
@@ -150,7 +150,7 @@ def superbooking2(request):
             start_date = booking_date_parse - timedelta(days=booking_date_weekday)
             end_date = booking_date_parse + timedelta(days=(5 - booking_date_weekday))
             request_real_name = request.user.profile.real_name
-            if Booking.objects.filter(Q(user=user), Q(booking_date__range=(start_date, end_date)), Q(booking_status='예약승인') | Q(booking_status='예약요청')).count() < 2:
+            if Booking.objects.filter(Q(user=user), Q(booking_date__range=(start_date, end_date)), Q(booking_status='예약승인') | Q(booking_status='예약요청')).count() < 1000:
                 Booking(booking_date=booking_date, booking_time=booking_time, user=user, booking_status=booking_status).save()
                 return redirect(reverse('superapp:supercreate2'))
             else:
@@ -186,46 +186,46 @@ def superbooking3(request):
 
 # @method_decorator(login_required, 'get')
 # @method_decorator(login_required, 'post')
-class BookingDetailView(DetailView):
-    model = Booking
-    context_object_name = 'user'
-    template_name = 'bookingapp/detail.html'
-    def get_object(self):
-        return self.request.user
-    def get(self, *args, **kwargs):
-        if self.request.user.is_authenticated and self.get_object() == self.request.user:
-            return super().get(*args, **kwargs)
-        else:
-            return HttpResponseForbidden()
-    def post(self, *args, **kwargs):
-        if self.request.user.is_authenticated and self.get_object() == self.request.user:
-            return super().post(*args, **kwargs)
-        else:
-            return HttpResponseForbidden()
-
-
-@method_decorator(has_ownership, 'get')
-@method_decorator(has_ownership, 'post')
-class BookingDeleteView(DeleteView):
-    model = Booking
-    context_object_name = 'booking'
-    success_url = reverse_lazy('bookingapp:create')
-    template_name = 'bookingapp/delete.html'
-
-@login_required
-@booking_ownership_required
-def booking_delete(request, pk):
-    booking = Booking.objects.get(pk=pk)
-    booking_date = booking.booking_date
-    booking_time = booking.booking_time
-    user = ''
-    booking_status = '예약가능'
-    request_real_name = booking.user.profile.real_name
-    old_booking = Booking.objects.get(booking_date=booking_date, booking_time=booking_time)
-    if request.method == 'POST':
-        booking.delete()
-        old_booking.delete()
-        Booking(booking_date=booking_date, booking_time=booking_time, booking_status=booking_status).save()
-        return redirect(reverse('bookingapp:detail', kwargs={'pk': booking.user.pk}))
-    return render(request, 'bookingapp/delete.html', {'booking' : booking})
+# class BookingDetailView(DetailView):
+#     model = Booking
+#     context_object_name = 'user'
+#     template_name = 'bookingapp/detail.html'
+#     def get_object(self):
+#         return self.request.user
+#     def get(self, *args, **kwargs):
+#         if self.request.user.is_authenticated and self.get_object() == self.request.user:
+#             return super().get(*args, **kwargs)
+#         else:
+#             return HttpResponseForbidden()
+#     def post(self, *args, **kwargs):
+#         if self.request.user.is_authenticated and self.get_object() == self.request.user:
+#             return super().post(*args, **kwargs)
+#         else:
+#             return HttpResponseForbidden()
+#
+#
+# @method_decorator(has_ownership, 'get')
+# @method_decorator(has_ownership, 'post')
+# class BookingDeleteView(DeleteView):
+#     model = Booking
+#     context_object_name = 'booking'
+#     success_url = reverse_lazy('bookingapp:create')
+#     template_name = 'bookingapp/delete.html'
+#
+# @login_required
+# @booking_ownership_required
+# def booking_delete(request, pk):
+#     booking = Booking.objects.get(pk=pk)
+#     booking_date = booking.booking_date
+#     booking_time = booking.booking_time
+#     user = ''
+#     booking_status = '예약가능'
+#     request_real_name = booking.user.profile.real_name
+#     old_booking = Booking.objects.get(booking_date=booking_date, booking_time=booking_time)
+#     if request.method == 'POST':
+#         booking.delete()
+#         old_booking.delete()
+#         Booking(booking_date=booking_date, booking_time=booking_time, booking_status=booking_status).save()
+#         return redirect(reverse('bookingapp:detail', kwargs={'pk': booking.user.pk}))
+#     return render(request, 'bookingapp/delete.html', {'booking' : booking})
 
