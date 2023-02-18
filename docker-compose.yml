@@ -13,7 +13,7 @@ services:
       - 80:80
 
   prpc_container_gunicorn: #network로 묶이기 때문에 name-space 정보로 넣어줘야한다. django로 넣으면 안된다.
-    image: prpc_test_image:4
+    image: prpc_test_image:8
     networks:
       - network
     volumes:
@@ -22,6 +22,7 @@ services:
     secrets:
       - MYSQL_PASSWORD
       - DJANGO_SECRET_KEY
+      - EMAIL_HOST_PASSWORD
 
   mariadb:
     image: mariadb:10.5
@@ -56,3 +57,5 @@ secrets:
      external: true
    MYSQL_ROOT_PASSWORD:
      external: true
+  EMAIL_HOST_PASSWORD:
+    external: true
