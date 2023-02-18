@@ -15,11 +15,11 @@
                 {% for book in user.booking.all %}
                     {% if book.booking_status == '예약요청' %}
                         <div>
-                            <p style="margin: 2rem">예약일자 : {{ book.booking_date }} &nbsp &nbsp 예약시간 : {{ book.booking_time }} &nbsp &nbsp{{ book.booking_status }} &nbsp &nbsp &nbsp<a href="{% url 'bookingapp:delete' book.id %}">예약취소</a></p>
+                            <p style="margin: 2rem; font-size: 1.2rem">예약일자 : {{ book.booking_date }} &nbsp &nbsp 예약시간 : {{ book.booking_time }} &nbsp &nbsp<strong style="text-decoration: underline">{{ book.booking_status }}</strong> 상태&nbsp &nbsp &nbsp<a href="{% url 'bookingapp:delete' book.id %}">예약취소</a></p>
                         </div>
                     {% elif book.booking_status == '예약승인' %}
                         <div>
-                            <p style="margin: 2rem">예약일자 : {{ book.booking_date }} &nbsp &nbsp 예약시간 : {{ book.booking_time }} &nbsp &nbsp{{ book.booking_status }} &nbsp &nbsp &nbsp<a href="{% url 'bookingapp:delete' book.id %}">예약취소</a></p>
+                            <p style="margin: 2rem; font-size: 1.2rem">예약일자 : {{ book.booking_date }} &nbsp &nbsp 예약시간 : {{ book.booking_time }} &nbsp &nbsp<strong style="text-decoration: underline">{{ book.booking_status }}</strong> 상태&nbsp &nbsp &nbsp<a href="{% url 'bookingapp:delete' book.id %}">예약취소</a></p>
                         </div>
                     {% else %}
                     {% endif %}

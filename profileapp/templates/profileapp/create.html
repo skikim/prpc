@@ -2,10 +2,10 @@
 {% load bootstrap5 %}
 
 {% block content %}
-    <div style="text-align: center; max-width: 500px; margin: 4rem auto;">
+    <div style="text-align: center; max-width: 600px; margin: 4rem auto;">
         <div style="margin: 4rem">
-            <h3>회원정보 추가입력</h3>
-            <h6 style="color: darkred; margin: 2rem"> 주의) 홈페이지를 통해 '예약' 하시려면 아래 추가정보를 입력하셔야 합니다.</h6>
+            <h3>프로필 입력</h3>
+            <h6 style="color: darkred; margin: 2rem; font-size: 1.2rem">예약 하시려면 먼저 '프로필'을 입력하셔야 합니다.</h6>
         </div>
         <form action="{% url 'profileapp:create' %}" method="post">
             {%  csrf_token %}

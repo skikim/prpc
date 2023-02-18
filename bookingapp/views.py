@@ -5,7 +5,7 @@ from django.contrib.auth.decorators import login_required
 from django.db.models import Q
 from django.http import HttpResponse, HttpResponseForbidden
 
-from django.shortcuts import render, redirect, get_object_or_404
+from django.shortcuts import render, redirect
 from django.urls import reverse, reverse_lazy
 from django.utils.decorators import method_decorator
 from django.views.generic import DetailView, DeleteView
@@ -18,11 +18,7 @@ import requests
 has_ownership = [
     login_required, booking_ownership_required
 ]
-def test1(request):
-    return render(request, 'bookingapp/booking_1.html')
 
-def test2(request):
-    return render(request, 'bookingapp/booking_2.html')
 
 def send_message(msg):
     TARGET_URL = 'https://notify-api.line.me/api/notify'
@@ -78,7 +74,8 @@ def booking(request):
         try:
             request_real_name = request.user.profile.real_name
         except:
-            return redirect(reverse('accountapp:detail', kwargs={'pk': request.user.pk}))
+            return redirect(reverse('profileapp:create'))
+            # return redirect(reverse('accountapp:detail', kwargs={'pk': request.user.pk}))
 
         if Booking.objects.filter(Q(user=user), Q(booking_date__range=(start_date, end_date)), Q(booking_status='예약승인') | Q(booking_status='예약요청')).count() < 1:
             Booking.objects.get(booking_date=booking_date, booking_time=booking_time).delete()
@@ -142,17 +139,7 @@ def booking_2(request):
     return render(request, 'bookingapp/create_2.html', context)
 
 
-def booking_test(request):
-    if request.method == 'POST':
-        booking_date = request.POST.get('date')
-        booking_time = request.POST.get('time')
-        user = request.user
-        booking_status = '예약요청'
-        Booking(booking_date=booking_date, booking_time=booking_time, user=user, booking_status=booking_status).save()
-        return redirect('bookingapp:create')
-    dict_book = Booking.objects.filter().order_by('-id')[:7:0]
-    display_booking_list = Booking.objects.filter(booking_date__range=[date.today(), date.today() + timedelta(days=6)])
-    return render(request, 'bookingapp/create_test.html', {'bookings': dict_book, 'display_booking': display_booking_list})
+
 
 # @method_decorator(login_required, 'get')
 # @method_decorator(login_required, 'post')

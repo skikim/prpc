@@ -25,4 +25,6 @@ urlpatterns = [
     path('bookings/', include('bookingapp.urls')),
     path('supers/', include('superapp.urls')),
     path('', TemplateView.as_view(template_name='articleapp/index.html'), name='index'),
- ]
+    path('home/', TemplateView.as_view(template_name='articleapp/index.html'), name='home'),
+
+]

@@ -26,11 +26,13 @@
             {% endif %}
             </p>
         {% else %}
+            <p style="color: darkred; font-size: 1.2rem"><strong>예약하시려면 '프로필' 입력을 하셔야 합니다.</strong></p>
             <a href = "{% url 'profileapp:create' %}">
-               <h2 style = "font-family: 'NanumSquareB'">
-                   회원정보 추가입력
-               </h2>
-                <p style="color: darkred"><strong>(온라인으로 예약하시려면 반드시 회원정보 추가입력을 하셔야 합니다!!!)</strong></p>
+                <button type="button" class="btn btn-primary">프로필 입력</button>
+{#               <h2 style = "font-family: 'NanumSquareB'">#}
+{#                   프로필 입력#}
+{#               </h2>#}
+
             </a>
         {% endif %}
         {% if request.user == user %}
