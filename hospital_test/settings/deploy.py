@@ -18,7 +18,7 @@ env = environ.Env(
 
 # Take environment variables from .env file
 # environ.Env.read_env(os.path.join(BASE_DIR, '../../.env'))
-environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
+environ.Env.read_env(os.path.join('/home/django_course', '.env'))
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.0/howto/deployment/checklist/
 
@@ -66,7 +66,7 @@ EMAIL_PORT = '587'
 # 발신할 이메일
 EMAIL_HOST_USER = 'prpc8575@gmail.com'
 # 발신할 메일의 비밀번호
-EMAIL_HOST_PASSWORD = 'oscduracdlqauzhd'
+EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD')
 # TLS 보안 방법
 EMAIL_USE_TLS = True
 # 사이트와 관련한 자동응답을 받을 이메일 주소
