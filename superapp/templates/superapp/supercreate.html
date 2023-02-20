@@ -5,7 +5,7 @@
 {% if user.is_superuser %}
     <div style="text-align: center; max-width: 600px; margin: 2rem auto;" xmlns="http://www.w3.org/1999/html">
         <div style="margin-top: 6rem">
-            <h2>관리자 페이지 1주차</h2>
+            <h2>[관리자 페이지 1주차]</h2>
         </div>
 
         <form action="{% url 'superapp:supercreate' %}" method="post">
@@ -60,12 +60,12 @@
         </div>
     </div>
         <div style="text-align: center; margin-bottom: 2rem; display: flex; justify-content: center;">
-            <a href="{% url 'superapp:supercreate2' %}"><p>2주차&nbsp&nbsp></p></a>&emsp;&emsp;&emsp;&emsp;
-            <a href="{% url 'superapp:supercreate3' %}"><p>메시지&nbsp&nbsp></p></a>
+            <a href="{% url 'superapp:supercreate2' %}"><button type="button" class="btn btn-outline-primary" style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .75rem;">2주차 ></button></a>&emsp;&emsp;&emsp;&emsp;
+            <a href="{% url 'superapp:supercreate3' %}"><button type="button" class="btn btn-outline-primary" style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .75rem;">Message ></button></a>
         </div>
     <div>
-    <table id="table" class="table table-striped-columns">
-    <tr>
+    <table id="table" class="table table-striped" style="width:98%; margin: 0 auto; font-size: 0.78rem">
+    <tr style="font-weight: bold">
         <td id="r0c0"></td>
         <td id="r0c1"></td>
         <td id="r0c2"></td>
@@ -75,7 +75,7 @@
         <td id="r0c6"></td>
         <td id="r0c7"></td>
     </tr>
-    <tr>
+    <tr style="font-weight: bold">
         <td id="r1c0"></td>
         <td id="r1c1"></td>
         <td id="r1c2"></td>
@@ -838,7 +838,7 @@
     var week = new Array( '일', '월', '화', '수', '목', '금', '토');
     var today = new Date();
     document.getElementById('r0c1').innerHTML = dateFormat(today)
-    document.getElementById('r1c1').innerHTML = week[today.getDay()] + ' (오늘)'
+    document.getElementById('r1c1').innerHTML = week[today.getDay()]
     var today = new Date();
     var today_1 = new Date(today.setDate(today.getDate() + 1))
     document.getElementById('r0c2').innerHTML = dateFormat(today_1)
