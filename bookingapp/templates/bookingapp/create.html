@@ -4,7 +4,7 @@
 {% block content %}
     <div>
         <div style="margin-top: 8rem; margin-bottom: 2rem; text-align: center">
-            <h2>[진료 예약 하기 1주차]</h2>
+            <h2>[진료 예약 1주차]</h2>
         </div>
 
         <form action="{% url 'bookingapp:create' %}" method="post">
@@ -53,7 +53,7 @@
             <a href="{% url 'bookingapp:create2' %}"><button type="button" class="btn btn-outline-primary btn-sm">2주차 ></button></a>
         </div>
     <div>
-    <table id="table" class="table table-striped table-bordered" style="width:98%; margin: 0 auto">
+    <table id="table" class="table table-striped table-bordered" style="width:98%; margin: 0 auto;">
     <tr>
         <td id="r0c0"></td>
         <td id="r0c1"></td>
@@ -858,8 +858,14 @@
     function input_objects_1(){
         var t_today = new Date();
         var t_hours = t_today.getHours(); // 시
+        var t_min = t_today.getMinutes(); //분
+        var t_total_min = t_hours*60 + t_min
+        console.log(t_total_min)
         {% for inform in inform_today_1 %}
-            bt_hr = ('{{ inform.booking_time }}').substring(0,2)
+            var bt_hr = ('{{ inform.booking_time }}').substring(0,2)
+            var bt_min = ('{{ inform.booking_time }}').substring(3,5)
+            var bt_total_min = parseInt(bt_hr)*60 + parseInt(bt_min)
+            console.log(bt_total_min - t_total_min)
             {% if inform.booking_status == '예약승인' %}
                 document.getElementById('r{{ inform.booking_time }}c1').style.backgroundColor = 'lightpink'
                 document.getElementById('r{{ inform.booking_time }}c1').style.cursor = 'default'
@@ -871,7 +877,7 @@
             {% elif inform.booking_status == '예약불가' %}
                 document.getElementById('r{{ inform.booking_time }}c1').style.cursor = 'default'
             {% elif inform.booking_status == '예약가능' %}
-                if (bt_hr - t_hours < 2) {
+                if (bt_total_min - t_total_min < 20) {
                     document.getElementById('r{{ inform.booking_time }}c1').style.backgroundColor = ''
                     document.getElementById('r{{ inform.booking_time }}c1').style.cursor = 'default'
                     document.getElementById('r{{ inform.booking_time }}c1').innerHTML = ''
