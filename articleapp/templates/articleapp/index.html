@@ -10,6 +10,9 @@
         </div>
     </header>
     <!-- About section-->
+    <div id='waiting_inform' style="margin-left: 2rem; line-height: 1.96">
+        {{ waiting_date }} {{ waiting_time }} (현재)<br> 선착순 대기환자 : <span style="color: darkred; font-weight: bold">{{ waiting.waiting_num }}</span> / 4 명
+    </div>
     <section id="about">
         <div class="container px-4">
             <div class="row gx-4 justify-content-center">
@@ -58,5 +61,23 @@
             </div>
         </div>
     </section>
+    <script>
+        function waiting_inform() {
+            var t_today = new Date();
+            var t_hours = t_today.getHours(); // 시
+            var t_min = t_today.getMinutes(); //분
+            var t_total = (t_hours*60) + t_min;
+            if (t_hours > 450 && t_hours < 560) {
+                document.getElementById('waiting_inform').style.display='block';
+            }
+            else if (t_hours > 750 && t_hours < 860) {
+                document.getElementById('waiting_inform').style.display='block';
+            }
+            else {
+                document.getElementById('waiting_inform').style.display='none';
+            }
+        }
 
+        waiting_inform();
+    </script>
 {% endblock %}

@@ -101,7 +101,7 @@ TIME_ZONE = 'Asia/Seoul'
 
 USE_I18N = True
 
-USE_TZ = True
+USE_TZ = False
 
 TIME_INPUT_FORMATS = ('%H:%M')
 DATE_INPUT_FORMATS = ['%Y-%m-%d']

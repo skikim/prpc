@@ -860,12 +860,12 @@
         var t_hours = t_today.getHours(); // 시
         var t_min = t_today.getMinutes(); //분
         var t_total_min = t_hours*60 + t_min
-        console.log(t_total_min)
+        {#console.log(t_total_min)#}
         {% for inform in inform_today_1 %}
             var bt_hr = ('{{ inform.booking_time }}').substring(0,2)
             var bt_min = ('{{ inform.booking_time }}').substring(3,5)
             var bt_total_min = parseInt(bt_hr)*60 + parseInt(bt_min)
-            console.log(bt_total_min - t_total_min)
+            {#console.log(bt_total_min - t_total_min)#}
             {% if inform.booking_status == '예약승인' %}
                 document.getElementById('r{{ inform.booking_time }}c1').style.backgroundColor = 'lightpink'
                 document.getElementById('r{{ inform.booking_time }}c1').style.cursor = 'default'
