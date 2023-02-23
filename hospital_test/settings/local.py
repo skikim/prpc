@@ -40,13 +40,12 @@ DATABASES = {
 
 #### Email 전송 ####
 # 메일을 호스트하는 서버
-EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST = 'smtp.mail.nate.com'
 # gmail과의 통신하는 포트
 EMAIL_PORT = '587'
 # 발신할 이메일
-EMAIL_HOST_USER = 'prpc8575@gmail.com'
+EMAIL_HOST_USER = 'kshhyh00@nate.com'
 # 발신할 메일의 비밀번호
-# EMAIL_HOST_PASSWORD = 'oscduracdlqauzhd'
 EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD')
 # TLS 보안 방법
 EMAIL_USE_TLS = True
