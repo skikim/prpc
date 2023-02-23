@@ -16,4 +16,4 @@ RUN pip install mysqlclient
 
 EXPOSE 8000
 
-CMD ["bash", "-c", "python manage.py collectstatic --noinput --settings=hospital_test.settings.deploy && python manage.py makemigrations --settings=hospital_test.settings.deploy && python manage.py migrate --settings=hospital_test.settings.deploy && gunicorn hospital_test.wsgi --env DJANGO_SETTINGS_MODULE=hospital_test.settings.deploy --bind 0.0.0.0:8000"]
+CMD ["bash", "-c", "python manage.py collectstatic --noinput --settings=hospital_test.settings.deploy && python manage.py migrate --settings=hospital_test.settings.deploy && gunicorn hospital_test.wsgi --env DJANGO_SETTINGS_MODULE=hospital_test.settings.deploy --bind 0.0.0.0:8000"]
