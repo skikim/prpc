@@ -3,25 +3,7 @@
 
 {% block content %}
     {% if user.is_staff %}
-        <style>
-            {##display {#}
-            {#    font-size: 36px;#}
-            {#    text-align: center;#}
-            {#    margin-top: 50px;#}
-            {#}#}
-            {##button {#}
-            {#    display: block;#}
-            {#    margin: 0 auto;#}
-            {#    margin-top: 50px;#}
-            {#    font-size: 24px;#}
-            {#    padding: 10px 20px;#}
-            {#    border-radius: 10px;#}
-            {#    background-color: #007bff;#}
-            {#    color: #fff;#}
-            {#    cursor: pointer;#}
-            {#}#}
-        </style>
-        <div style="text-align: center; max-width: 600px; margin: 8rem auto;">
+        <div style="text-align: center; max-width: 600px; margin: 6rem auto;">
             <div style="margin-bottom: 3rem">
                 <h2 style="margin-bottom: 3rem">[관리자 페이지]</h2>
                 <h4>선착순 대기환자 수정</h4>
@@ -30,23 +12,32 @@
                 {%  csrf_token %}
                 <div style="margin-bottom: 2rem">
                     <input name="waiting_num" id="display" value="0" style="text-align:center; width:100px; height:100px; font-size:60px;"><br>
-                    {#                    {% bootstrap_form form %}#}
-                    <p style="height:6rem; padding-top: 2.2rem" class="btn btn-secondary rounded-pill col-lg-2 mt-4" id="button">환자수변경</p>
+                    <button style="height: 6rem; " class="btn btn-secondary rounded-pill col-lg-2 mt-4" type="button" id="button" onclick="incrementValue()">환자수변경</button>
                 </div>
-                <input type="submit" value="입력" class="btn btn-primary rounded-pill col-6 mt-4">
+                <div><input type="submit" value="입력" class="btn btn-primary rounded-pill col-6 mt-4"></div>
             </form>
         </div>
 
         <script>
-            const display = document.querySelector("#display");
-            const button = document.querySelector("#button");
+            function incrementValue() {
+                var inputElement = document.getElementById("display");
+                var currentValue = parseInt(inputElement.value);
+                var nextValue = currentValue + 1;
+                if (nextValue > 4) {
+                    nextValue = 0;
+                }
+                inputElement.value = nextValue;
+            }
 
-            let currentIndex = 0;
-
-            button.addEventListener("click", function() {
-                display.innerHTML = currentIndex;
-                display.value = currentIndex;
-                currentIndex = (currentIndex + 1) % 5;
+            var myButton = document.getElementById("button");
+            var lastClickTime = 0;
+            var delay = 500; // milliseconds
+            myButton.addEventListener("click", function(event) {
+                var currentTime = new Date().getTime();
+                if (currentTime - lastClickTime < delay) {
+                    event.preventDefault();
+                }
+                lastClickTime = currentTime;
             });
         </script>
     {% endif %}

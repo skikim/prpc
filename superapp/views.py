@@ -163,7 +163,7 @@ def superbooking2(request):
 
 def superbooking3(request):
     if request.user.is_superuser:
-        dict_book = Booking.objects.filter().order_by('-id')[:40:0]
+        dict_book = Booking.objects.filter().order_by('-id')[:80:0]
         context = {
             'bookings': dict_book
         }

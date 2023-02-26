@@ -25,9 +25,10 @@
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div class="modal-body">
-                            <p id="booking_date"></p>
-                            <p id="booking_time"></p>
-                            <p style="color: darkred">예약을 변경하려면 '나의 예약정보'에서 현재 예약시간을 취소하시고 새로 예약해 주세요.</p>
+                            <p id="booking_date" style="font-weight: bold; font-size: 1.2rem"></p>
+                            <p id="booking_time" style="font-weight: bold; font-size: 1.2rem"></p>
+                            <p style="color: darkred">- 예약신청 하시면 '예약요청'(노란색)으로 바뀌고 근무시간 기준 2시간 이내 승인되며(야간, 일, 공휴일 제외) '예약승인'(붉은색)으로 바뀝니다.</p>
+                            <p style="color: darkred">- 예약을 변경하려면 '나의 예약정보'에서 현재 예약시간을 취소하시고 새로 예약해 주세요.</p>
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -52,6 +53,7 @@
         <div style="text-align: center; margin-bottom: 2rem">
             <a href="{% url 'bookingapp:create2' %}"><button type="button" class="btn btn-outline-primary btn-sm">2주차 ></button></a>
         </div>
+
     <div>
     <table id="table" class="table table-striped table-bordered" style="width:98%; margin: 0 auto;">
     <tr>
@@ -337,13 +339,24 @@
 
     <tr>
         <td id="r13:00c0">점심시간</td>
-        <td id="r13:00c1" onclick="input_form(this.id)"></td>
-        <td id="r13:00c2" onclick="input_form(this.id)"></td>
-        <td id="r13:00c3" onclick="input_form(this.id)"></td>
-        <td id="r13:00c4" onclick="input_form(this.id)"></td>
-        <td id="r13:00c5" onclick="input_form(this.id)"></td>
-        <td id="r13:00c6" onclick="input_form(this.id)"></td>
-        <td id="r13:00c7" onclick="input_form(this.id)"></td>
+        <td id="r13:00c1"></td>
+        <td id="r13:00c2"></td>
+        <td id="r13:00c3"></td>
+        <td id="r13:00c4"></td>
+        <td id="r13:00c5"></td>
+        <td id="r13:00c6"></td>
+        <td id="r13:00c7"></td>
+    </tr>
+
+    <tr>
+        <td id="r13:05c0"></td>
+        <td id="r13:05c1"></td>
+        <td id="r13:05c2"></td>
+        <td id="r13:05c3"></td>
+        <td id="r13:05c4"></td>
+        <td id="r13:05c5"></td>
+        <td id="r13:05c6"></td>
+        <td id="r13:05c7"></td>
     </tr>
 
     <tr>
@@ -813,237 +826,301 @@
 
 
     <script>
+        document.getElementById('table').style.fontSize = '0.76rem';
 
-    function dateFormat(date) {
-        let month = date.getMonth() + 1;
-        let day = date.getDate();
-        let hour = date.getHours();
-        let minute = date.getMinutes();
-        let second = date.getSeconds();
-        month = month >= 10 ? month : '0' + month;
-        day = day >= 10 ? day : '0' + day;
-        return date.getFullYear() + '-' + month + '-' + day
-    }
-    var week = new Array( '일', '월', '화', '수', '목', '금', '토');
-    var today = new Date();
-    document.getElementById('r0c1').innerHTML = dateFormat(today)
-    document.getElementById('r1c1').innerHTML = week[today.getDay()]
-    var today = new Date();
-    var today_1 = new Date(today.setDate(today.getDate() + 1));
-    document.getElementById('r0c2').innerHTML = dateFormat(today_1)
-    document.getElementById('r1c2').innerHTML = week[today_1.getDay()]
-    var today = new Date();
-    var today_2 = new Date(today.setDate(today.getDate() + 2));
-    document.getElementById('r0c3').innerHTML = dateFormat(today_2)
-    document.getElementById('r1c3').innerHTML = week[today_2.getDay()]
-    var today = new Date();
-    var today_3 = new Date(today.setDate(today.getDate() + 3));
-    document.getElementById('r0c4').innerHTML = dateFormat(today_3)
-    document.getElementById('r1c4').innerHTML = week[today_3.getDay()]
-    var today = new Date();
-    var today_4 = new Date(today.setDate(today.getDate() + 4));
-    document.getElementById('r0c5').innerHTML = dateFormat(today_4)
-    document.getElementById('r1c5').innerHTML = week[today_4.getDay()]
-    var today = new Date();
-    var today_5 = new Date(today.setDate(today.getDate() + 5));
-    document.getElementById('r0c6').innerHTML = dateFormat(today_5)
-    document.getElementById('r1c6').innerHTML = week[today_5.getDay()]
-    var today = new Date();
-    var today_6 = new Date(today.setDate(today.getDate() + 6));
-    document.getElementById('r0c7').innerHTML = dateFormat(today_6)
-    document.getElementById('r1c7').innerHTML = week[today_6.getDay()]
-
-
-
-    function input_objects_1(){
-        var t_today = new Date();
-        var t_hours = t_today.getHours(); // 시
-        var t_min = t_today.getMinutes(); //분
-        var t_total_min = t_hours*60 + t_min
-        {#console.log(t_total_min)#}
-        {% for inform in inform_today_1 %}
-            var bt_hr = ('{{ inform.booking_time }}').substring(0,2)
-            var bt_min = ('{{ inform.booking_time }}').substring(3,5)
-            var bt_total_min = parseInt(bt_hr)*60 + parseInt(bt_min)
-            {#console.log(bt_total_min - t_total_min)#}
-            {% if inform.booking_status == '예약승인' %}
-                document.getElementById('r{{ inform.booking_time }}c1').style.backgroundColor = 'lightpink'
-                document.getElementById('r{{ inform.booking_time }}c1').style.cursor = 'default'
-                document.getElementById('r{{ inform.booking_time }}c1').innerHTML = '{{ inform.booking_status }}'
-            {% elif inform.booking_status == '예약요청' %}
-                document.getElementById('r{{ inform.booking_time }}c1').style.backgroundColor = 'beige'
-                document.getElementById('r{{ inform.booking_time }}c1').style.cursor = 'default'
-                document.getElementById('r{{ inform.booking_time }}c1').innerHTML = '{{ inform.booking_status }}'
-            {% elif inform.booking_status == '예약불가' %}
-                document.getElementById('r{{ inform.booking_time }}c1').style.cursor = 'default'
-            {% elif inform.booking_status == '예약가능' %}
-                if (bt_total_min - t_total_min < 20) {
-                    document.getElementById('r{{ inform.booking_time }}c1').style.backgroundColor = ''
-                    document.getElementById('r{{ inform.booking_time }}c1').style.cursor = 'default'
-                    document.getElementById('r{{ inform.booking_time }}c1').innerHTML = ''
-                }
-                else {
-                    document.getElementById('r{{ inform.booking_time }}c1').style.backgroundColor = 'lightblue'
-                    document.getElementById('r{{ inform.booking_time }}c1').style.cursor = 'pointer'
-                    document.getElementById('r{{ inform.booking_time }}c1').innerHTML = '{{ inform.booking_status }}'
-                }
-            {% endif %}
-        {% endfor %}
-    }
-    function input_objects_2(){
-        {% for inform in inform_today_2 %}
-            {% if inform.booking_status == '예약승인' %}
-                document.getElementById('r{{ inform.booking_time }}c2').style.backgroundColor = 'lightpink'
-                document.getElementById('r{{ inform.booking_time }}c2').style.cursor = 'default'
-                document.getElementById('r{{ inform.booking_time }}c2').innerHTML = '{{ inform.booking_status }}'
-            {% elif inform.booking_status == '예약요청' %}
-                document.getElementById('r{{ inform.booking_time }}c2').style.backgroundColor = 'beige'
-                document.getElementById('r{{ inform.booking_time }}c2').style.cursor = 'default'
-                document.getElementById('r{{ inform.booking_time }}c2').innerHTML = '{{ inform.booking_status }}'
-            {% elif inform.booking_status == '예약불가' %}
-                document.getElementById('r{{ inform.booking_time }}c2').style.cursor = 'default'
-            {% elif inform.booking_status == '예약가능' %}
-                document.getElementById('r{{ inform.booking_time }}c2').style.backgroundColor = 'lightblue'
-                document.getElementById('r{{ inform.booking_time }}c2').style.cursor = 'pointer'
-                document.getElementById('r{{ inform.booking_time }}c2').innerHTML = '{{ inform.booking_status }}'
-            {% endif %}
-        {% endfor %}
-    }
-    function input_objects_3(){
-        {% for inform in inform_today_3 %}
-            {% if inform.booking_status == '예약승인' %}
-                document.getElementById('r{{ inform.booking_time }}c3').style.backgroundColor = 'lightpink'
-                document.getElementById('r{{ inform.booking_time }}c3').style.cursor = 'default'
-                document.getElementById('r{{ inform.booking_time }}c3').innerHTML = '{{ inform.booking_status }}'
-            {% elif inform.booking_status == '예약요청' %}
-                document.getElementById('r{{ inform.booking_time }}c3').style.backgroundColor = 'beige'
-                document.getElementById('r{{ inform.booking_time }}c3').style.cursor = 'default'
-                document.getElementById('r{{ inform.booking_time }}c3').innerHTML = '{{ inform.booking_status }}'
-            {% elif inform.booking_status == '예약불가' %}
-                document.getElementById('r{{ inform.booking_time }}c3').style.cursor = 'default'
-            {% elif inform.booking_status == '예약가능' %}
-                document.getElementById('r{{ inform.booking_time }}c3').style.backgroundColor = 'lightblue'
-                document.getElementById('r{{ inform.booking_time }}c3').style.cursor = 'pointer'
-                document.getElementById('r{{ inform.booking_time }}c3').innerHTML = '{{ inform.booking_status }}'
-            {% endif %}
-        {% endfor %}
-    }
-    function input_objects_4(){
-        {% for inform in inform_today_4 %}
-            {% if inform.booking_status == '예약승인' %}
-                document.getElementById('r{{ inform.booking_time }}c4').style.backgroundColor = 'lightpink'
-                document.getElementById('r{{ inform.booking_time }}c4').style.cursor = 'default'
-                document.getElementById('r{{ inform.booking_time }}c4').innerHTML = '{{ inform.booking_status }}'
-            {% elif inform.booking_status == '예약요청' %}
-                document.getElementById('r{{ inform.booking_time }}c4').style.backgroundColor = 'beige'
-                document.getElementById('r{{ inform.booking_time }}c4').style.cursor = 'default'
-                document.getElementById('r{{ inform.booking_time }}c4').innerHTML = '{{ inform.booking_status }}'
-            {% elif inform.booking_status == '예약불가' %}
-                document.getElementById('r{{ inform.booking_time }}c4').style.cursor = 'default'
-            {% elif inform.booking_status == '예약가능' %}
-                document.getElementById('r{{ inform.booking_time }}c4').style.backgroundColor = 'lightblue'
-                document.getElementById('r{{ inform.booking_time }}c4').style.cursor = 'pointer'
-                document.getElementById('r{{ inform.booking_time }}c4').innerHTML = '{{ inform.booking_status }}'
-            {% endif %}
-        {% endfor %}
-    }
-    function input_objects_5(){
-        {% for inform in inform_today_5 %}
-            {% if inform.booking_status == '예약승인' %}
-                document.getElementById('r{{ inform.booking_time }}c5').style.backgroundColor = 'lightpink'
-                document.getElementById('r{{ inform.booking_time }}c5').style.cursor = 'default'
-                document.getElementById('r{{ inform.booking_time }}c5').innerHTML = '{{ inform.booking_status }}'
-            {% elif inform.booking_status == '예약요청' %}
-                document.getElementById('r{{ inform.booking_time }}c5').style.backgroundColor = 'beige'
-                document.getElementById('r{{ inform.booking_time }}c5').style.cursor = 'default'
-                document.getElementById('r{{ inform.booking_time }}c5').innerHTML = '{{ inform.booking_status }}'
-            {% elif inform.booking_status == '예약불가' %}
-                document.getElementById('r{{ inform.booking_time }}c5').style.cursor = 'default'
-            {% elif inform.booking_status == '예약가능' %}
-                document.getElementById('r{{ inform.booking_time }}c5').style.backgroundColor = 'lightblue'
-                document.getElementById('r{{ inform.booking_time }}c5').style.cursor = 'pointer'
-                document.getElementById('r{{ inform.booking_time }}c5').innerHTML = '{{ inform.booking_status }}'
-            {% endif %}
-        {% endfor %}
-    }
-    function input_objects_6(){
-        {% for inform in inform_today_6 %}
-            {% if inform.booking_status == '예약승인' %}
-                document.getElementById('r{{ inform.booking_time }}c6').style.backgroundColor = 'lightpink'
-                document.getElementById('r{{ inform.booking_time }}c6').style.cursor = 'default'
-                document.getElementById('r{{ inform.booking_time }}c6').innerHTML = '{{ inform.booking_status }}'
-            {% elif inform.booking_status == '예약요청' %}
-                document.getElementById('r{{ inform.booking_time }}c6').style.backgroundColor = 'beige'
-                document.getElementById('r{{ inform.booking_time }}c6').style.cursor = 'default'
-                document.getElementById('r{{ inform.booking_time }}c6').innerHTML = '{{ inform.booking_status }}'
-            {% elif inform.booking_status == '예약불가' %}
-                document.getElementById('r{{ inform.booking_time }}c6').style.cursor = 'default'
-            {% elif inform.booking_status == '예약가능' %}
-                document.getElementById('r{{ inform.booking_time }}c6').style.backgroundColor = 'lightblue'
-                document.getElementById('r{{ inform.booking_time }}c6').style.cursor = 'pointer'
-                document.getElementById('r{{ inform.booking_time }}c6').innerHTML = '{{ inform.booking_status }}'
-            {% endif %}
-        {% endfor %}
-    }
-    function input_objects_7(){
-        {% for inform in inform_today_7 %}
-            {% if inform.booking_status == '예약승인' %}
-                document.getElementById('r{{ inform.booking_time }}c7').style.backgroundColor = 'lightpink'
-                document.getElementById('r{{ inform.booking_time }}c7').style.cursor = 'default'
-                document.getElementById('r{{ inform.booking_time }}c7').innerHTML = '{{ inform.booking_status }}'
-            {% elif inform.booking_status == '예약요청' %}
-                document.getElementById('r{{ inform.booking_time }}c7').style.backgroundColor = 'beige'
-                document.getElementById('r{{ inform.booking_time }}c7').style.cursor = 'default'
-                document.getElementById('r{{ inform.booking_time }}c7').innerHTML = '{{ inform.booking_status }}'
-            {% elif inform.booking_status == '예약불가' %}
-                document.getElementById('r{{ inform.booking_time }}c7').style.cursor = 'default'
-            {% elif inform.booking_status == '예약가능' %}
-                document.getElementById('r{{ inform.booking_time }}c7').style.backgroundColor = 'lightblue'
-                document.getElementById('r{{ inform.booking_time }}c7').style.cursor = 'pointer'
-                document.getElementById('r{{ inform.booking_time }}c7').innerHTML = '{{ inform.booking_status }}'
-            {% endif %}
-        {% endfor %}
-    }
-
-    function input_form(clicked_id){
-        let selected_time = clicked_id.substring(1, 6)
-        let col_num = clicked_id.charAt(7)
-        let date_cell = table.rows[0].cells[col_num]
-        let selected_date = date_cell.innerHTML
-        if (document.getElementById(clicked_id).innerHTML == '예약가능'){
-            $('#modal_post').modal("show");
-            document.getElementById('date').value = selected_date
-            document.getElementById('time').value = selected_time
-            document.getElementById('booking_date').innerHTML = '예약날짜 :  ' + selected_date
-            document.getElementById('booking_time').innerHTML = '예약시간 :  ' + selected_time
-            {#console.log(selected_date)#}
-            {#console.log(selected_time)#}
+        const cells = document.getElementsByTagName("td");
+        for (let i = 0; i < cells.length; i++) {
+          cells[i].style.verticalAlign = "middle";
         }
-    }
-    function no_booking(){
-        for (i=1; i<8; i++){
-            if (document.getElementsByTagName('r0c'+i).innerHTML = '월'){
 
+        const tdList = document.querySelectorAll("td[id*='c0']"); // id에 c0가 포함된 모든 td 요소 선택
+        tdList.forEach(td => { // 선택된 모든 td 요소에 대해
+            td.style.fontSize = "1rem"; // 스타일 변경
+        });
+
+        const tdList2 = document.querySelectorAll("td[id*='r0c']"); // id에 r0c가 포함된 모든 td 요소 선택
+        tdList2.forEach(td => { // 선택된 모든 td 요소에 대해
+            td.style.fontSize = "1rem"; // 스타일 변경
+        });
+
+         const tdList3 = document.querySelectorAll("td[id*='r1c']"); // id에 r1c가 포함된 모든 td 요소 선택
+        tdList3.forEach(td => { // 선택된 모든 td 요소에 대해
+            td.style.fontSize = "1rem"; // 스타일 변경
+        });
+
+        const tdList4 = document.querySelectorAll("td[id*='r13:00c']"); // id에 r1c가 포함된 모든 td 요소 선택
+        tdList4.forEach(td => { // 선택된 모든 td 요소에 대해
+            td.style.fontSize = "1rem"; // 스타일 변경
+        });
+
+        const tdList5 = document.querySelectorAll("td[id*='r13:05c']"); // id에 r1c가 포함된 모든 td 요소 선택
+        tdList5.forEach(td => { // 선택된 모든 td 요소에 대해
+            td.style.fontSize = "1rem"; // 스타일 변경
+        });
+
+        function dateFormat(date) {
+            let month = date.getMonth() + 1;
+            let day = date.getDate();
+            let hour = date.getHours();
+            let minute = date.getMinutes();
+            let second = date.getSeconds();
+            month = month >= 10 ? month : '0' + month;
+            day = day >= 10 ? day : '0' + day;
+            return date.getFullYear() + '-' + month + '-' + day
+        }
+        var week = new Array( '일', '월', '화', '수', '목', '금', '토');
+        var today = new Date();
+        document.getElementById('r0c1').innerHTML = dateFormat(today)
+        document.getElementById('r1c1').innerHTML = week[today.getDay()]
+        document.getElementById('r13:00c1').innerHTML = dateFormat(today)
+        document.getElementById('r13:05c1').innerHTML = week[today.getDay()]
+        var today = new Date();
+        var today_1 = new Date(today.setDate(today.getDate() + 1));
+        document.getElementById('r0c2').innerHTML = dateFormat(today_1)
+        document.getElementById('r1c2').innerHTML = week[today_1.getDay()]
+        document.getElementById('r13:00c2').innerHTML = dateFormat(today)
+        document.getElementById('r13:05c2').innerHTML = week[today.getDay()]
+        var today = new Date();
+        var today_2 = new Date(today.setDate(today.getDate() + 2));
+        document.getElementById('r0c3').innerHTML = dateFormat(today_2)
+        document.getElementById('r1c3').innerHTML = week[today_2.getDay()]
+        document.getElementById('r13:00c3').innerHTML = dateFormat(today_2)
+        document.getElementById('r13:05c3').innerHTML = week[today_2.getDay()]
+        var today = new Date();
+        var today_3 = new Date(today.setDate(today.getDate() + 3));
+        document.getElementById('r0c4').innerHTML = dateFormat(today_3)
+        document.getElementById('r1c4').innerHTML = week[today_3.getDay()]
+        document.getElementById('r13:00c4').innerHTML = dateFormat(today_3)
+        document.getElementById('r13:05c4').innerHTML = week[today_3.getDay()]
+        var today = new Date();
+        var today_4 = new Date(today.setDate(today.getDate() + 4));
+        document.getElementById('r0c5').innerHTML = dateFormat(today_4)
+        document.getElementById('r1c5').innerHTML = week[today_4.getDay()]
+        document.getElementById('r13:00c5').innerHTML = dateFormat(today_4)
+        document.getElementById('r13:05c5').innerHTML = week[today_4.getDay()]
+        var today = new Date();
+        var today_5 = new Date(today.setDate(today.getDate() + 5));
+        document.getElementById('r0c6').innerHTML = dateFormat(today_5)
+        document.getElementById('r1c6').innerHTML = week[today_5.getDay()]
+        document.getElementById('r13:00c6').innerHTML = dateFormat(today_5)
+        document.getElementById('r13:05c6').innerHTML = week[today_5.getDay()]
+        var today = new Date();
+        var today_6 = new Date(today.setDate(today.getDate() + 6));
+        document.getElementById('r0c7').innerHTML = dateFormat(today_6)
+        document.getElementById('r1c7').innerHTML = week[today_6.getDay()]
+        document.getElementById('r13:00c7').innerHTML = dateFormat(today_6)
+        document.getElementById('r13:05c7').innerHTML = week[today_6.getDay()]
+
+
+
+        function input_objects_1(){
+            var t_today = new Date();
+            var t_hours = t_today.getHours(); // 시
+            var t_min = t_today.getMinutes(); //분
+            var t_total_min = t_hours*60 + t_min
+            {#console.log(t_total_min)#}
+            {% for inform in inform_today_1 %}
+                var bt_hr = ('{{ inform.booking_time }}').substring(0,2)
+                var bt_min = ('{{ inform.booking_time }}').substring(3,5)
+                var bt_total_min = parseInt(bt_hr)*60 + parseInt(bt_min)
+                {#console.log(bt_total_min - t_total_min)#}
+                {% if inform.booking_status == '예약승인' %}
+                    document.getElementById('r{{ inform.booking_time }}c1').style.backgroundColor = 'lightpink'
+                    document.getElementById('r{{ inform.booking_time }}c1').style.cursor = 'default'
+                    document.getElementById('r{{ inform.booking_time }}c1').innerHTML = '{{ inform.booking_status }}'
+                {% elif inform.booking_status == '예약요청' %}
+                    document.getElementById('r{{ inform.booking_time }}c1').style.backgroundColor = 'beige'
+                    document.getElementById('r{{ inform.booking_time }}c1').style.cursor = 'default'
+                    document.getElementById('r{{ inform.booking_time }}c1').innerHTML = '{{ inform.booking_status }}'
+                {% elif inform.booking_status == '예약불가' %}
+                    document.getElementById('r{{ inform.booking_time }}c1').style.cursor = 'default'
+                {% elif inform.booking_status == '예약가능' %}
+                    if (bt_total_min - t_total_min < 20) {
+                        document.getElementById('r{{ inform.booking_time }}c1').style.backgroundColor = ''
+                        document.getElementById('r{{ inform.booking_time }}c1').style.cursor = 'default'
+                        document.getElementById('r{{ inform.booking_time }}c1').innerHTML = ''
+                    }
+                    else {
+                        document.getElementById('r{{ inform.booking_time }}c1').style.backgroundColor = 'lightblue'
+                        document.getElementById('r{{ inform.booking_time }}c1').style.cursor = 'pointer'
+                        document.getElementById('r{{ inform.booking_time }}c1').innerHTML = '{{ inform.booking_status }}'
+                    }
+                {% endif %}
+            {% endfor %}
+        }
+        function input_objects_2(){
+            {% for inform in inform_today_2 %}
+                {% if inform.booking_status == '예약승인' %}
+                    document.getElementById('r{{ inform.booking_time }}c2').style.backgroundColor = 'lightpink'
+                    document.getElementById('r{{ inform.booking_time }}c2').style.cursor = 'default'
+                    document.getElementById('r{{ inform.booking_time }}c2').innerHTML = '{{ inform.booking_status }}'
+                {% elif inform.booking_status == '예약요청' %}
+                    document.getElementById('r{{ inform.booking_time }}c2').style.backgroundColor = 'beige'
+                    document.getElementById('r{{ inform.booking_time }}c2').style.cursor = 'default'
+                    document.getElementById('r{{ inform.booking_time }}c2').innerHTML = '{{ inform.booking_status }}'
+                {% elif inform.booking_status == '예약불가' %}
+                    document.getElementById('r{{ inform.booking_time }}c2').style.cursor = 'default'
+                {% elif inform.booking_status == '예약가능' %}
+                    document.getElementById('r{{ inform.booking_time }}c2').style.backgroundColor = 'lightblue'
+                    document.getElementById('r{{ inform.booking_time }}c2').style.cursor = 'pointer'
+                    document.getElementById('r{{ inform.booking_time }}c2').innerHTML = '{{ inform.booking_status }}'
+                {% endif %}
+            {% endfor %}
+        }
+        function input_objects_3(){
+            {% for inform in inform_today_3 %}
+                {% if inform.booking_status == '예약승인' %}
+                    document.getElementById('r{{ inform.booking_time }}c3').style.backgroundColor = 'lightpink'
+                    document.getElementById('r{{ inform.booking_time }}c3').style.cursor = 'default'
+                    document.getElementById('r{{ inform.booking_time }}c3').innerHTML = '{{ inform.booking_status }}'
+                {% elif inform.booking_status == '예약요청' %}
+                    document.getElementById('r{{ inform.booking_time }}c3').style.backgroundColor = 'beige'
+                    document.getElementById('r{{ inform.booking_time }}c3').style.cursor = 'default'
+                    document.getElementById('r{{ inform.booking_time }}c3').innerHTML = '{{ inform.booking_status }}'
+                {% elif inform.booking_status == '예약불가' %}
+                    document.getElementById('r{{ inform.booking_time }}c3').style.cursor = 'default'
+                {% elif inform.booking_status == '예약가능' %}
+                    document.getElementById('r{{ inform.booking_time }}c3').style.backgroundColor = 'lightblue'
+                    document.getElementById('r{{ inform.booking_time }}c3').style.cursor = 'pointer'
+                    document.getElementById('r{{ inform.booking_time }}c3').innerHTML = '{{ inform.booking_status }}'
+                {% endif %}
+            {% endfor %}
+        }
+        function input_objects_4(){
+            {% for inform in inform_today_4 %}
+                {% if inform.booking_status == '예약승인' %}
+                    document.getElementById('r{{ inform.booking_time }}c4').style.backgroundColor = 'lightpink'
+                    document.getElementById('r{{ inform.booking_time }}c4').style.cursor = 'default'
+                    document.getElementById('r{{ inform.booking_time }}c4').innerHTML = '{{ inform.booking_status }}'
+                {% elif inform.booking_status == '예약요청' %}
+                    document.getElementById('r{{ inform.booking_time }}c4').style.backgroundColor = 'beige'
+                    document.getElementById('r{{ inform.booking_time }}c4').style.cursor = 'default'
+                    document.getElementById('r{{ inform.booking_time }}c4').innerHTML = '{{ inform.booking_status }}'
+                {% elif inform.booking_status == '예약불가' %}
+                    document.getElementById('r{{ inform.booking_time }}c4').style.cursor = 'default'
+                {% elif inform.booking_status == '예약가능' %}
+                    document.getElementById('r{{ inform.booking_time }}c4').style.backgroundColor = 'lightblue'
+                    document.getElementById('r{{ inform.booking_time }}c4').style.cursor = 'pointer'
+                    document.getElementById('r{{ inform.booking_time }}c4').innerHTML = '{{ inform.booking_status }}'
+                {% endif %}
+            {% endfor %}
+        }
+        function input_objects_5(){
+            {% for inform in inform_today_5 %}
+                {% if inform.booking_status == '예약승인' %}
+                    document.getElementById('r{{ inform.booking_time }}c5').style.backgroundColor = 'lightpink'
+                    document.getElementById('r{{ inform.booking_time }}c5').style.cursor = 'default'
+                    document.getElementById('r{{ inform.booking_time }}c5').innerHTML = '{{ inform.booking_status }}'
+                {% elif inform.booking_status == '예약요청' %}
+                    document.getElementById('r{{ inform.booking_time }}c5').style.backgroundColor = 'beige'
+                    document.getElementById('r{{ inform.booking_time }}c5').style.cursor = 'default'
+                    document.getElementById('r{{ inform.booking_time }}c5').innerHTML = '{{ inform.booking_status }}'
+                {% elif inform.booking_status == '예약불가' %}
+                    document.getElementById('r{{ inform.booking_time }}c5').style.cursor = 'default'
+                {% elif inform.booking_status == '예약가능' %}
+                    document.getElementById('r{{ inform.booking_time }}c5').style.backgroundColor = 'lightblue'
+                    document.getElementById('r{{ inform.booking_time }}c5').style.cursor = 'pointer'
+                    document.getElementById('r{{ inform.booking_time }}c5').innerHTML = '{{ inform.booking_status }}'
+                {% endif %}
+            {% endfor %}
+        }
+        function input_objects_6(){
+            {% for inform in inform_today_6 %}
+                {% if inform.booking_status == '예약승인' %}
+                    document.getElementById('r{{ inform.booking_time }}c6').style.backgroundColor = 'lightpink'
+                    document.getElementById('r{{ inform.booking_time }}c6').style.cursor = 'default'
+                    document.getElementById('r{{ inform.booking_time }}c6').innerHTML = '{{ inform.booking_status }}'
+                {% elif inform.booking_status == '예약요청' %}
+                    document.getElementById('r{{ inform.booking_time }}c6').style.backgroundColor = 'beige'
+                    document.getElementById('r{{ inform.booking_time }}c6').style.cursor = 'default'
+                    document.getElementById('r{{ inform.booking_time }}c6').innerHTML = '{{ inform.booking_status }}'
+                {% elif inform.booking_status == '예약불가' %}
+                    document.getElementById('r{{ inform.booking_time }}c6').style.cursor = 'default'
+                {% elif inform.booking_status == '예약가능' %}
+                    document.getElementById('r{{ inform.booking_time }}c6').style.backgroundColor = 'lightblue'
+                    document.getElementById('r{{ inform.booking_time }}c6').style.cursor = 'pointer'
+                    document.getElementById('r{{ inform.booking_time }}c6').innerHTML = '{{ inform.booking_status }}'
+                {% endif %}
+            {% endfor %}
+        }
+        function input_objects_7(){
+            {% for inform in inform_today_7 %}
+                {% if inform.booking_status == '예약승인' %}
+                    document.getElementById('r{{ inform.booking_time }}c7').style.backgroundColor = 'lightpink'
+                    document.getElementById('r{{ inform.booking_time }}c7').style.cursor = 'default'
+                    document.getElementById('r{{ inform.booking_time }}c7').innerHTML = '{{ inform.booking_status }}'
+                {% elif inform.booking_status == '예약요청' %}
+                    document.getElementById('r{{ inform.booking_time }}c7').style.backgroundColor = 'beige'
+                    document.getElementById('r{{ inform.booking_time }}c7').style.cursor = 'default'
+                    document.getElementById('r{{ inform.booking_time }}c7').innerHTML = '{{ inform.booking_status }}'
+                {% elif inform.booking_status == '예약불가' %}
+                    document.getElementById('r{{ inform.booking_time }}c7').style.cursor = 'default'
+                {% elif inform.booking_status == '예약가능' %}
+                    document.getElementById('r{{ inform.booking_time }}c7').style.backgroundColor = 'lightblue'
+                    document.getElementById('r{{ inform.booking_time }}c7').style.cursor = 'pointer'
+                    document.getElementById('r{{ inform.booking_time }}c7').innerHTML = '{{ inform.booking_status }}'
+                {% endif %}
+            {% endfor %}
+        }
+
+        function input_form(clicked_id){
+            let selected_time = clicked_id.substring(1, 6)
+            let col_num = clicked_id.charAt(7)
+            let date_cell = table.rows[0].cells[col_num]
+            let selected_date = date_cell.innerHTML
+            if (document.getElementById(clicked_id).innerHTML == '예약가능'){
+                $('#modal_post').modal("show");
+                document.getElementById('date').value = selected_date
+                document.getElementById('time').value = selected_time
+                document.getElementById('booking_date').innerHTML = '예약날짜 :  ' + selected_date
+                document.getElementById('booking_time').innerHTML = '예약시간 :  ' + selected_time
+                {#console.log(selected_date)#}
+                {#console.log(selected_time)#}
             }
         }
-    }
-    function find_cell(){
-        {#table = document.getElementById('table')#}
-        let td = table.rows[4].cells[4];
-        td.style.backgroundColor = "red"; // 강조
-        td.innerHTML = 'TEST'
-    }
 
 
-    input_objects_1()
-    input_objects_2()
-    input_objects_3()
-    input_objects_4()
-    input_objects_5()
-    input_objects_6()
-    input_objects_7()
-    input_form()
+        function find_cell(){
+            {#table = document.getElementById('table')#}
+            let td = table.rows[4].cells[4];
+            td.style.backgroundColor = "red"; // 강조
+            td.innerHTML = 'TEST'
+        }
 
+
+        const table = document.getElementsByTagName("table")[0];
+        const rows = table.getElementsByTagName("tr");
+        for (let i = 0; i < rows.length; i++) {
+            const cells = rows[i].getElementsByTagName("td");
+            for (let j = 0; j < cells.length; j++) {
+                const cell = cells[j];
+                if (cell.innerText === "일") {
+                    cell.style.color = "red";
+                    const columnIndex = cell.cellIndex;
+                    const columnCells = table.querySelectorAll(`td:nth-child(${columnIndex + 1})`);
+                    for (let k = 0; k < columnCells.length; k++) {
+                        columnCells[k].style.backgroundColor = "#FFF7F7";
+                    }
+                }
+                if (cell.innerText === "토") {
+                    cell.style.color = "blue";
+                    const columnIndex2 = cell.cellIndex;
+                    const columnCells2 = table.querySelectorAll(`td:nth-child(${columnIndex2 + 1})`);
+                    for (let k = 0; k < columnCells2.length; k++) {
+                        columnCells2[k].style.backgroundColor = "#F7FAFF";
+                    }
+                }
+            }
+        }
+
+        input_objects_1()
+        input_objects_2()
+        input_objects_3()
+        input_objects_4()
+        input_objects_5()
+        input_objects_6()
+        input_objects_7()
+        input_form()
 
 
     </script>
