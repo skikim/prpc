@@ -127,6 +127,16 @@
         <td id="r09:50c7" onclick="input_form(this.id)"></td>
     </tr>
     <tr>
+        <td id="r09:55c0">09:55</td>
+        <td id="r09:55c1" onclick="input_form(this.id)"></td>
+        <td id="r09:55c2" onclick="input_form(this.id)"></td>
+        <td id="r09:55c3" onclick="input_form(this.id)"></td>
+        <td id="r09:55c4" onclick="input_form(this.id)"></td>
+        <td id="r09:55c5" onclick="input_form(this.id)"></td>
+        <td id="r09:55c6" onclick="input_form(this.id)"></td>
+        <td id="r09:55c7" onclick="input_form(this.id)"></td>
+    </tr>
+    <tr>
         <td id="r10:05c0">10:05</td>
         <td id="r10:05c1" onclick="input_form(this.id)"></td>
         <td id="r10:05c2" onclick="input_form(this.id)"></td>
@@ -410,6 +420,16 @@
         <td id="r14:50c7" onclick="input_form(this.id)"></td>
     </tr>
     <tr>
+        <td id="r14:55c0">14:55</td>
+        <td id="r14:55c1" onclick="input_form(this.id)"></td>
+        <td id="r14:55c2" onclick="input_form(this.id)"></td>
+        <td id="r14:55c3" onclick="input_form(this.id)"></td>
+        <td id="r14:55c4" onclick="input_form(this.id)"></td>
+        <td id="r14:55c5" onclick="input_form(this.id)"></td>
+        <td id="r14:55c6" onclick="input_form(this.id)"></td>
+        <td id="r14:55c7" onclick="input_form(this.id)"></td>
+    </tr>
+    <tr>
         <td id="r15:05c0">15:05</td>
         <td id="r15:05c1" onclick="input_form(this.id)"></td>
         <td id="r15:05c2" onclick="input_form(this.id)"></td>
@@ -449,6 +469,7 @@
         <td id="r15:30c6" onclick="input_form(this.id)"></td>
         <td id="r15:30c7" onclick="input_form(this.id)"></td>
     </tr>
+
     <tr>
         <td id="r15:35c0">15:35</td>
         <td id="r15:35c1" onclick="input_form(this.id)"></td>
@@ -619,6 +640,29 @@
         <td id="r17:30c6" onclick="input_form(this.id)"></td>
         <td id="r17:30c7" onclick="input_form(this.id)"></td>
     </tr>
+
+    <tr>
+        <td id="r17:31c0">야간진료</td>
+        <td id="r17:31c1"></td>
+        <td id="r17:31c2"></td>
+        <td id="r17:31c3"></td>
+        <td id="r17:31c4"></td>
+        <td id="r17:31c5"></td>
+        <td id="r17:31c6"></td>
+        <td id="r17:31c7"></td>
+    </tr>
+
+    <tr>
+        <td id="r17:32c0">(수요일만)</td>
+        <td id="r17:32c1"></td>
+        <td id="r17:32c2"></td>
+        <td id="r17:32c3"></td>
+        <td id="r17:32c4"></td>
+        <td id="r17:32c5"></td>
+        <td id="r17:32c6"></td>
+        <td id="r17:32c7"></td>
+    </tr>
+
     <tr>
         <td id="r17:45c0">17:45</td>
         <td id="r17:45c1" onclick="input_form(this.id)"></td>
@@ -638,6 +682,16 @@
         <td id="r17:50c5" onclick="input_form(this.id)"></td>
         <td id="r17:50c6" onclick="input_form(this.id)"></td>
         <td id="r17:50c7" onclick="input_form(this.id)"></td>
+    </tr>
+    <tr>
+        <td id="r17:55c0">17:55</td>
+        <td id="r17:55c1" onclick="input_form(this.id)"></td>
+        <td id="r17:55c2" onclick="input_form(this.id)"></td>
+        <td id="r17:55c3" onclick="input_form(this.id)"></td>
+        <td id="r17:55c4" onclick="input_form(this.id)"></td>
+        <td id="r17:55c5" onclick="input_form(this.id)"></td>
+        <td id="r17:55c6" onclick="input_form(this.id)"></td>
+        <td id="r17:55c7" onclick="input_form(this.id)"></td>
     </tr>
     <tr>
         <td id="r18:05c0">18:05</td>
@@ -858,6 +912,16 @@
             td.style.fontSize = "1rem"; // 스타일 변경
         });
 
+        const tdList6 = document.querySelectorAll("td[id*='r17:31c']"); // id에 r1c가 포함된 모든 td 요소 선택
+        tdList6.forEach(td => { // 선택된 모든 td 요소에 대해
+            td.style.fontSize = "1rem"; // 스타일 변경
+        });
+
+        const tdList7 = document.querySelectorAll("td[id*='r17:32c']"); // id에 r1c가 포함된 모든 td 요소 선택
+        tdList7.forEach(td => { // 선택된 모든 td 요소에 대해
+            td.style.fontSize = "1rem"; // 스타일 변경
+        });
+
         function dateFormat(date) {
             let month = date.getMonth() + 1;
             let day = date.getDate();
@@ -874,42 +938,56 @@
         document.getElementById('r1c1').innerHTML = week[today.getDay()]
         document.getElementById('r13:00c1').innerHTML = dateFormat(today)
         document.getElementById('r13:05c1').innerHTML = week[today.getDay()]
+        document.getElementById('r17:31c1').innerHTML = dateFormat(today)
+        document.getElementById('r17:32c1').innerHTML = week[today.getDay()]
         var today = new Date();
         var today_1 = new Date(today.setDate(today.getDate() + 1));
         document.getElementById('r0c2').innerHTML = dateFormat(today_1)
         document.getElementById('r1c2').innerHTML = week[today_1.getDay()]
         document.getElementById('r13:00c2').innerHTML = dateFormat(today)
         document.getElementById('r13:05c2').innerHTML = week[today.getDay()]
+        document.getElementById('r17:31c2').innerHTML = dateFormat(today_1)
+        document.getElementById('r17:32c2').innerHTML = week[today_1.getDay()]
         var today = new Date();
         var today_2 = new Date(today.setDate(today.getDate() + 2));
         document.getElementById('r0c3').innerHTML = dateFormat(today_2)
         document.getElementById('r1c3').innerHTML = week[today_2.getDay()]
         document.getElementById('r13:00c3').innerHTML = dateFormat(today_2)
         document.getElementById('r13:05c3').innerHTML = week[today_2.getDay()]
+        document.getElementById('r17:31c3').innerHTML = dateFormat(today_2)
+        document.getElementById('r17:32c3').innerHTML = week[today_2.getDay()]
         var today = new Date();
         var today_3 = new Date(today.setDate(today.getDate() + 3));
         document.getElementById('r0c4').innerHTML = dateFormat(today_3)
         document.getElementById('r1c4').innerHTML = week[today_3.getDay()]
         document.getElementById('r13:00c4').innerHTML = dateFormat(today_3)
         document.getElementById('r13:05c4').innerHTML = week[today_3.getDay()]
+        document.getElementById('r17:31c4').innerHTML = dateFormat(today_3)
+        document.getElementById('r17:32c4').innerHTML = week[today_3.getDay()]
         var today = new Date();
         var today_4 = new Date(today.setDate(today.getDate() + 4));
         document.getElementById('r0c5').innerHTML = dateFormat(today_4)
         document.getElementById('r1c5').innerHTML = week[today_4.getDay()]
         document.getElementById('r13:00c5').innerHTML = dateFormat(today_4)
         document.getElementById('r13:05c5').innerHTML = week[today_4.getDay()]
+        document.getElementById('r17:31c5').innerHTML = dateFormat(today_4)
+        document.getElementById('r17:32c5').innerHTML = week[today_4.getDay()]
         var today = new Date();
         var today_5 = new Date(today.setDate(today.getDate() + 5));
         document.getElementById('r0c6').innerHTML = dateFormat(today_5)
         document.getElementById('r1c6').innerHTML = week[today_5.getDay()]
         document.getElementById('r13:00c6').innerHTML = dateFormat(today_5)
         document.getElementById('r13:05c6').innerHTML = week[today_5.getDay()]
+        document.getElementById('r17:31c6').innerHTML = dateFormat(today_5)
+        document.getElementById('r17:32c6').innerHTML = week[today_5.getDay()]
         var today = new Date();
         var today_6 = new Date(today.setDate(today.getDate() + 6));
         document.getElementById('r0c7').innerHTML = dateFormat(today_6)
         document.getElementById('r1c7').innerHTML = week[today_6.getDay()]
         document.getElementById('r13:00c7').innerHTML = dateFormat(today_6)
         document.getElementById('r13:05c7').innerHTML = week[today_6.getDay()]
+        document.getElementById('r17:31c7').innerHTML = dateFormat(today_6)
+        document.getElementById('r17:32c7').innerHTML = week[today_6.getDay()]
 
 
 
