@@ -1,12 +1,14 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="ko" style="height: 100%">
 {% include 'head.html' %}
-<body style="font-family: 'NanumSquareR';">
+<body style="font-family: 'NanumSquareR'; height: 100%; display: flex; flex-direction: column">
 {% include 'header.html' %}
-<hr>
+<div style="flex: 1">
+{#<hr>#}
 {% block content %}
 {% endblock %}
-<hr>
+{#<hr>#}
+</div>
 {% include 'footer.html' %}
 </body>
 </html>

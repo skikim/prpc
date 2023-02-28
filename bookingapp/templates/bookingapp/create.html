@@ -13,7 +13,7 @@
             <input class="date" type="date" id="date" name="date" value="" style="width: 100%; display: none;" required/>
             <input class="time" id="time" name="time" value="" style="width: 100%; display: none;" required/>
 
-{#            <input type="submit" value="확인" class="btn btn-primary rounded-pill col-6 mt-4">#}
+            {#            <input type="submit" value="확인" class="btn btn-primary rounded-pill col-6 mt-4">#}
 
             <!-- Modal -->
 
@@ -1152,7 +1152,7 @@
                 document.getElementById('time').value = selected_time
                 document.getElementById('booking_date').innerHTML = '예약날짜 :  ' + selected_date
                 document.getElementById('booking_time').innerHTML = '예약시간 :  ' + selected_time
-                {#console.log(selected_date)#}
+                {#alert(selected_date)#}
                 {#console.log(selected_time)#}
             }
         }
@@ -1180,7 +1180,7 @@
                         columnCells[k].style.backgroundColor = "#FFF7F7";
                     }
                 }
-                if (cell.innerText === "토") {
+                else if (cell.innerText === "토") {
                     cell.style.color = "blue";
                     const columnIndex2 = cell.cellIndex;
                     const columnCells2 = table.querySelectorAll(`td:nth-child(${columnIndex2 + 1})`);
