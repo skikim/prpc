@@ -4,7 +4,6 @@ from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
 from django.views.generic import CreateView, UpdateView
-from gtts import gTTS
 
 from articleapp.decorators import staff_required
 from articleapp.forms import WaitingCreationForm
