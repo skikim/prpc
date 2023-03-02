@@ -886,7 +886,7 @@
 
 
     <script>
-        document.getElementById('table').style.fontSize = '0.76rem';
+        document.getElementById('table').style.fontSize = '0.68rem';
 
         const mycells = document.getElementsByTagName("td");
         for (let i = 0; i < mycells.length; i++) {
@@ -895,37 +895,37 @@
 
         const tdList = document.querySelectorAll("td[id*='c0']"); // id에 c0가 포함된 모든 td 요소 선택
         tdList.forEach(td => { // 선택된 모든 td 요소에 대해
-            td.style.fontSize = "0.76rem"; // 스타일 변경
+            td.style.fontSize = "0.68rem"; // 스타일 변경
         });
 
         const tdList2 = document.querySelectorAll("td[id*='r0c']"); // id에 c0가 포함된 모든 td 요소 선택
         tdList2.forEach(td => { // 선택된 모든 td 요소에 대해
-            td.style.fontSize = "0.84rem"; // 스타일 변경
+            td.style.fontSize = "0.8rem"; // 스타일 변경
         });
 
         const tdList3 = document.querySelectorAll("td[id*='r1c']"); // id에 c0가 포함된 모든 td 요소 선택
         tdList3.forEach(td => { // 선택된 모든 td 요소에 대해
-            td.style.fontSize = "0.84rem"; // 스타일 변경
+            td.style.fontSize = "0.8rem"; // 스타일 변경
         });
 
         const tdList4 = document.querySelectorAll("td[id*='r13:00c']"); // id에 r1c가 포함된 모든 td 요소 선택
         tdList4.forEach(td => { // 선택된 모든 td 요소에 대해
-            td.style.fontSize = "0.84rem"; // 스타일 변경
+            td.style.fontSize = "0.8rem"; // 스타일 변경
         });
 
         const tdList5 = document.querySelectorAll("td[id*='r13:05c']"); // id에 r1c가 포함된 모든 td 요소 선택
         tdList5.forEach(td => { // 선택된 모든 td 요소에 대해
-            td.style.fontSize = "0.84rem"; // 스타일 변경
+            td.style.fontSize = "0.8rem"; // 스타일 변경
         });
 
         const tdList6 = document.querySelectorAll("td[id*='r17:31c']"); // id에 r1c가 포함된 모든 td 요소 선택
         tdList6.forEach(td => { // 선택된 모든 td 요소에 대해
-            td.style.fontSize = "0.84rem"; // 스타일 변경
+            td.style.fontSize = "0.8rem"; // 스타일 변경
         });
 
         const tdList7 = document.querySelectorAll("td[id*='r17:32c']"); // id에 r1c가 포함된 모든 td 요소 선택
         tdList7.forEach(td => { // 선택된 모든 td 요소에 대해
-            td.style.fontSize = "0.84rem"; // 스타일 변경
+            td.style.fontSize = "0.8rem"; // 스타일 변경
         });
 
 
@@ -1154,67 +1154,67 @@
             document.getElementById('status').value = selected_status
         }
 
-        var clicked_id;  // 전역 변수로 clicked_id 선언
-
-        $(document).ready(function() {
-            $('#table').click(function(event) {
-                clicked_id = event.target.id;  // 클릭된 요소의 id 값을 clicked_id 변수에 할당
-            });
-        });
-
-        $(document).ready(function() {
-            $('#my-form').submit(function(event) {
-                event.preventDefault();  // 기본 submit 이벤트 중단
-
-                var formData = {
-                    'date': $('input[name=date]').val(),
-                    'time': $('input[name=time]').val(),
-                    'status': $('input[name=status]').val(),
-                    'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val()  // Django에서 필요한 CSRF 토큰
-                };
-
-                $.ajax({
-                    type: 'POST',
-                    url: "{% url 'superapp:supercreate' %}",
-                    data: formData,
-                    success: function(response) {
-                        if ($('input[name=status]').val() == '예약승인') {
-                            document.getElementById(clicked_id).style.backgroundColor = 'lightpink'
+        {#var clicked_id;  // 전역 변수로 clicked_id 선언#}
+        {##}
+        {#$(document).ready(function() {#}
+        {#    $('#table').click(function(event) {#}
+        {#        clicked_id = event.target.id;  // 클릭된 요소의 id 값을 clicked_id 변수에 할당#}
+        {#    });#}
+        {#});#}
+        {##}
+        {#$(document).ready(function() {#}
+        {#    $('#my-form').submit(function(event) {#}
+        {#        event.preventDefault();  // 기본 submit 이벤트 중단#}
+        {##}
+        {#        var formData = {#}
+        {#            'date': $('input[name=date]').val(),#}
+        {#            'time': $('input[name=time]').val(),#}
+        {#            'status': $('input[name=status]').val(),#}
+        {#            'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val()  // Django에서 필요한 CSRF 토큰#}
+        {#        };#}
+        {##}
+        {#        $.ajax({#}
+        {#            type: 'POST',#}
+        {#            url: "{% url 'superapp:supercreate' %}",#}
+        {#            data: formData,#}
+        {#            success: function(response) {#}
+        {#                if ($('input[name=status]').val() == '예약승인') {#}
+        {#                    document.getElementById(clicked_id).style.backgroundColor = 'lightpink'#}
                             {#document.getElementById('r{{ inform.booking_time }}c7').style.cursor = 'default'#}
-                            document.getElementById(clicked_id).innerHTML = ''
-                            $('#modal_post').modal('hide');
-                            $('.modal-backdrop').remove();
-                        }
-                        else if ($('input[name=status]').val() == '예약요청') {
-                            document.getElementById(clicked_id).style.backgroundColor = 'beige'
+        {#                    document.getElementById(clicked_id).innerHTML = ''#}
+        {#                    $('#modal_post').modal('hide');#}
+        {#                    $('.modal-backdrop').remove();#}
+        {#                }#}
+        {#                else if ($('input[name=status]').val() == '예약요청') {#}
+        {#                    document.getElementById(clicked_id).style.backgroundColor = 'beige'#}
                             {#document.getElementById('r{{ inform.booking_time }}c7').style.cursor = 'default'#}
-                            document.getElementById(clicked_id).innerHTML = ''
-                            $('#modal_post').modal('hide');
-                            $('.modal-backdrop').remove();
-
-                        }
-                        else if ($('input[name=status]').val() == '예약불가') {
-                            document.getElementById(clicked_id).style.backgroundColor = 'transparent'
+        {#                    document.getElementById(clicked_id).innerHTML = ''#}
+        {#                    $('#modal_post').modal('hide');#}
+        {#                    $('.modal-backdrop').remove();#}
+        {##}
+        {#                }#}
+        {#                else if ($('input[name=status]').val() == '예약불가') {#}
+        {#                    document.getElementById(clicked_id).style.backgroundColor = 'transparent'#}
                             {#document.getElementById('r{{ inform.booking_time }}c7').style.cursor = 'default'#}
-                            document.getElementById(clicked_id).innerHTML = ''
-                            $('#modal_post').modal('hide');
-                            $('.modal-backdrop').remove();
-                        }
-                        else if ($('input[name=status]').val() == '예약가능') {
-                            document.getElementById(clicked_id).style.backgroundColor = 'lightblue'
+        {#                    document.getElementById(clicked_id).innerHTML = ''#}
+        {#                    $('#modal_post').modal('hide');#}
+        {#                    $('.modal-backdrop').remove();#}
+        {#                }#}
+        {#                else if ($('input[name=status]').val() == '예약가능') {#}
+        {#                    document.getElementById(clicked_id).style.backgroundColor = 'lightblue'#}
                             {#document.getElementById('r{{ inform.booking_time }}c7').style.cursor = 'pointer'#}
-                            document.getElementById(clicked_id).innerHTML = '예약가능'
-                            $('#modal_post').modal('hide');
-                            $('.modal-backdrop').remove();
-                        }
-                        console.log(response);  // Ajax 요청에 대한 응답을 콘솔에 출력
-                    },
-                    error: function(response) {
-                        console.log(response);  // Ajax 요청에 대한 에러를 콘솔에 출력
-                    }
-                });
-            });
-        });
+        {#                    document.getElementById(clicked_id).innerHTML = '예약가능'#}
+        {#                    $('#modal_post').modal('hide');#}
+        {#                    $('.modal-backdrop').remove();#}
+        {#                }#}
+        {#                console.log(response);  // Ajax 요청에 대한 응답을 콘솔에 출력#}
+        {#            },#}
+        {#            error: function(response) {#}
+        {#                console.log(response);  // Ajax 요청에 대한 에러를 콘솔에 출력#}
+        {#            }#}
+        {#        });#}
+        {#    });#}
+        {#});#}
 
         function find_cell(){
             {#table = document.getElementById('table')#}

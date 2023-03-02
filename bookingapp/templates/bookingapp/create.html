@@ -40,6 +40,10 @@
 
         </form>
 
+{#        <div class="alert alert-success position-absolute" role="alert" style="display: none;">#}
+{#            <span style="font-weight: bold"></span>#}
+{#        </div>#}
+
 {#        <div style="margin-bottom: 2rem">#}
 {#            <h4>[진료예약 현황]</h4>#}
 {#        </div>#}
@@ -876,6 +880,16 @@
                 font-size: 12px;
             }
         }
+
+        {#.active {#}
+        {#    border: 3px solid black;#}
+        {#    animation: blinker 0.5s;#}
+        {#}#}
+        {##}
+        {#@keyframes blinker {#}
+        {#    from { background-color: gray; }#}
+        {#    to { background-color: transparent; }#}
+        {#}#}
     </style>
 
 
@@ -1191,6 +1205,30 @@
             }
         }
 
+        {#$("td").click(function(e) {#}
+        {#    var cellText = $(this).text();#}
+        {#    var cellRowIndex = $(this).parent().index();#}
+        {#    var cellColumnIndex = $(this).index();#}
+        {#    var cellRowText = $("table tr:eq(" + cellRowIndex + ") td:eq(0)").text();#}
+        {#    var cellColumnText = $("table tr:eq(0) td:eq(" + cellColumnIndex + ")").text();#}
+        {#    var cellColumnText1 = $("table tr:eq(1) td:eq(" + cellColumnIndex + ")").text();#}
+        {#    var alertText = cellText + " (" + cellColumnText + "(" + cellColumnText1 + "), "+ cellRowText +")";#}
+        {#    var posX = e.pageX;#}
+        {#    var posY = e.pageY;#}
+        {#    var alertWidth = $(".alert").outerWidth();#}
+        {#    var windowWidth = $(window).width();#}
+        {#    if (posX + alertWidth > windowWidth) {#}
+        {#        posX = windowWidth - alertWidth;#}
+        {#    }#}
+        {#    $(this).addClass("active");#}
+        {#    setTimeout(() => $(this).removeClass("active"), 500);#}
+        {##}
+        {#    $(".alert").children("span").text(alertText);#}
+            {#$(this).addClass("bg-dark").fadeOut(100).fadeIn(400).delay(100).fadeOut(100).fadeIn(400).removeClass("bg-dark");#}
+        {#    $(".alert").css({top: posY, left: posX}).fadeIn().delay(1000).fadeOut();#}
+        {#});#}
+
+
         input_objects_1()
         input_objects_2()
         input_objects_3()
@@ -1199,7 +1237,6 @@
         input_objects_6()
         input_objects_7()
         input_form()
-
 
     </script>
 

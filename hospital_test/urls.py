@@ -17,6 +17,7 @@ from django.contrib import admin
 from django.urls import path, include
 from django.views.generic import TemplateView
 
+import articleapp
 from articleapp.views import index
 
 urlpatterns = [
@@ -27,8 +28,8 @@ urlpatterns = [
     path('bookings/', include('bookingapp.urls')),
     path('supers/', include('superapp.urls')),
     path('passwords/', include('passwordapp.urls')),
-    path('', index, name='index'),
-    path('home/', index, name='home'),
+    path('', articleapp.views.index, name='index'),
+    path('home/', articleapp.views.index, name='home'),
 
     # path('', TemplateView.as_view(template_name='articleapp/index.html'), name='index'),
     # path('home/', TemplateView.as_view(template_name='articleapp/index.html'), name='home'),
