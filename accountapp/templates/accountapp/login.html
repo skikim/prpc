@@ -2,11 +2,11 @@
 {% load bootstrap5 %}
 
 {% block content %}
-    <div style="text-align: center; max-width: 400px; margin: 8rem auto;">
-        <div style="margin: 4rem">
-            <h3>로그인</h3>
+    <div style="margin-top: 8rem;">
+        <div style="text-align: center;">
+            <h3>[로그인]</h3>
         </div>
-        <div>
+        <div style="max-width: 480px; padding: 2rem; margin: 4rem auto; line-height: 1.96; text-align: center;">
             <form action="{% url 'accountapp:login' %}" method="post">
                 {% csrf_token %}
                 {% bootstrap_form form %}
