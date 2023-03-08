@@ -11,20 +11,24 @@ services:
       - media-volume:/data/media
     ports:
       - 80:80
+    depends_on:
+      - prpc_container_gunicorn
 
   prpc_container_gunicorn: #network로 묶이기 때문에 name-space 정보로 넣어줘야한다. django로 넣으면 안된다.
-    image: prpc_image:4
+    image: prpc_image:8
     networks:
       - network
     volumes:
       - static-volume:/home/prpc/staticfiles
       - media-volume:/home/prpc/media
-#      - /home/django_course/.env:/home/prpc/.env
+      - /home/django_course/.env:/home/prpc/.env
     secrets:
       - MYSQL_PASSWORD
       - DJANGO_SECRET_KEY
-    env_file:
-      - /home/django_course/.env
+#    env_file:
+#      - /home/prpc/.env
+    depends_on:
+      - mariadb
 
   mariadb:
     image: mariadb:10.5
