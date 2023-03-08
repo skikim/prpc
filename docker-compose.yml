@@ -19,10 +19,12 @@ services:
     volumes:
       - static-volume:/home/prpc/staticfiles
       - media-volume:/home/prpc/media
-      - /home/django_course/.env:/home/prpc/.env
+#      - /home/django_course/.env:/home/prpc/.env
     secrets:
       - MYSQL_PASSWORD
       - DJANGO_SECRET_KEY
+    env_file:
+      - /home/django_course/.env
 
   mariadb:
     image: mariadb:10.5
