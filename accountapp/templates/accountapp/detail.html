@@ -2,7 +2,8 @@
 {% load bootstrap5 %}
 
 {% block content %}
-    <div style="text-align: center; max-width: 500px; margin: 8rem auto">
+    <div style="text-align: center; max-width: 600px; margin: 8rem auto">
+        <h2>[회원정보]</h2><br>
         <p>
             가입일 : {{ user.date_joined }}
         </p>
@@ -37,10 +38,10 @@
         {% endif %}
         {% if request.user == user %}
             <a href="{% url 'accountapp:update' pk=user.pk %}">
-                <p style="margin-top: 4rem;">회원정보 수정</p>
+                <p style="margin-top: 4rem;">회원정보 수정</p><br>
             </a>
             <a href="{% url 'accountapp:delete' pk=user.pk %}">
-                <p>회원 탈퇴</p>
+                <p style="color: darkred">회원 탈퇴</p>
             </a>
         {% endif %}
     </div>
