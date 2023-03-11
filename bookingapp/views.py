@@ -28,6 +28,7 @@ def send_message(msg):
     data={'message': f"[{now.strftime('%Y-%m-%d %H:%M:%S')}] {str(msg)}"}
     response = requests.post(TARGET_URL, headers=headers, data=data)
 
+
 def send_message_2(msg):
     TARGET_URL = 'https://notify-api.line.me/api/notify'
     TOKEN = 'QGfhpZOSYthQBxVhEB5UP7lC75XyWCEtMg8VsTwqrqY'  # 장은미씨 발급받은 토큰
@@ -42,6 +43,7 @@ def send_message_2(msg):
     # message = {"content": f"[{dt_now.strftime('%Y-%m-%d %H:%M:%S')}] {str(msg)}"}
     # requests.post(DISCORD_WEBHOOK_URL, data=message)
     # print(message)
+
 
 @login_required
 def booking(request):
@@ -96,6 +98,7 @@ def booking(request):
             return render(request, 'bookingapp/post_write.html', {'errors': errors})
     return render(request, 'bookingapp/create.html', context)
 
+
 @login_required
 def booking_2(request):
     today_1 = datetime.datetime.today()
@@ -148,8 +151,6 @@ def booking_2(request):
             errors.append('온라인 예약은 주 1회만 가능합니다.')
             return render(request, 'bookingapp/post_write.html', {'errors': errors})
     return render(request, 'bookingapp/create_2.html', context)
-
-
 
 
 # @method_decorator(login_required, 'get')

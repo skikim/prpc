@@ -1,6 +1,7 @@
 from .base import *
 import environ
 
+
 def read_secret(secret_name):
     file = open('/run/secrets/' + secret_name)
     secret = file.read()
@@ -64,7 +65,7 @@ EMAIL_HOST = 'smtp.naver.com'
 # gmail과의 통신하는 포트
 EMAIL_PORT = '465'
 # 발신할 이메일
-EMAIL_HOST_USER = 'kshhyh00@naver.com'
+EMAIL_HOST_USER = 'prpc8575@naver.com'
 # 발신할 메일의 비밀번호
 EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD')
 # TLS 보안 방법

@@ -19,6 +19,7 @@ has_ownership = [
     login_required, booking_ownership_required
 ]
 
+
 def aligo_sms_send(rec, msg_2):
     send_url = 'https://apis.aligo.in/send/'  # 요청을 던지는 URL, 현재는 문자보내기
     sms_data = {'key': 'yepy36bove0jotl0pmzvga3zhuu6oovx',  # api key
@@ -30,6 +31,7 @@ def aligo_sms_send(rec, msg_2):
                 }
     send_response = requests.post(send_url, data=sms_data)
     print(send_response.json())
+
 
 @login_required
 def superbooking(request):
