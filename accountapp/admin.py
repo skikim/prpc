@@ -15,7 +15,7 @@ class UserProfileInline(admin.StackedInline):
 
 class UserProfileAdmin(UserAdmin):
     inlines = (UserProfileInline, )
-    list_display = ('username', 'real_name', 'phone_num', 'birth_date', 'email', 'chart_num', 'date_joined')
+    list_display = ('username', 'real_name', 'phone_num', 'birth_date', 'email', 'chart_num', 'date_joined', 'is_staff',)
     ordering = ('-date_joined',)
 
     def real_name(self, obj):
