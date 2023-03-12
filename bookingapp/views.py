@@ -6,15 +6,15 @@ from django.db.models import Q
 from django.http import HttpResponseForbidden
 
 from django.shortcuts import render, redirect
-from django.urls import reverse, reverse_lazy
-from django.utils.decorators import method_decorator
-from django.views.generic import DetailView, DeleteView
+from django.urls import reverse
+from django.views.generic import DetailView
 
 from bookingapp.decorators import booking_ownership_required
 from bookingapp.models import Booking
 import requests
 
 # Create your views here.
+
 has_ownership = [
     login_required, booking_ownership_required
 ]
@@ -37,7 +37,8 @@ def send_message_2(msg):
     data = {'message': f"[{now.strftime('%Y-%m-%d %H:%M:%S')}] {str(msg)}"}
     response = requests.post(TARGET_URL, headers=headers, data=data)
 
-    """디스코드 메세지 전송"""
+
+    # """디스코드 메세지 전송"""
     # DISCORD_WEBHOOK_URL = "https://discord.com/api/webhooks/1071627279836397578/7yNetkPT0o1gX8TTMuJHXce6CjbovaY7RyOqwEoEOJtMYS72Kx6A7GKFH2n1jl4_phws"
     # dt_now = datetime.datetime.now()
     # message = {"content": f"[{dt_now.strftime('%Y-%m-%d %H:%M:%S')}] {str(msg)}"}
@@ -153,33 +154,26 @@ def booking_2(request):
     return render(request, 'bookingapp/create_2.html', context)
 
 
-# @method_decorator(login_required, 'get')
-# @method_decorator(login_required, 'post')
 class BookingDetailView(DetailView):
     model = Booking
     context_object_name = 'user'
     template_name = 'bookingapp/detail.html'
+
     def get_object(self):
         return self.request.user
+
     def get(self, *args, **kwargs):
         if self.request.user.is_authenticated and self.get_object() == self.request.user:
             return super().get(*args, **kwargs)
         else:
             return HttpResponseForbidden()
+
     def post(self, *args, **kwargs):
         if self.request.user.is_authenticated and self.get_object() == self.request.user:
             return super().post(*args, **kwargs)
         else:
             return HttpResponseForbidden()
 
-
-# @method_decorator(has_ownership, 'get')
-# @method_decorator(has_ownership, 'post')
-# class BookingDeleteView(DeleteView):
-#     model = Booking
-#     context_object_name = 'booking'
-#     success_url = reverse_lazy('bookingapp:create')
-#     template_name = 'bookingapp/delete.html'
 
 @login_required
 @booking_ownership_required
