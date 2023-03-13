@@ -13,11 +13,12 @@
             </h3>
             {% if request.user == user %}
                 {% for book in user.booking.all %}
-                    {% if book.booking_status == '예약요청' %}
+{#                    {% if book.booking_status == '예약요청' %}#}
+                    {% if book.booking_status == '예약요청' and book.booking_date >= today %}
                         <div>
                             <p style="margin: 2rem; font-size: 1.2rem">예약일자 : {{ book.booking_date }} &nbsp &nbsp 예약시간 : {{ book.booking_time }} &nbsp &nbsp<strong style="text-decoration: underline">{{ book.booking_status }}</strong> 상태&nbsp &nbsp &nbsp<a href="{% url 'bookingapp:delete' book.id %}">예약취소</a></p>
                         </div>
-                    {% elif book.booking_status == '예약승인' %}
+                    {% elif book.booking_status == '예약승인' and book.booking_date >= today %}
                         <div>
                             <p style="margin: 2rem; font-size: 1.2rem">예약일자 : {{ book.booking_date }} &nbsp &nbsp 예약시간 : {{ book.booking_time }} &nbsp &nbsp<strong style="text-decoration: underline">{{ book.booking_status }}</strong> 상태&nbsp &nbsp &nbsp<a href="{% url 'bookingapp:delete' book.id %}">예약취소</a></p>
                         </div>

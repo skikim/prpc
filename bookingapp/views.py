@@ -154,10 +154,18 @@ def booking_2(request):
     return render(request, 'bookingapp/create_2.html', context)
 
 
+
+
 class BookingDetailView(DetailView):
     model = Booking
     context_object_name = 'user'
     template_name = 'bookingapp/detail.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        today_date = datetime.date.today()
+        context['today'] = today_date
+        return context
 
     def get_object(self):
         return self.request.user
