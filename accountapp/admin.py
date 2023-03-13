@@ -38,13 +38,22 @@ class UserProfileAdmin(UserAdmin):
 
     chart_num.admin_order_field = 'profile__chart_num'
 
-
-
     real_name.short_description = '이름'
     phone_num.short_description = '전화번호'
     birth_date.short_description = '생년월일'
     chart_num.short_description = '차트번호'
 
+    def get_search_results(self, request, queryset, search_term):
+        queryset, use_distinct = super().get_search_results(request, queryset, search_term)
+
+        try:
+            search_term = int(search_term)
+            queryset |= self.model.objects.filter(profile__phone_num__contains=str(search_term))
+            queryset |= self.model.objects.filter(profile__birth_date=search_term)
+        except ValueError:
+            queryset |= self.model.objects.filter(profile__real_name__icontains=search_term)
+
+        return queryset.distinct(), use_distinct
 
 
 admin.site.unregister(User)
