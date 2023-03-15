@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'bookingapp',
     'superapp',
     'passwordapp',
+    'noteapp',
 ]
 
 MIDDLEWARE = [

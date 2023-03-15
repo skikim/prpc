@@ -14,6 +14,8 @@
             <input class="date" type="date" id="date" name="date" value="" style="width: 100%; display: none;" required/>
             <input class="time" id="time" name="time" value="" style="width: 100%; display: none;" required/>
             <input class="status" id="status" name="status" value="" style="width: 100%; display: none;" required/>
+{#            <input type="number" name="recipient_id" id="recipient_id" class="form-control"></input>#}
+{#            <textarea name="message" id="message" class="form-control"></textarea>#}
 
 
 
@@ -40,7 +42,7 @@
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                            <button type="submit" class="btn btn-primary">예약신청</button>
+                            <button type="submit" class="btn btn-primary" id="submitBtn">예약신청</button>
                         </div>
                     </div>
                 </div>
@@ -874,16 +876,17 @@
     </table>
     </div>
 
-
     <style>
         td{
             text-align: center; cursor: pointer;
         }
+
         @media screen and (max-width: 500px) {
             html {
                 font-size: 12px;
             }
         }
+
     </style>
 
 
@@ -1246,6 +1249,13 @@
                 }
             }
         }
+
+        {#$(document).ready(function() {#}
+        {#    $('#submitBtn').click(function() {#}
+        {#        $('#my-form').submit();#}
+        {#        $('#msg_form').submit();#}
+        {#    });#}
+        {#});#}
 
         input_objects_1()
         input_objects_2()

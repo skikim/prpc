@@ -2,6 +2,7 @@ import datetime
 from datetime import timedelta
 from dateutil.parser import parse
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
 from django.db.models import Q
 from django.http import HttpResponse, HttpResponseForbidden
 
@@ -13,6 +14,9 @@ from django.views.generic import DetailView, DeleteView
 from bookingapp.decorators import booking_ownership_required
 from bookingapp.models import Booking
 import requests
+
+from noteapp.models import Note
+
 
 # Create your views here.
 has_ownership = [
@@ -72,6 +76,11 @@ def superbooking(request):
                     booking.delete()
                 elif booking_status == '예약승인':
                     user = booking.user
+                    recipient_id = booking.user_id
+                    message = f"{user.profile.real_name}님, {booking_date} {booking_time}의 예약이 승인되었습니다."
+                    recipient = User.objects.get(id=recipient_id)
+                    sender = request.user
+                    note = Note.objects.create(sender=sender, recipient=recipient, message=message)
                     booking.delete()
                 elif booking_status == '예약가능':
                     booking.delete()
@@ -137,6 +146,11 @@ def superbooking2(request):
                     booking.delete()
                 elif booking_status == '예약승인':
                     user = booking.user
+                    recipient_id = booking.user_id
+                    message = f"{user.profile.real_name}님, {booking_date} {booking_time}의 예약이 승인되었습니다."
+                    recipient = User.objects.get(id=recipient_id)
+                    sender = request.user
+                    note = Note.objects.create(sender=sender, recipient=recipient, message=message)
                     booking.delete()
                 elif booking_status == '예약가능':
                     booking.delete()
@@ -163,6 +177,7 @@ def superbooking2(request):
         return redirect(reverse('articleapp:index'))
 
 
+@login_required
 def superbooking3(request):
     if request.user.is_superuser:
         dict_book = Booking.objects.filter().order_by('-id')[:120:0]

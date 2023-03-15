@@ -28,6 +28,7 @@ urlpatterns = [
     path('bookings/', include('bookingapp.urls')),
     path('supers/', include('superapp.urls')),
     path('passwords/', include('passwordapp.urls')),
+    path('notes/', include('noteapp.urls')),
     path('', articleapp.views.index, name='index'),
     path('home/', articleapp.views.index, name='home'),
 

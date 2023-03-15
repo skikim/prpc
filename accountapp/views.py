@@ -3,10 +3,13 @@ from django.contrib.auth.models import User
 from django.shortcuts import redirect
 from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
-from django.views.generic import CreateView, DetailView, UpdateView, DeleteView, TemplateView
+from django.views.generic import CreateView, DetailView, UpdateView, DeleteView, TemplateView, FormView
 
 from accountapp.decorators import account_ownership_required
 from accountapp.forms import AccountUpdateForm, CreateUserForm
+from django.contrib.auth.views import LoginView
+from .forms import CustomAuthenticationForm
+# from .forms import CustomUserCreationForm
 
 
 has_ownership = [
@@ -34,6 +37,11 @@ class AccountCreateView(CreateView):
         if not request.session.get('agreed'):
             return redirect('accountapp:agreement')
         return super().dispatch(request, *args, **kwargs)
+
+
+class CustomLoginView(LoginView):
+    authentication_form = CustomAuthenticationForm
+    template_name = 'accountapp/login.html'
 
 
 @method_decorator(account_ownership_required, 'get')
