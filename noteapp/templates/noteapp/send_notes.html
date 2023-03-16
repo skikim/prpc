@@ -3,23 +3,17 @@
 
 {% block content %}
     <div style="text-align: center; max-width: 600px; margin: 8rem auto;">
-        <form method="post">
+        <form method="post" action="{% url 'noteapp:send_notes' %}">
             {% csrf_token %}
             <div class="form-group">
-                <label for="recipient_id">Recipient:</label>
-                <input type="number" name="recipient_id" id="recipient_id" class="form-control">
-{#                    {% for user in users %}#}
-{#                        {% if user != request.user %}#}
-{#                            <option value="{{ user.id }}">{{ user.username }}</option>#}
-{#                        {% endif %}#}
-{#                    {% endfor %}#}
-                </input>
+                <label for="recipient_id" style="margin: 2rem;">수신자:</label>
+                <input type="number" name="recipient_id" id="recipient_id" class="form-control" style="margin-bottom: 4rem;">
             </div>
             <div class="form-group">
-                <label for="message">Message:</label>
-                <textarea name="message" id="message" class="form-control"></textarea>
+                <label for="message" style="margin: 2rem">메시지:</label>
+                <textarea name="message" id="message" class="form-control" style="margin-bottom: 4rem"></textarea>
             </div>
-            <button type="submit" class="btn btn-primary">Send</button>
+            <button type="submit" class="btn btn-primary rounded-pill">메시지 보내기</button>
         </form>
     </div>
 {% endblock %}

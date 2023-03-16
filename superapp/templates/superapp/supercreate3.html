@@ -6,7 +6,7 @@
 
     <div>
         <div style="margin-top: 8rem; margin-bottom: 2rem; text-align: center">
-            <h2>[예약 환자 메시지 관리]</h2>
+            <h2>[예약 환자 메시지 관리]<a href="{% url 'noteapp:send_notes' %}"><span style="font-size: 0.8rem">쪽지</span></a></h2>
         </div>
 
         <div>
@@ -28,7 +28,7 @@
                     <th>예약날짜</th>
                     <th>예약시간</th>
                     <th>Phone</th>
-                    <th>생년월일</th>
+                    <th>ID</th>
                     <th>예약상태</th>
                 </tr>
                 {% for book in bookings %}
@@ -37,7 +37,7 @@
                     <td id="r{{ forloop.counter }}c2">{{ book.booking_date }}</td>
                     <td id="r{{ forloop.counter }}c3">{{ book.booking_time }}</td>
                     <td id="r{{ forloop.counter }}c4">{{ book.user.profile.phone_num }}</td>
-                    <td id="r{{ forloop.counter }}c5">{{ book.user.profile.birth_date }}</td>
+                    <td id="r{{ forloop.counter }}c5" style="cursor: pointer" onclick="send_note(this.id)">{% if book.user_id %}{{ book.user_id }}{% endif %}</td>
                     <td id="r{{ forloop.counter }}c6">{{ book.booking_status }}</td>
                 </tr>
                 {% endfor %}
@@ -86,8 +86,38 @@
                 </div>
             </div>
         </div>
-
     </form>
+
+    <form method="post" action="{% url 'noteapp:send_notes' %}">
+        {% csrf_token %}
+        <div class="modal" id="modal_note" tabindex="-1">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">쪽지 보내기</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body" style="text-align: center; padding: 1rem; margin: 4rem;">
+
+                        <div class="form-group">
+                            <label for="recipient_id" style="margin: 2rem;">수신자:</label>
+                            <input type="number" name="recipient_id" id="recipient_id" class="form-control" style="margin-bottom: 4rem;">
+                        </div>
+                        <div class="form-group">
+                            <label for="message" style="margin: 2rem">메시지:</label>
+                            <textarea name="message" id="message" class="form-control" style="margin-bottom: 4rem"></textarea>
+                        </div>
+{#                        <button type="submit" class="btn btn-primary rounded-pill">메시지 보내기</button>#}
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">보내기</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+
 
     <style>
         td, th{
@@ -126,6 +156,17 @@
             document.getElementById('msg').value = selected_msg
         }
 
+        function send_note(clicked_id){
+            let row_num = clicked_id.charAt(1)
+            let col_num = clicked_id.charAt(3)
+            let id_cell = table.rows[row_num].cells[4]
+            let selected_id = id_cell.innerText
+
+            $('#modal_note').modal("show");
+            document.getElementById('recipient_id').value = selected_id
+        }
+
+
         function change_sel(){
             let selected_msg = document.getElementById('msg_selector').value
             document.getElementById('msg').value = selected_msg
@@ -148,7 +189,7 @@
                 }
             }
         }
-        
+
     </script>
 {% endif %}
 {% endblock %}

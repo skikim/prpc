@@ -12,7 +12,7 @@ def send_note(request):
         recipient = User.objects.get(id=recipient_id)
         sender = request.user
         note = Note.objects.create(sender=sender, recipient=recipient, message=message)
-        return redirect('superapp/supercreate')
+        return redirect('/supers/supercreate3/')
     else:
         return render(request, 'noteapp/send_notes.html')
 
