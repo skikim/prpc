@@ -131,6 +131,24 @@
             document.getElementById('msg').value = selected_msg
         }
 
+        const table = document.getElementsByTagName("table")[0];
+        const rows = table.getElementsByTagName("tr");
+        for (let i = 0; i < rows.length; i++) {
+            const cells = rows[i].getElementsByTagName("td");
+            for (let j = 0; j < cells.length; j++) {
+                const cell = cells[j];
+                if (cell.innerText === "예약요청") {
+                    cell.style.backgroundColor = "beige";
+                }
+                if (cell.innerText === "예약승인") {
+                    cell.style.backgroundColor = "#FFDDDD";
+                }
+                if (cell.innerText === "예약가능") {
+                    cell.style.backgroundColor = "#D7E5FF";
+                }
+            }
+        }
+        
     </script>
 {% endif %}
 {% endblock %}
