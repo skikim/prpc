@@ -9,6 +9,10 @@
             <a class="btn btn-lg btn-light" href="{% url 'bookingapp:create' %}" style="margin-top: 2.8rem">예약하기!</a>
         </div>
     </header>
+
+    {% if notes %}
+        <div style="margin: 2rem 2rem;text-align: center"><a href="{% url 'noteapp:display_notes' %}" >내게 온 메시지: <strong>{{ notes_count }}개</strong></a></div>
+    {% endif %}
     <!-- About section-->
     {#    <div id='waiting_inform' style="margin-left: 2rem; line-height: 1.96">#}
     {#        {{ waiting_date }} {{ waiting_time }} (현재)<br> 선착순 대기환자 : <span style="color: darkred; font-weight: bold">{{ waiting.waiting_num }}</span> / 4 명#}
@@ -98,11 +102,13 @@
                                 {% for note in notes reversed %}
                                     <li class="list-group-item {% if not note.is_read %}list-group-item-warning{% endif %}">
                                         <p>{{ note.message }}</p>
-                                        <div style="text-align: right"><small class="text-muted">-{{ note.sender.profile.real_name }}-  {{ note.timestamp }}</small></div>
-                                        <form method="POST" action="{% url 'noteapp:delete_notes' note.id %}" style="display: inline">
-                                            {% csrf_token %}
-                                            <button type="submit" class="btn btn-danger btn-sm rounded-pill">삭제</button>
-                                        </form>
+                                        <div style="display: flex; justify-content: space-between">
+                                            <div><small class="text-muted">-{{ note.sender.profile.real_name }}-  {{ note.timestamp }}</small></div>
+                                            <form method="POST" action="{% url 'noteapp:delete_notes' note.id %}" style="display: inline">
+                                                {% csrf_token %}
+                                                <div><button type="submit" class="btn btn-danger btn-sm rounded-pill float-right">삭제</button></div>
+                                            </form>
+                                        </div>
                                     </li>
                                 {% endfor %}
                             </ul>
