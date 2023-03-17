@@ -25,7 +25,7 @@ def delete_note(request, note_id):
     note = get_object_or_404(Note, id=note_id)
     if request.user == note.recipient:
         note.delete()
-    return redirect('home')
+    return redirect('noteapp:display_notes')
 
 
 # @login_required
