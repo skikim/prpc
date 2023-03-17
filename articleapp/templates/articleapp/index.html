@@ -101,16 +101,18 @@
                         <div class="modal-body">
                             <ul class="list-group">
                                 {% for note in notes reversed %}
-                                    <li class="list-group-item {% if not note.is_read %}list-group-item-warning{% endif %}">
-                                        <p>{{ note.message }}</p>
-                                        <div style="display: flex; justify-content: space-between">
-                                            <div><small class="text-muted">-{{ note.sender.profile.real_name }}-  {{ note.timestamp }}</small></div>
-                                            <form method="POST" action="{% url 'noteapp:delete_notes' note.id %}" style="display: inline">
-                                                {% csrf_token %}
-                                                <div><button type="submit" class="btn btn-danger btn-sm rounded-pill float-right">삭제</button></div>
-                                            </form>
-                                        </div>
-                                    </li>
+                                    <div style="margin: 0.2rem 0">
+                                        <li class="list-group-item {% if not note.is_read %}list-group-item-warning{% endif %}">
+                                            <p>{{ note.message }}</p>
+                                            <div style="display: flex; justify-content: space-between">
+                                                <div><small class="text-muted">-{{ note.sender.profile.real_name }}-  {{ note.timestamp }}</small></div>
+                                                <form method="POST" action="{% url 'noteapp:delete_notes' note.id %}" style="display: inline">
+                                                    {% csrf_token %}
+                                                    <div><button type="submit" class="btn btn-danger btn-sm rounded-pill float-right">삭제</button></div>
+                                                </form>
+                                            </div>
+                                        </li>
+                                    </div>
                                 {% endfor %}
                             </ul>
                         </div>
@@ -119,7 +121,7 @@
                             {#                            {% csrf_token %}#}
                             {#                            <button type="submit" class="btn btn-danger rounded-pill">전체 삭제</button>#}
                             {#                        </form>#}
-                            <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="modal_close()">닫기</button>
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal" onclick="modal_close()">닫기</button>
                         </div>
                     </div>
                 </div>

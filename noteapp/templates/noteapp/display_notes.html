@@ -10,16 +10,18 @@
     </div>
     <div style="max-width: 600px; padding: 1rem; margin: 4rem auto; line-height: 1.96">
         {% for note in notes reversed %}
-            <li class="list-group-item {% if not note.is_read %}list-group-item-warning{% endif %}">
-                <p>{{ note.message }}</p>
-                <div style="display: flex; justify-content: space-between;">
-                    <div><small class="text-muted">-{{ note.sender.profile.real_name }}-  {{ note.timestamp }}</small></div>
-                    <form method="POST" action="{% url 'noteapp:delete_notes' note.id %}" style="display: inline">
-                        {% csrf_token %}
-                        <div><button type="submit" class="btn btn-danger btn-sm rounded-pill">삭제</button></div>
-                    </form>
-                </div>
-            </li>
+            <div style="margin: 0.4rem">
+                <li class="list-group-item {% if not note.is_read %}list-group-item-warning{% endif %}">
+                    <p>{{ note.message }}</p>
+                    <div style="display: flex; justify-content: space-between;">
+                        <div><small class="text-muted">-{{ note.sender.profile.real_name }}-  {{ note.timestamp }}</small></div>
+                        <form method="POST" action="{% url 'noteapp:delete_notes' note.id %}" style="display: inline">
+                            {% csrf_token %}
+                            <div><button type="submit" class="btn btn-danger btn-sm rounded-pill">삭제</button></div>
+                        </form>
+                    </div>
+                </li>
+            </div>
         {% endfor %}
     </div>
 

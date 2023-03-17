@@ -6,15 +6,18 @@ from noteapp.models import Note
 
 @login_required
 def send_note(request):
-    if request.method == 'POST':
-        recipient_id = request.POST.get('recipient_id')
-        message = request.POST.get('message')
-        recipient = User.objects.get(id=recipient_id)
-        sender = request.user
-        note = Note.objects.create(sender=sender, recipient=recipient, message=message)
-        return redirect('/supers/supercreate3/')
+    if request.user.is_superuser:
+        if request.method == 'POST':
+            recipient_id = request.POST.get('recipient_id')
+            message = request.POST.get('message')
+            recipient = User.objects.get(id=recipient_id)
+            sender = request.user
+            note = Note.objects.create(sender=sender, recipient=recipient, message=message)
+            return redirect('/supers/supercreate3/')
+        else:
+            return render(request, 'noteapp/send_notes.html')
     else:
-        return render(request, 'noteapp/send_notes.html')
+        return render(request, 'articleapp/index.html')
 
 
 @login_required
