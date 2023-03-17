@@ -28,6 +28,7 @@
                     <th>예약날짜</th>
                     <th>예약시간</th>
                     <th>Phone</th>
+                    <th>생년월일</th>
                     <th>ID</th>
                     <th>예약상태</th>
                 </tr>
@@ -37,8 +38,9 @@
                     <td id="r{{ forloop.counter }}c2">{{ book.booking_date }}</td>
                     <td id="r{{ forloop.counter }}c3">{{ book.booking_time }}</td>
                     <td id="r{{ forloop.counter }}c4">{{ book.user.profile.phone_num }}</td>
-                    <td id="r{{ forloop.counter }}c5" style="cursor: pointer" onclick="send_note(this.id)">{% if book.user_id %}{{ book.user_id }}{% endif %}</td>
-                    <td id="r{{ forloop.counter }}c6">{{ book.booking_status }}</td>
+                    <td id="r{{ forloop.counter }}c5">{{ book.user.profile.birth_date }}</td>
+                    <td id="r{{ forloop.counter }}c6" style="cursor: pointer" onclick="send_note(this.id)">{% if book.user_id %}{{ book.user_id }}{% endif %}</td>
+                    <td id="r{{ forloop.counter }}c7">{{ book.booking_status }}</td>
                 </tr>
                 {% endfor %}
             </table>
@@ -164,7 +166,7 @@
         function send_note(clicked_id){
             let row_num = clicked_id.charAt(1)
             let col_num = clicked_id.charAt(3)
-            let id_cell = table.rows[row_num].cells[4]
+            let id_cell = table.rows[row_num].cells[5]
             let selected_id = id_cell.innerText
 
             $('#modal_note').modal("show");
