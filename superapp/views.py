@@ -69,6 +69,7 @@ def superbooking(request):
             booking_date = request.POST.get('date')
             booking_time = request.POST.get('time')
             booking_status = request.POST.get('status')
+            booking_rn = request.POST.get('booking_rn')
             try:
                 booking = Booking.objects.get(booking_date=booking_date, booking_time=booking_time)
                 if booking_status == '예약요청':
@@ -77,10 +78,11 @@ def superbooking(request):
                 elif booking_status == '예약승인':
                     user = booking.user
                     recipient_id = booking.user_id
-                    message = f"{user.profile.real_name}님, {booking_date} {booking_time}의 예약이 승인되었습니다."
-                    recipient = User.objects.get(id=recipient_id)
-                    sender = request.user
-                    note = Note.objects.create(sender=sender, recipient=recipient, message=message)
+                    if user:
+                        message = f"{user.profile.real_name}님, {booking_date} {booking_time}의 예약이 승인되었습니다."
+                        recipient = User.objects.get(id=recipient_id)
+                        sender = request.user
+                        note = Note.objects.create(sender=sender, recipient=recipient, message=message)
                     booking.delete()
                 elif booking_status == '예약가능':
                     booking.delete()
@@ -97,7 +99,7 @@ def superbooking(request):
             end_date = booking_date_parse + timedelta(days=(5 - booking_date_weekday))
             request_real_name = request.user.profile.real_name
             if Booking.objects.filter(Q(user=user), Q(booking_date__range=(start_date, end_date)), Q(booking_status='예약승인') | Q(booking_status='예약요청')).count() < 1000:
-                Booking(booking_date=booking_date, booking_time=booking_time, user=user, booking_status=booking_status).save()
+                Booking(booking_date=booking_date, booking_time=booking_time, user=user, booking_status=booking_status, booking_rn=booking_rn).save()
                 return redirect(reverse('superapp:supercreate'))
             else:
                 errors.append('주 2회 예약이 넘었는지 확인하세요.')
@@ -139,6 +141,7 @@ def superbooking2(request):
             booking_date = request.POST.get('date')
             booking_time = request.POST.get('time')
             booking_status = request.POST.get('status')
+            booking_rn = request.POST.get('booking_rn')
             try:
                 booking = Booking.objects.get(booking_date=booking_date, booking_time=booking_time)
                 if booking_status == '예약요청':
@@ -147,10 +150,11 @@ def superbooking2(request):
                 elif booking_status == '예약승인':
                     user = booking.user
                     recipient_id = booking.user_id
-                    message = f"{user.profile.real_name}님, {booking_date} {booking_time}의 예약이 승인되었습니다."
-                    recipient = User.objects.get(id=recipient_id)
-                    sender = request.user
-                    note = Note.objects.create(sender=sender, recipient=recipient, message=message)
+                    if user:
+                        message = f"{user.profile.real_name}님, {booking_date} {booking_time}의 예약이 승인되었습니다."
+                        recipient = User.objects.get(id=recipient_id)
+                        sender = request.user
+                        note = Note.objects.create(sender=sender, recipient=recipient, message=message)
                     booking.delete()
                 elif booking_status == '예약가능':
                     booking.delete()
@@ -167,7 +171,7 @@ def superbooking2(request):
             end_date = booking_date_parse + timedelta(days=(5 - booking_date_weekday))
             request_real_name = request.user.profile.real_name
             if Booking.objects.filter(Q(user=user), Q(booking_date__range=(start_date, end_date)), Q(booking_status='예약승인') | Q(booking_status='예약요청')).count() < 1000:
-                Booking(booking_date=booking_date, booking_time=booking_time, user=user, booking_status=booking_status).save()
+                Booking(booking_date=booking_date, booking_time=booking_time, user=user, booking_status=booking_status, booking_rn=booking_rn).save()
                 return redirect(reverse('superapp:supercreate2'))
             else:
                 errors.append('주 2회 예약이 넘었는지 확인하세요.')

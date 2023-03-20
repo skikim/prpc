@@ -92,7 +92,7 @@ def booking(request):
             Booking.objects.get(booking_date=booking_date, booking_time=booking_time).delete()
             Booking(booking_date=booking_date, booking_time=booking_time, user=user, booking_status=booking_status).save()
             send_message(f"{request_real_name}님이 {booking_date} {booking_time}의 예약을 요청하셨습니다.")
-            send_message_2(f"{request_real_name}님이 {booking_date} {booking_time}의 예약을 요청하셨습니다.")
+            # send_message_2(f"{request_real_name}님이 {booking_date} {booking_time}의 예약을 요청하셨습니다.")
             return redirect(reverse('bookingapp:detail', kwargs={'pk': user.pk}))
         else:
             errors.append('온라인 예약은 주 1회만 가능합니다.')
@@ -146,7 +146,7 @@ def booking_2(request):
             Booking.objects.get(booking_date=booking_date, booking_time=booking_time).delete()
             Booking(booking_date=booking_date, booking_time=booking_time, user=user, booking_status=booking_status).save()
             send_message(f"{request_real_name}님이 {booking_date} {booking_time}의 예약을 요청하셨습니다.")
-            send_message_2(f"{request_real_name}님이 {booking_date} {booking_time}의 예약을 요청하셨습니다.")
+            # send_message_2(f"{request_real_name}님이 {booking_date} {booking_time}의 예약을 요청하셨습니다.")
             return redirect(reverse('bookingapp:detail', kwargs={'pk': user.pk}))
         else:
             errors.append('온라인 예약은 주 1회만 가능합니다.')

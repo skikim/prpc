@@ -16,4 +16,5 @@ class Booking(models.Model):
     booking_time = models.CharField(max_length=16, choices=BOOKING_TIME)
     booking_status = models.CharField(max_length=10, choices=BOOKING_STATUS)
     booked_on_datetime = models.DateTimeField(auto_now=True)
+    booking_rn = models.CharField(max_length=12, null=True, blank=True)
 

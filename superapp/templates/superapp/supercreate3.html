@@ -33,15 +33,17 @@
                     <th>예약상태</th>
                 </tr>
                 {% for book in bookings %}
-                <tr>
-                    <td id="r{{ forloop.counter }}c1" style="cursor: pointer" onclick="input_form(this.id)">{{ book.user.profile.real_name }}</td>
-                    <td id="r{{ forloop.counter }}c2">{{ book.booking_date }}</td>
-                    <td id="r{{ forloop.counter }}c3">{{ book.booking_time }}</td>
-                    <td id="r{{ forloop.counter }}c4">{{ book.user.profile.phone_num }}</td>
-                    <td id="r{{ forloop.counter }}c5">{{ book.user.profile.birth_date }}</td>
-                    <td id="r{{ forloop.counter }}c6" style="cursor: pointer" onclick="send_note(this.id)">{% if book.user_id %}{{ book.user_id }}{% endif %}</td>
-                    <td id="r{{ forloop.counter }}c7">{{ book.booking_status }}</td>
-                </tr>
+                    {% if book.user %}
+                        <tr>
+                            <td id="r{{ forloop.counter }}c1" style="cursor: pointer" onclick="input_form(this.id)">{{ book.user.profile.real_name }}</td>
+                            <td id="r{{ forloop.counter }}c2">{{ book.booking_date }}</td>
+                            <td id="r{{ forloop.counter }}c3">{{ book.booking_time }}</td>
+                            <td id="r{{ forloop.counter }}c4">{{ book.user.profile.phone_num }}</td>
+                            <td id="r{{ forloop.counter }}c5">{{ book.user.profile.birth_date }}</td>
+                            <td id="r{{ forloop.counter }}c6" style="cursor: pointer" onclick="send_note(this.id)">{% if book.user_id %}{{ book.user_id }}{% endif %}</td>
+                            <td id="r{{ forloop.counter }}c7">{{ book.booking_status }}</td>
+                        </tr>
+                    {% endif %}
                 {% endfor %}
             </table>
         </div>

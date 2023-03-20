@@ -37,6 +37,9 @@
                                 <option value="예약불가">예약불가</option>
                             </select>
                         </div>
+                        <div style="text-align: center;">
+                            <span>예약자 : &nbsp </span><input type="text" class="booking_rn" id="booking_rn" name="booking_rn" style="width: 24%;">
+                        </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                             <button type="submit" class="btn btn-primary">예약신청</button>
@@ -1004,7 +1007,11 @@
                 {% if inform.booking_status == '예약승인' %}
                     document.getElementById('r{{ inform.booking_time }}c1').style.backgroundColor = 'lightpink'
                     document.getElementById('r{{ inform.booking_time }}c1').style.cursor = 'default'
-                    document.getElementById('r{{ inform.booking_time }}c1').innerHTML = '{{ inform.user.profile.real_name }}'
+                    {% if inform.user.profile.real_name %}
+                        document.getElementById('r{{ inform.booking_time }}c1').innerHTML = '{{ inform.user.profile.real_name }}'
+                    {% else %}
+                        document.getElementById('r{{ inform.booking_time }}c1').innerHTML = '{{ inform.booking_rn }}'
+                    {% endif %}
                 {% elif inform.booking_status == '예약요청' %}
                     document.getElementById('r{{ inform.booking_time }}c1').style.backgroundColor = 'beige'
                     document.getElementById('r{{ inform.booking_time }}c1').style.cursor = 'default'
@@ -1023,7 +1030,11 @@
                 {% if inform.booking_status == '예약승인' %}
                     document.getElementById('r{{ inform.booking_time }}c2').style.backgroundColor = 'lightpink'
                     document.getElementById('r{{ inform.booking_time }}c2').style.cursor = 'default'
-                    document.getElementById('r{{ inform.booking_time }}c2').innerHTML = '{{ inform.user.profile.real_name }}'
+                    {% if inform.user.profile.real_name %}
+                        document.getElementById('r{{ inform.booking_time }}c2').innerHTML = '{{ inform.user.profile.real_name }}'
+                    {% else %}
+                        document.getElementById('r{{ inform.booking_time }}c2').innerHTML = '{{ inform.booking_rn }}'
+                    {% endif %}
                 {% elif inform.booking_status == '예약요청' %}
                     document.getElementById('r{{ inform.booking_time }}c2').style.backgroundColor = 'beige'
                     document.getElementById('r{{ inform.booking_time }}c2').style.cursor = 'default'
@@ -1042,7 +1053,11 @@
                 {% if inform.booking_status == '예약승인' %}
                     document.getElementById('r{{ inform.booking_time }}c3').style.backgroundColor = 'lightpink'
                     document.getElementById('r{{ inform.booking_time }}c3').style.cursor = 'default'
-                    document.getElementById('r{{ inform.booking_time }}c3').innerHTML = '{{ inform.user.profile.real_name }}'
+                    {% if inform.user.profile.real_name %}
+                        document.getElementById('r{{ inform.booking_time }}c3').innerHTML = '{{ inform.user.profile.real_name }}'
+                    {% else %}
+                        document.getElementById('r{{ inform.booking_time }}c3').innerHTML = '{{ inform.booking_rn }}'
+                    {% endif %}
                 {% elif inform.booking_status == '예약요청' %}
                     document.getElementById('r{{ inform.booking_time }}c3').style.backgroundColor = 'beige'
                     document.getElementById('r{{ inform.booking_time }}c3').style.cursor = 'default'
@@ -1061,7 +1076,11 @@
                 {% if inform.booking_status == '예약승인' %}
                     document.getElementById('r{{ inform.booking_time }}c4').style.backgroundColor = 'lightpink'
                     document.getElementById('r{{ inform.booking_time }}c4').style.cursor = 'default'
-                    document.getElementById('r{{ inform.booking_time }}c4').innerHTML = '{{ inform.user.profile.real_name }}'
+                    {% if inform.user.profile.real_name %}
+                        document.getElementById('r{{ inform.booking_time }}c4').innerHTML = '{{ inform.user.profile.real_name }}'
+                    {% else %}
+                        document.getElementById('r{{ inform.booking_time }}c4').innerHTML = '{{ inform.booking_rn }}'
+                    {% endif %}
                 {% elif inform.booking_status == '예약요청' %}
                     document.getElementById('r{{ inform.booking_time }}c4').style.backgroundColor = 'beige'
                     document.getElementById('r{{ inform.booking_time }}c4').style.cursor = 'default'
@@ -1080,7 +1099,11 @@
                 {% if inform.booking_status == '예약승인' %}
                     document.getElementById('r{{ inform.booking_time }}c5').style.backgroundColor = 'lightpink'
                     document.getElementById('r{{ inform.booking_time }}c5').style.cursor = 'default'
-                    document.getElementById('r{{ inform.booking_time }}c5').innerHTML = '{{ inform.user.profile.real_name }}'
+                    {% if inform.user.profile.real_name %}
+                        document.getElementById('r{{ inform.booking_time }}c5').innerHTML = '{{ inform.user.profile.real_name }}'
+                    {% else %}
+                        document.getElementById('r{{ inform.booking_time }}c5').innerHTML = '{{ inform.booking_rn }}'
+                    {% endif %}
                 {% elif inform.booking_status == '예약요청' %}
                     document.getElementById('r{{ inform.booking_time }}c5').style.backgroundColor = 'beige'
                     document.getElementById('r{{ inform.booking_time }}c5').style.cursor = 'default'
@@ -1099,7 +1122,11 @@
                 {% if inform.booking_status == '예약승인' %}
                     document.getElementById('r{{ inform.booking_time }}c6').style.backgroundColor = 'lightpink'
                     document.getElementById('r{{ inform.booking_time }}c6').style.cursor = 'default'
-                    document.getElementById('r{{ inform.booking_time }}c6').innerHTML = '{{ inform.user.profile.real_name }}'
+                    {% if inform.user.profile.real_name %}
+                        document.getElementById('r{{ inform.booking_time }}c6').innerHTML = '{{ inform.user.profile.real_name }}'
+                    {% else %}
+                        document.getElementById('r{{ inform.booking_time }}c6').innerHTML = '{{ inform.booking_rn }}'
+                    {% endif %}
                 {% elif inform.booking_status == '예약요청' %}
                     document.getElementById('r{{ inform.booking_time }}c6').style.backgroundColor = 'beige'
                     document.getElementById('r{{ inform.booking_time }}c6').style.cursor = 'default'
@@ -1118,7 +1145,11 @@
                 {% if inform.booking_status == '예약승인' %}
                     document.getElementById('r{{ inform.booking_time }}c7').style.backgroundColor = 'lightpink'
                     document.getElementById('r{{ inform.booking_time }}c7').style.cursor = 'default'
-                    document.getElementById('r{{ inform.booking_time }}c7').innerHTML = '{{ inform.user.profile.real_name }}'
+                    {% if inform.user.profile.real_name %}
+                        document.getElementById('r{{ inform.booking_time }}c7').innerHTML = '{{ inform.user.profile.real_name }}'
+                    {% else %}
+                        document.getElementById('r{{ inform.booking_time }}c7').innerHTML = '{{ inform.booking_rn }}'
+                    {% endif %}
                 {% elif inform.booking_status == '예약요청' %}
                     document.getElementById('r{{ inform.booking_time }}c7').style.backgroundColor = 'beige'
                     document.getElementById('r{{ inform.booking_time }}c7').style.cursor = 'default'
