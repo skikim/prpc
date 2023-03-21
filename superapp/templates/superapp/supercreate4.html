@@ -6,7 +6,7 @@
 
     <div>
         <div style="margin-top: 8rem; margin-bottom: 2rem; text-align: center">
-            <h2>[예약 환자 메시지 관리]<a href="{% url 'noteapp:send_notes' %}"><span style="font-size: 0.8rem">쪽지</span></a></h2>
+            <h2>[예약 환자 메시지 관리 2]<a href="{% url 'noteapp:send_notes' %}"><span style="font-size: 0.8rem">쪽지</span></a></h2>
         </div>
 
         <div>
@@ -14,7 +14,7 @@
         <div style="margin-bottom: 2rem; display: flex; justify-content: space-between;">
             <div><a style="margin-left: 4rem" href="{% url 'superapp:supercreate' %}"><button type="button" class="btn btn-outline-primary btn-sm" style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .75rem;">< 1주차</button></a></div>
             <div><a href="{% url 'superapp:supercreate2' %}"><button type="button" class="btn btn-outline-primary btn-sm" style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .75rem;">< 2주차</button></a></div>
-            <div><a style="margin-right: 4rem" href="{% url 'superapp:supercreate4' %}"><button type="button" class="btn btn-outline-primary btn-sm" style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .75rem;">Message2 ></button></a></div>
+            <div><a style="margin-right: 4rem" href="{% url 'superapp:supercreate3' %}"><button type="button" class="btn btn-outline-primary btn-sm" style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .75rem;">< Message</button></a></div>
         </div>
 
 
@@ -34,9 +34,10 @@
                     <th>예약상태</th>
                 </tr>
                 {% for book in bookings %}
-                    {% if book.user %}
+                    {% if not book.user %}
                         <tr>
-                            <td id="r{{ forloop.counter }}c1" style="cursor: pointer" onclick="input_form(this.id)">{{ book.user.profile.real_name }}</td>
+                            <td id="r{{ forloop.counter }}c1">{{ book.booking_rn }}</td>
+{#                            <td id="r{{ forloop.counter }}c1" style="cursor: pointer" onclick="input_form(this.id)">{{ book.user.profile.real_name }}</td>#}
                             <td id="r{{ forloop.counter }}c2">{{ book.booking_date }}</td>
                             <td id="r{{ forloop.counter }}c3">{{ book.booking_time }}</td>
                             <td id="r{{ forloop.counter }}c4">{{ book.user.profile.phone_num }}</td>

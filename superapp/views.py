@@ -119,6 +119,7 @@ def superbooking2(request):
     today_12 = today_1 + timedelta(days=11)
     today_13 = today_1 + timedelta(days=12)
     today_14 = today_1 + timedelta(days=13)
+    today_15 = today_1 + timedelta(days=14)
     inform_today_8 = Booking.objects.filter(booking_date = today_8.strftime('%Y-%m-%d'))
     inform_today_9 = Booking.objects.filter(booking_date = today_9.strftime('%Y-%m-%d'))
     inform_today_10 = Booking.objects.filter(booking_date = today_10.strftime('%Y-%m-%d'))
@@ -126,6 +127,7 @@ def superbooking2(request):
     inform_today_12 = Booking.objects.filter(booking_date = today_12.strftime('%Y-%m-%d'))
     inform_today_13 = Booking.objects.filter(booking_date = today_13.strftime('%Y-%m-%d'))
     inform_today_14 = Booking.objects.filter(booking_date = today_14.strftime('%Y-%m-%d'))
+    inform_today_15 = Booking.objects.filter(booking_date = today_15.strftime('%Y-%m-%d'))
 
     context = {'inform_today_8': inform_today_8,
                'inform_today_9': inform_today_9,
@@ -134,7 +136,8 @@ def superbooking2(request):
                'inform_today_12': inform_today_12,
                'inform_today_13': inform_today_13,
                'inform_today_14': inform_today_14,
-    }
+               'inform_today_15': inform_today_15,
+               }
     if request.user.is_superuser:
         errors = []
         if request.method == 'POST':
@@ -201,6 +204,30 @@ def superbooking3(request):
                 msg_2 = f"{name}님, {date} {time}분의 예약이 취소되었습니다."
                 aligo_sms_send(rec, msg_2)
         return render(request, 'superapp/supercreate3.html', context)
+    elif not request.user.is_superuser:
+        return redirect(reverse('articleapp:index'))
+
+
+@login_required
+def superbooking4(request):
+    if request.user.is_superuser:
+        dict_book = Booking.objects.filter().order_by('-id')[:240:0]
+        context = {
+            'bookings': dict_book
+        }
+        if request.method == 'POST':
+            rec = request.POST.get('rec')
+            msg = request.POST.get('msg')
+            name = request.POST.get('name')
+            date = request.POST.get('date')
+            time = request.POST.get('time')
+            if str(msg)=='ok':
+                msg_2 = f"{name}님, {date} {time}분의 예약이 승인되었습니다."
+                aligo_sms_send(rec, msg_2)
+            elif str(msg)=='cancel':
+                msg_2 = f"{name}님, {date} {time}분의 예약이 취소되었습니다."
+                aligo_sms_send(rec, msg_2)
+        return render(request, 'superapp/supercreate4.html', context)
     elif not request.user.is_superuser:
         return redirect(reverse('articleapp:index'))
 
