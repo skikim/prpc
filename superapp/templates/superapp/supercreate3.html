@@ -167,11 +167,8 @@
         }
 
         function send_note(clicked_id){
-            let row_num = clicked_id.charAt(1)
-            let col_num = clicked_id.charAt(3)
-            let id_cell = table.rows[row_num].cells[5]
+            let id_cell = document.getElementById(clicked_id)
             let selected_id = id_cell.innerText
-
             $('#modal_note').modal("show");
             document.getElementById('recipient_id').value = selected_id
         }
