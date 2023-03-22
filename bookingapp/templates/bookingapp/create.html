@@ -1024,15 +1024,21 @@
                         document.getElementById('r{{ inform.booking_time }}c1').style.cursor = 'default'
                         {% if request.user == inform.user %}
                             document.getElementById('r{{ inform.booking_time }}c1').innerHTML = '{{ inform.user.profile.real_name }}'
-                            document.getElementById('r{{ inform.booking_time }}c2').style.borderColor = 'black'
-                            document.getElementById('r{{ inform.booking_time }}c2').style.borderWidth = '1.5px'
+                            document.getElementById('r{{ inform.booking_time }}c1').style.borderColor = 'black'
+                            document.getElementById('r{{ inform.booking_time }}c1').style.borderWidth = '1.5px'
                         {% else %}
                             document.getElementById('r{{ inform.booking_time }}c1').innerHTML = '{{ inform.booking_status }}'
                         {% endif %}
                     {% elif inform.booking_status == '예약요청' %}
                         document.getElementById('r{{ inform.booking_time }}c1').style.backgroundColor = 'beige'
                         document.getElementById('r{{ inform.booking_time }}c1').style.cursor = 'default'
-                        document.getElementById('r{{ inform.booking_time }}c1').innerHTML = '{{ inform.booking_status }}'
+                        {% if request.user == inform.user %}
+                            document.getElementById('r{{ inform.booking_time }}c1').innerHTML = '{{ inform.user.profile.real_name }}'
+                            document.getElementById('r{{ inform.booking_time }}c1').style.borderColor = 'black'
+                            document.getElementById('r{{ inform.booking_time }}c1').style.borderWidth = '1.5px'
+                        {% else %}
+                            document.getElementById('r{{ inform.booking_time }}c1').innerHTML = '{{ inform.booking_status }}'
+                        {% endif %}
                     {% elif inform.booking_status == '예약불가' %}
                         document.getElementById('r{{ inform.booking_time }}c1').style.cursor = 'default'
                     {% elif inform.booking_status == '예약가능' %}

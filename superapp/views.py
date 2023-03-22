@@ -187,7 +187,7 @@ def superbooking2(request):
 @login_required
 def superbooking3(request):
     if request.user.is_superuser:
-        dict_book = Booking.objects.filter().order_by('-id')[:240:0]
+        dict_book = Booking.objects.filter(user__isnull=False).order_by('-id')[:120]
         context = {
             'bookings': dict_book
         }
@@ -211,7 +211,7 @@ def superbooking3(request):
 @login_required
 def superbooking4(request):
     if request.user.is_superuser:
-        dict_book = Booking.objects.filter().order_by('-id')[:240:0]
+        dict_book = Booking.objects.filter(user__isnull=True).order_by('-id')[:120]
         context = {
             'bookings': dict_book
         }
