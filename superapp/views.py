@@ -185,6 +185,82 @@ def superbooking2(request):
 
 
 @login_required
+def superbooking2_1(request):
+    today_1 = datetime.datetime.today()
+    today_16 = today_1 + timedelta(days=15)
+    today_17 = today_1 + timedelta(days=16)
+    today_18 = today_1 + timedelta(days=17)
+    today_19 = today_1 + timedelta(days=18)
+    today_20 = today_1 + timedelta(days=19)
+    today_21 = today_1 + timedelta(days=20)
+    today_22 = today_1 + timedelta(days=21)
+    today_23 = today_1 + timedelta(days=22)
+    inform_today_16 = Booking.objects.filter(booking_date = today_16.strftime('%Y-%m-%d'))
+    inform_today_17 = Booking.objects.filter(booking_date = today_17.strftime('%Y-%m-%d'))
+    inform_today_18 = Booking.objects.filter(booking_date = today_18.strftime('%Y-%m-%d'))
+    inform_today_19 = Booking.objects.filter(booking_date = today_19.strftime('%Y-%m-%d'))
+    inform_today_20 = Booking.objects.filter(booking_date = today_20.strftime('%Y-%m-%d'))
+    inform_today_21 = Booking.objects.filter(booking_date = today_21.strftime('%Y-%m-%d'))
+    inform_today_22 = Booking.objects.filter(booking_date = today_22.strftime('%Y-%m-%d'))
+    inform_today_23 = Booking.objects.filter(booking_date = today_23.strftime('%Y-%m-%d'))
+
+    context = {'inform_today_16': inform_today_16,
+               'inform_today_17': inform_today_17,
+               'inform_today_18': inform_today_18,
+               'inform_today_19': inform_today_19,
+               'inform_today_20': inform_today_20,
+               'inform_today_21': inform_today_21,
+               'inform_today_22': inform_today_22,
+               'inform_today_23': inform_today_23,
+               }
+    if request.user.is_superuser:
+        errors = []
+        if request.method == 'POST':
+            booking_date = request.POST.get('date')
+            booking_time = request.POST.get('time')
+            booking_status = request.POST.get('status')
+            booking_rn = request.POST.get('booking_rn')
+            try:
+                booking = Booking.objects.get(booking_date=booking_date, booking_time=booking_time)
+                if booking_status == '예약요청':
+                    user = booking.user
+                    booking.delete()
+                elif booking_status == '예약승인':
+                    user = booking.user
+                    recipient_id = booking.user_id
+                    if user:
+                        message = f"{user.profile.real_name}님, {booking_date} {booking_time}의 예약이 승인되었습니다."
+                        recipient = User.objects.get(id=recipient_id)
+                        sender = request.user
+                        note = Note.objects.create(sender=sender, recipient=recipient, message=message)
+                    booking.delete()
+                elif booking_status == '예약가능':
+                    booking.delete()
+                    user = None
+                elif booking_status == '예약불가':
+                    booking.delete()
+                    user = None
+            except Booking.DoesNotExist:
+                booking = None
+                user = None
+            booking_date_parse = parse(booking_date)
+            booking_date_weekday = booking_date_parse.weekday()
+            start_date = booking_date_parse - timedelta(days=booking_date_weekday)
+            end_date = booking_date_parse + timedelta(days=(5 - booking_date_weekday))
+            request_real_name = request.user.profile.real_name
+            if Booking.objects.filter(Q(user=user), Q(booking_date__range=(start_date, end_date)), Q(booking_status='예약승인') | Q(booking_status='예약요청')).count() < 1000:
+                Booking(booking_date=booking_date, booking_time=booking_time, user=user, booking_status=booking_status, booking_rn=booking_rn).save()
+                return redirect(reverse('superapp:supercreate2_1'))
+            else:
+                errors.append('주 2회 예약이 넘었는지 확인하세요.')
+                return render(request, 'superapp/supercreate2_1.html', {'errors': errors})
+        return render(request, 'superapp/supercreate2_1.html', context)
+    elif not request.user.is_superuser:
+        return redirect(reverse('articleapp:index'))
+
+
+
+@login_required
 def superbooking3(request):
     if request.user.is_superuser:
         dict_book = Booking.objects.filter(user__isnull=False).order_by('-id')[:120]
