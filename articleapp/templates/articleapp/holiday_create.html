@@ -1,10 +1,49 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>$Title$</title>
-</head>
-<body>
-$END$
-</body>
-</html>
+{%  extends 'base.html' %}
+
+{% block content %}
+    {% if user.is_staff %}
+        <div style="text-align: center; max-width: 600px; margin: 8rem auto;">
+            <div style="margin-bottom: 4rem">
+                <h2 style="margin-bottom: 4rem">[공휴일 안내]</h2>
+{#                <h4>공휴일 안내 메시지 입력</h4>#}
+            </div>
+            <div>
+                <form action="{% url 'articleapp:holiday_create' %}" method="post">
+                    {% csrf_token %}
+                    {#                {% bootstrap_form form %}#}
+                    <div>
+                        <label for="holiday_message" style="margin: 2rem">공휴일 안내:</label>
+                        <textarea name="holiday_message" id="message" class="form-control" style="margin-bottom: 2rem"></textarea>
+                    </div>
+                    {#                <input type="text" name="holiday_message"/>#}
+                    {# <input type="submit" value="Create Holiday"/>#}
+                    <button type="submit" class="btn btn-primary rounded-pill col-3 mt-4">확인</button>
+                </form>
+            </div>
+
+{#            <form action="{% url 'articleapp:waiting_create' %}" method="post">#}
+{#                {%  csrf_token %}#}
+{#                <div style="margin-bottom: 6rem">#}
+{#                    {% bootstrap_form form %}#}
+{#                </div>#}
+{#                <input type="submit" value="확인" class="btn btn-primary rounded-pill col-6 mt-4">#}
+{#            </form>#}
+
+            <div style="margin-top: 6rem">
+            <h4 style="margin-bottom: 2rem">[휴가 알림 내용]</h4>
+                {% for holiday_message in holiday_messages %}
+                    <div style="display: flex; justify-content: center; margin-bottom: 1rem">
+                        <div style="margin-right: 4rem"><p> {{ holiday_message.holiday_message }} </p></div>
+                        <div>
+                            <form method="POST" action="{% url 'articleapp:holiday_message_delete' holiday_message.id %}">
+                                {% csrf_token %}
+                                <div><button type="submit" class="btn btn-danger btn-sm rounded-pill">삭제</button></div>
+                            </form>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+
+        </div>
+    {% endif %}
+{% endblock %}

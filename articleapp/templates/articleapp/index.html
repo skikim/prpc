@@ -1,7 +1,6 @@
 {% extends 'base.html' %}
 
 {% block content %}
-
     <header class="bg-gradient text-white" style="background-color: #417690 !important;">
         <div class="container px-4 text-center">
             <h1 class="fw-bolder" style="font-family: 'NanumSquareB'">푸른 마취통증의학과 의원</h1>
@@ -13,6 +12,15 @@
     {% if notes %}
         <div style="margin: 2rem 2rem;text-align: center"><a href="{% url 'noteapp:display_notes' %}" >내게 온 메시지: <strong>{{ notes_count }}개</strong></a></div>
     {% endif %}
+
+    {% if holiday_messages %}
+        <div class="alert alert-danger" role="alert">
+            {% for holiday_message in holiday_messages %}
+                <div style="text-align: center; font-size: 1.12rem; font-weight: bold; margin: 0.2rem 0">{{ holiday_message.holiday_message }}</div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
     <!-- About section-->
     {#    <div id='waiting_inform' style="margin-left: 2rem; line-height: 1.96">#}
     {#        {{ waiting_date }} {{ waiting_time }} (현재)<br> 선착순 대기환자 : <span style="color: darkred; font-weight: bold">{{ waiting.waiting_num }}</span> / 4 명#}

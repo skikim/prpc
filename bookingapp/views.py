@@ -9,6 +9,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
 from django.views.generic import DetailView
 
+from articleapp.models import Holiday
 from bookingapp.decorators import booking_ownership_required
 from bookingapp.models import Booking
 import requests
@@ -201,4 +202,3 @@ def booking_delete(request, pk):
         Booking(booking_date=booking_date, booking_time=booking_time, booking_status=booking_status).save()
         return redirect(reverse('bookingapp:detail', kwargs={'pk': booking.user.pk}))
     return render(request, 'bookingapp/delete.html', {'booking' : booking})
-

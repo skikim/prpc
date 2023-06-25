@@ -12,3 +12,7 @@ CHOICES = (
 class Waiting(models.Model):
     waiting_num = models.IntegerField(null=True, blank=True, choices=CHOICES)
     added_on_datetime = models.DateTimeField(auto_now=True)
+
+
+class Holiday(models.Model):
+    holiday_message = models.CharField(null=True, max_length=100)

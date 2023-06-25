@@ -10,3 +10,9 @@ class WaitingCreationForm(ModelForm):
         labels = {
             'waiting_num': '대기자 수',
         }
+
+
+# class HolidayCreateForm(ModelForm):
+#     class Meta:
+#         model = Holiday
+#         fields = ['holiday_message']
