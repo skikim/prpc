@@ -10,16 +10,26 @@
     </header>
 
     {% if notes %}
-        <div style="margin: 2rem 2rem;text-align: center"><a href="{% url 'noteapp:display_notes' %}" >내게 온 메시지: <strong>{{ notes_count }}개</strong></a></div>
+{#        <div class="alert alert-light" role="alert">#}
+        <div style="text-align: center; text-decoration-line: underline; margin: 0.2rem 0"><a href="{% url 'noteapp:display_notes' %}" ><strong>내게 온 메시지: {{ notes_count }}개</strong></a></div>
+{#        </div>#}
     {% endif %}
 
     {% if holiday_messages %}
-        <div class="alert alert-danger" role="alert">
+        <div class="alert alert-danger" role="alert" style="margin: 0.4rem 0.8rem; padding-left: 0.2rem; padding-right: 0.2rem">
             {% for holiday_message in holiday_messages %}
-                <div style="text-align: center; font-size: 1.0rem; margin: 0.2rem 0">{{ holiday_message.holiday_message }}</div>
+                <div style="text-align: center; font-size: 1.0rem">{{ holiday_message.holiday_message }}</div>
             {% endfor %}
         </div>
     {% endif %}
+
+
+    <div id='waiting_num_notice' class="alert alert-warning" role="alert" style="text-align: center; margin: 0.4rem 0.8rem">
+        <p class="modal-title" style="font-size:1.2rem; margin-bottom: 0.8rem">선착순 대기환자 안내</p>
+        <p>{{ waiting_date }} {{ waiting_time }} (현재)<br> 대기환자 : <span style="color: darkred; font-weight: bold">{{ waiting.waiting_num }}</span> / 4 명</p>
+        <p>꼭!!! 집계된 시간을 체크하세요.</p>
+    </div>
+
 
     <!-- About section-->
     {#    <div id='waiting_inform' style="margin-left: 2rem; line-height: 1.96">#}
@@ -74,24 +84,23 @@
         </div>
     </section>
 
-    <div class="modal" id="modal_inform" tabindex="-1" role="dialog">
-        <div class="modal-dialog modal-sm">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">선착순 대기환자 안내</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" onclick="modal_close_1()"></button>
-                </div>
-                <div class="modal-body" style="text-align: center">
-                    <p>{{ waiting_date }} {{ waiting_time }} (현재)<br> 대기환자 : <span style="color: darkred; font-weight: bold">{{ waiting.waiting_num }}</span> / 4 명</p>
-                    <p>꼭!!! 집계된 시간을 체크하세요.</p>
-                </div>
-                {#                <div class="modal-footer">#}
-                {#                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>#}
-                {#                    <button type="button" class="btn btn-primary">Save changes</button>#}
-                {#                </div>#}
-            </div>
-        </div>
-    </div>
+
+{#    대기환자수 모달창 안내#}
+{#    <div class="modal" id="modal_inform" tabindex="-1" role="dialog">#}
+{#        <div class="modal-dialog modal-sm">#}
+{#            <div class="modal-content">#}
+{#                <div class="modal-header">#}
+{#                    <h5 class="modal-title">선착순 대기환자 안내</h5>#}
+{#                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" onclick="modal_close_1()"></button>#}
+{#                </div>#}
+{#                <div class="modal-body" style="text-align: center">#}
+{#                    <p>{{ waiting_date }} {{ waiting_time }} (현재)<br> 대기환자 : <span style="color: darkred; font-weight: bold">{{ waiting.waiting_num }}</span> / 4 명</p>#}
+{#                    <p>꼭!!! 집계된 시간을 체크하세요.</p>#}
+{#                </div>#}
+{#            </div>#}
+{#        </div>#}
+{#    </div>#}
+
 
     <div>
 {#        {% if notes %}#}
@@ -170,7 +179,39 @@
             $('#notes-modal').modal('hide');
         }
 
-        waiting_inform();
+        {#waiting_inform();#}
+
+
+        function waiting_inform_2() {
+            var t_today = new Date();
+            var t_hours = t_today.getHours(); // 시
+            var t_min = t_today.getMinutes(); //분
+            var t_total = (t_hours*60) + t_min;
+            if (t_total > 480 && t_total < 550) {
+                $('#waiting_num_notice').show();
+                {#document.getElementById('waiting_inform').style.display='block';#}
+            }
+            else if (t_total > 780 && t_total < 850) {
+                $('#waiting_num_notice').show();
+                {#document.getElementById('waiting_inform').style.display='block';#}
+            }
+            else {
+                $('#waiting_num_notice').hide();
+                {#document.getElementById('waiting_inform').style.display='none';#}
+            }
+        }
+
+        waiting_inform_2();
+
+        function modal_close_1() {
+            $('#modal_inform').hide();
+        }
+
+        function modal_close() {
+            $('#notes-modal').modal('hide');
+        }
+
+
     </script>
     <style>
 
