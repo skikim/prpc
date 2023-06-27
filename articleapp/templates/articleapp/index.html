@@ -16,7 +16,7 @@
     {% endif %}
 
     {% if holiday_messages %}
-        <div class="alert alert-danger" role="alert" style="margin: 0.4rem 0.8rem; padding-left: 0.2rem; padding-right: 0.2rem">
+        <div class="alert alert-danger" role="alert" style="margin: 0.4rem 0.4rem; padding-left: 0.2rem; padding-right: 0.2rem">
             {% for holiday_message in holiday_messages %}
                 <div style="text-align: center; font-size: 1.0rem">{{ holiday_message.holiday_message }}</div>
             {% endfor %}
@@ -24,7 +24,7 @@
     {% endif %}
 
 
-    <div id='waiting_num_notice' class="alert alert-warning" role="alert" style="text-align: center; margin: 0.4rem 0.8rem">
+    <div id='waiting_num_notice' class="alert alert-warning" role="alert" style="text-align: center; margin: 0.4rem 0.4rem">
         <p class="modal-title" style="font-size:1.2rem; margin-bottom: 0.8rem">선착순 대기환자 안내</p>
         <p>{{ waiting_date }} {{ waiting_time }} (현재)<br> 대기환자 : <span style="color: darkred; font-weight: bold">{{ waiting.waiting_num }}</span> / 4 명</p>
         <p>꼭!!! 집계된 시간을 체크하세요.</p>
