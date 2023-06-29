@@ -28,6 +28,7 @@
         <p class="modal-title" style="font-size:1.2rem; margin-bottom: 0.8rem">선착순 대기환자 안내</p>
         <p>{{ waiting_date }} {{ waiting_time }} (현재)<br> 대기환자 : <span style="color: darkred; font-weight: bold">{{ waiting.waiting_num }}</span> / 4 명</p>
         <p>꼭!!! 집계된 시간을 체크하세요.</p>
+{#        <p id="test123"></p>#}
     </div>
 
 
@@ -181,17 +182,31 @@
 
         {#waiting_inform();#}
 
-
+{#&& '{{ waiting_date }}'==today_date_han#}
         function waiting_inform_2() {
             var t_today = new Date();
+
+            const t_month = (t_today.getMonth() + 1).toString().padStart(2, '0');
+            const t_day = t_today.getDate().toString().padStart(2, '0');
+            const today_date_han = `${t_month}월 ${t_day}일`;
+
+            const t_hours_2 = t_today.getHours().toString().padStart(2, '0');
+            const t_hours_3 = t_hours_2.substring(0, 2)
+            const t_waiting_time_2 = '{{ waiting_time }}'
+            const t_waiting_time_3 = t_waiting_time_2.substring(0, 2)
+            const t_waiting_time_4 = (+t_waiting_time_3 + 1).toString().padStart(2, '0')
+            {#const t_minutes_2 = t_today.getMinutes().toString().padStart(2, '0');#}
+            {#const today_time_han = `${t_hours_2}시 ${t_minutes_2}분`;#}
+
             var t_hours = t_today.getHours(); // 시
+            {#document.getElementById('test123').innerText = t_waiting_time_4 +"  "+ t_waiting_time_3 +"  "+t_hours_3#}
             var t_min = t_today.getMinutes(); //분
             var t_total = (t_hours*60) + t_min;
-            if (t_total > 480 && t_total < 550) {
+            if (t_total > 479 && t_total < 550 && '{{ waiting_date }}'==today_date_han && (t_hours_3==t_waiting_time_3 || t_hours_3==t_waiting_time_4)) {
                 $('#waiting_num_notice').show();
                 {#document.getElementById('waiting_inform').style.display='block';#}
             }
-            else if (t_total > 780 && t_total < 850) {
+            else if (t_total > 769 && t_total < 850 && '{{ waiting_date }}'==today_date_han && (t_hours_3==t_waiting_time_3 || t_hours_3==t_waiting_time_4)) {
                 $('#waiting_num_notice').show();
                 {#document.getElementById('waiting_inform').style.display='block';#}
             }
