@@ -14,6 +14,9 @@ from bookingapp.decorators import booking_ownership_required
 from bookingapp.models import Booking
 import requests
 
+from noteapp.models import Note
+from django.contrib.auth.models import User
+
 # Create your views here.
 
 has_ownership = [
@@ -187,18 +190,36 @@ class BookingDetailView(DetailView):
 @login_required
 @booking_ownership_required
 def booking_delete(request, pk):
+    current_date = datetime.datetime.now().strftime("%Y-%m-%d")
+    current_time = datetime.datetime.now().strftime("%H:%M")
     booking = Booking.objects.get(pk=pk)
     booking_date = booking.booking_date
     booking_time = booking.booking_time
     user = ''
     booking_status = '예약가능'
     request_real_name = booking.user.profile.real_name
+    request_user_id = booking.user_id
     old_booking = Booking.objects.get(booking_date=booking_date, booking_time=booking_time)
     if request.method == 'POST':
         booking.delete()
         old_booking.delete()
         send_message(f"{request_real_name}님이 {booking_date} {booking_time}의 예약을 취소하셨습니다.")
         send_message_2(f"{request_real_name}님이 {booking_date} {booking_time}의 예약을 취소하셨습니다.")
+
+        time_format = "%H:%M"
+        booking_time_datetime = datetime.datetime.strptime(booking_time, time_format)
+        current_time_datetime = datetime.datetime.strptime(current_time, time_format)
+        time_diff = booking_time_datetime - current_time_datetime
+        # time_diff = current_time_datetime - booking_time_datetime
+
+        if current_date == booking_date and time_diff < timedelta(hours=2):
+            recipient_id = request_user_id
+            message = "예약 시간에 너무 임박해서 취소하셨군요. 가능하면 하루 전에, 늦어도 2시간 전에는 취소해 주시길 당부드립니다."
+            recipient = User.objects.get(id=recipient_id)
+            # recipient = User.objects.get(id=28)
+            sender = User.objects.get(id=1)
+            note = Note.objects.create(sender=sender, recipient=recipient, message=message)
+
         Booking(booking_date=booking_date, booking_time=booking_time, booking_status=booking_status).save()
         return redirect(reverse('bookingapp:detail', kwargs={'pk': booking.user.pk}))
     return render(request, 'bookingapp/delete.html', {'booking' : booking})
