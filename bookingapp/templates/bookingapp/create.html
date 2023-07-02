@@ -1269,6 +1269,10 @@
                 {#alert(selected_date)#}
                 {#console.log(selected_time)#}
             }
+            else if (document.getElementById(clicked_id).innerHTML == '{{ request.user.profile.real_name }}'){
+                window.location.href = "{% url 'bookingapp:detail' pk=user.pk %}"
+            }
+
         }
 
 

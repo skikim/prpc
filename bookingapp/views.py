@@ -17,6 +17,7 @@ import requests
 from noteapp.models import Note
 from django.contrib.auth.models import User
 
+
 # Create your views here.
 
 has_ownership = [
