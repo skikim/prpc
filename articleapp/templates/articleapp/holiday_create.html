@@ -32,9 +32,10 @@
             <div style="margin-top: 6rem">
             <h4 style="margin-bottom: 2rem">[휴가 알림 내용]</h4>
                 {% for holiday_message in holiday_messages %}
-                    <div style="display: flex; justify-content: center; margin-bottom: 1rem">
+                    <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 1rem">
+                        <div></div>
                         <div style="margin-right: 4rem"><p> {{ holiday_message.holiday_message }} </p></div>
-                        <div>
+                        <div style="flex-shrink: 0">
                             <form method="POST" action="{% url 'articleapp:holiday_message_delete' holiday_message.id %}">
                                 {% csrf_token %}
                                 <div><button type="submit" class="btn btn-danger btn-sm rounded-pill">삭제</button></div>
