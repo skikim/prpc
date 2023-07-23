@@ -1,4 +1,4 @@
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, user_passes_test
 from django.http import HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse_lazy
@@ -37,13 +37,17 @@ class WaitingUpdateView(UpdateView):
     template_name = 'articleapp/waiting_update.html'
 
 
+@login_required
 def HolidayPageView(request):
-    if request.method == 'POST':
-        holiday_message = request.POST.get('holiday_message')
-        Holiday.objects.create(holiday_message=holiday_message)
+    if request.user.is_superuser:
+        if request.method == 'POST':
+            holiday_message = request.POST.get('holiday_message')
+            Holiday.objects.create(holiday_message=holiday_message)
 
-    holiday_messages = Holiday.objects.all()
-    return render(request, 'articleapp/holiday_create.html', {'holiday_messages': holiday_messages})
+        holiday_messages = Holiday.objects.all()
+        return render(request, 'articleapp/holiday_create.html', {'holiday_messages': holiday_messages})
+    elif not request.user.is_superuser:
+        return redirect('articleapp:index')
 
 
 @login_required
