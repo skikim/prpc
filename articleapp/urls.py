@@ -1,7 +1,8 @@
 from django.urls import path
 from django.views.generic import TemplateView
 
-from articleapp.views import WaitingCreateView, WaitingUpdateView, index, HolidayPageView, delete_holiday_message
+from articleapp.views import WaitingCreateView, WaitingUpdateView, index, HolidayPageView, delete_holiday_message, \
+    HolidayUpdateView
 
 app_name = 'articleapp'
 
@@ -20,5 +21,5 @@ urlpatterns = [
     path('waiting_update/<int:pk>', WaitingUpdateView.as_view(), name='waiting_update'),
     path('holiday_create/', HolidayPageView, name='holiday_create'),
     path('holiday_message_delete/<int:holiday_message_id>/', delete_holiday_message, name='holiday_message_delete'),
-
+    path('holiday_update/<int:pk>/', HolidayUpdateView.as_view(), name='holiday_update'),
 ]

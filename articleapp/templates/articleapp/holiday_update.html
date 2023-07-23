@@ -1,0 +1,19 @@
+{%  extends 'base.html' %}
+
+{% block content %}
+    <div style="text-align: center; max-width: 600px; margin: 8rem auto;">
+        <div style="margin-bottom: 4rem">
+            <h2 style="margin-bottom: 4rem">[공휴일 안내 수정]</h2>
+        </div>
+        <div>
+            <form action="{% url 'articleapp:holiday_update' holiday_message.id %}" method="post">
+                {% csrf_token %}
+                <div>
+                    <label for="holiday_message" style="margin: 2rem">공휴일 안내:</label>
+                    <textarea name="holiday_message" id="holiday_message" class="form-control" style="margin-bottom: 2rem">{{ holiday_message.holiday_message }}</textarea>
+                </div>
+                <button type="submit" class="btn btn-primary rounded-pill col-3 mt-4">저장</button>
+            </form>
+        </div>
+    </div>
+{% endblock %}

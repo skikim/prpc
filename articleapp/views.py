@@ -1,5 +1,5 @@
 from django.contrib.auth.decorators import login_required, user_passes_test
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
@@ -9,6 +9,7 @@ from articleapp.decorators import staff_required
 from articleapp.forms import WaitingCreationForm
 from articleapp.models import Waiting, Holiday
 from noteapp.models import Note
+
 
 # Create your views here.
 
@@ -48,6 +49,22 @@ def HolidayPageView(request):
         return render(request, 'articleapp/holiday_create.html', {'holiday_messages': holiday_messages})
     elif not request.user.is_superuser:
         return redirect('articleapp:index')
+
+
+class HolidayUpdateView(UpdateView):
+    model = Holiday
+    fields = ['holiday_message']
+    template_name = 'articleapp/holiday_update.html'
+
+    def form_valid(self, form):
+        holiday_message = form.save(commit=False)
+        holiday_message.save()
+        return HttpResponseRedirect(reverse_lazy('articleapp:holiday_create'))
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['holiday_message'] = self.object
+        return context
 
 
 @login_required

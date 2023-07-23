@@ -37,7 +37,12 @@
                         <div>
                             <form method="POST" action="{% url 'articleapp:holiday_message_delete' holiday_message.id %}">
                                 {% csrf_token %}
-                                <div style="text-align: right; margin-right: 2rem"><button type="submit" class="btn btn-danger btn-sm rounded-pill">삭제</button></div>
+                                <div style="text-align: right; margin-right: 2rem">
+                                    <a href="{% url 'articleapp:holiday_update' holiday_message.id %}">
+                                        <button type="button" class="btn btn-primary btn-sm rounded-pill">수정</button>
+                                    </a>
+                                    <button type="submit" class="btn btn-danger btn-sm rounded-pill">삭제</button>
+                                </div>
                             </form>
                         </div>
                     </div>
@@ -46,4 +51,7 @@
 
         </div>
     {% endif %}
+
+
+
 {% endblock %}
