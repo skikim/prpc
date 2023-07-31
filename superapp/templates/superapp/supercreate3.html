@@ -2,202 +2,202 @@
 {% load bootstrap5 %}
 
 {% block content %}
-{% if user.is_superuser %}
-
-    <div>
-        <div style="margin-top: 8rem; margin-bottom: 2rem; text-align: center">
-            <h2>[예약 환자 메시지 관리]<a href="{% url 'noteapp:send_notes' %}"><span style="font-size: 0.8rem; margin-right: 1rem">쪽지</span></a><a href="{% url 'articleapp:holiday_create' %}"><span style="font-size: 0.8rem">공휴일</span></a></h2>
-        </div>
+    {% if user.is_superuser %}
 
         <div>
-{#            <h4 style="margin-bottom: 2rem">최신 예약 리스트</h4>#}
-        <div style="margin-bottom: 2rem; display: flex; justify-content: space-between;">
-            <div><a style="margin-left: 4rem" href="{% url 'superapp:supercreate' %}"><button type="button" class="btn btn-outline-primary btn-sm" style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .75rem;">< 1주차</button></a></div>
-            <div><a href="{% url 'superapp:supercreate2' %}"><button type="button" class="btn btn-outline-primary btn-sm" style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .75rem;">< 2주차</button></a></div>
-            <div><a href="{% url 'superapp:supercreate2_1' %}"><button type="button" class="btn btn-outline-primary btn-sm" style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .75rem;">< 3주차</button></a></div>
-            <div><a style="margin-right: 4rem" href="{% url 'superapp:supercreate4' %}"><button type="button" class="btn btn-outline-primary btn-sm" style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .75rem;">Msg2 ></button></a></div>
+            <div style="margin-top: 8rem; margin-bottom: 2rem; text-align: center">
+                <h2>[예약 환자 메시지 관리]<a href="{% url 'noteapp:send_notes' %}"><span style="font-size: 0.8rem; margin-right: 1rem">쪽지</span></a><a href="{% url 'noteapp:notes_history' %}"><span style="font-size: 0.8rem; margin-right: 1rem">쪽지기록</span></a><a href="{% url 'articleapp:holiday_create' %}"><span style="font-size: 0.8rem">공휴일</span></a></h2>
+            </div>
+
+            <div>
+                {#            <h4 style="margin-bottom: 2rem">최신 예약 리스트</h4>#}
+                <div style="margin-bottom: 2rem; display: flex; justify-content: space-between;">
+                    <div><a style="margin-left: 4rem" href="{% url 'superapp:supercreate' %}"><button type="button" class="btn btn-outline-primary btn-sm" style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .75rem;">< 1주차</button></a></div>
+                    <div><a href="{% url 'superapp:supercreate2' %}"><button type="button" class="btn btn-outline-primary btn-sm" style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .75rem;">< 2주차</button></a></div>
+                    <div><a href="{% url 'superapp:supercreate2_1' %}"><button type="button" class="btn btn-outline-primary btn-sm" style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .75rem;">< 3주차</button></a></div>
+                    <div><a style="margin-right: 4rem" href="{% url 'superapp:supercreate4' %}"><button type="button" class="btn btn-outline-primary btn-sm" style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .75rem;">Msg2 ></button></a></div>
+                </div>
+
+
+                {#            <div style="text-align: center; margin-bottom: 1rem; display: flex; justify-content: center;" >#}
+                {#                <a href="{% url 'superapp:supercreate' %}"><button type="button" class="btn btn-outline-primary" style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .75rem;">< 1주차</button></a>&emsp;&emsp;&emsp;&emsp;&emsp;#}
+                {#                <a href="{% url 'superapp:supercreate2' %}"><button type="button" class="btn btn-outline-primary" style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .75rem;">< 2주차</button></a>#}
+                {#            </div>#}
+
+                <table id="table" class="table table-striped" style="max-width: 98%; margin: 0 auto; font-size: 0.68rem">
+                    <tr style="background-color: lightsteelblue">
+                        <th>예약자</th>
+                        <th>예약날짜</th>
+                        <th>예약시간</th>
+                        <th>Phone</th>
+                        <th>생년월일</th>
+                        <th>ID</th>
+                        <th>예약상태</th>
+                    </tr>
+                    {% for book in bookings %}
+                        {% if book.user %}
+                            <tr>
+                                <td id="r{{ forloop.counter }}c1" style="cursor: pointer" onclick="input_form(this.id)">{{ book.user.profile.real_name }}</td>
+                                <td id="r{{ forloop.counter }}c2">{{ book.booking_date }}</td>
+                                <td id="r{{ forloop.counter }}c3">{{ book.booking_time }}</td>
+                                <td id="r{{ forloop.counter }}c4">{{ book.user.profile.phone_num }}</td>
+                                <td id="r{{ forloop.counter }}c5">{{ book.user.profile.birth_date }}</td>
+                                <td id="r{{ forloop.counter }}c6" style="cursor: pointer" onclick="send_note(this.id)">{% if book.user_id %}{{ book.user_id }}{% endif %}</td>
+                                <td id="r{{ forloop.counter }}c7">{{ book.booking_status }}</td>
+                            </tr>
+                        {% endif %}
+                    {% endfor %}
+                </table>
+            </div>
         </div>
 
-
-{#            <div style="text-align: center; margin-bottom: 1rem; display: flex; justify-content: center;" >#}
-{#                <a href="{% url 'superapp:supercreate' %}"><button type="button" class="btn btn-outline-primary" style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .75rem;">< 1주차</button></a>&emsp;&emsp;&emsp;&emsp;&emsp;#}
-{#                <a href="{% url 'superapp:supercreate2' %}"><button type="button" class="btn btn-outline-primary" style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .75rem;">< 2주차</button></a>#}
-{#            </div>#}
-
-            <table id="table" class="table table-striped" style="max-width: 98%; margin: 0 auto; font-size: 0.68rem">
-                <tr style="background-color: lightsteelblue">
-                    <th>예약자</th>
-                    <th>예약날짜</th>
-                    <th>예약시간</th>
-                    <th>Phone</th>
-                    <th>생년월일</th>
-                    <th>ID</th>
-                    <th>예약상태</th>
-                </tr>
-                {% for book in bookings %}
-                    {% if book.user %}
-                        <tr>
-                            <td id="r{{ forloop.counter }}c1" style="cursor: pointer" onclick="input_form(this.id)">{{ book.user.profile.real_name }}</td>
-                            <td id="r{{ forloop.counter }}c2">{{ book.booking_date }}</td>
-                            <td id="r{{ forloop.counter }}c3">{{ book.booking_time }}</td>
-                            <td id="r{{ forloop.counter }}c4">{{ book.user.profile.phone_num }}</td>
-                            <td id="r{{ forloop.counter }}c5">{{ book.user.profile.birth_date }}</td>
-                            <td id="r{{ forloop.counter }}c6" style="cursor: pointer" onclick="send_note(this.id)">{% if book.user_id %}{{ book.user_id }}{% endif %}</td>
-                            <td id="r{{ forloop.counter }}c7">{{ book.booking_status }}</td>
-                        </tr>
-                    {% endif %}
-                {% endfor %}
-            </table>
-        </div>
-    </div>
-
-    <form action="{% url 'superapp:supercreate3' %}" method="post">
-        {%  csrf_token %}
-        {#                    {% bootstrap_form form %}#}
-        <input type="text" id="rec" name="rec" style="display: none;">
-        <input type="text" id="msg" name="msg" style="display: none;">
-        <input type="text" id="name" name="name" style="display: none;">
-        <input type="text" id="date" name="date" style="display: none;">
-        <input type="text" id="time" name="time" style="display: none;">
+        <form action="{% url 'superapp:supercreate3' %}" method="post">
+            {%  csrf_token %}
+            {#                    {% bootstrap_form form %}#}
+            <input type="text" id="rec" name="rec" style="display: none;">
+            <input type="text" id="msg" name="msg" style="display: none;">
+            <input type="text" id="name" name="name" style="display: none;">
+            <input type="text" id="date" name="date" style="display: none;">
+            <input type="text" id="time" name="time" style="display: none;">
 
 
 
 
-        {#            <input type="submit" value="확인" class="btn btn-primary rounded-pill col-6 mt-4">#}
+            {#            <input type="submit" value="확인" class="btn btn-primary rounded-pill col-6 mt-4">#}
 
-        <!-- Modal -->
+            <!-- Modal -->
 
-        <div class="modal" id="modal_post" tabindex="-1">
-            <div class="modal-dialog modal-lg">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title">문자 보내기</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body" style="text-align: center">
-                        <p id="rec_display"></p>
-                        <p id="date_display"></p>
-                        <p id="time_display"></p>
-                        <div>
-                            <select class="msg_selector" id="msg_selector" name="msg_selector" onchange="change_sel()">
-                                <option value="ok" selected>승인 메세지</option>
-                                <option value="cancel">취소 메세지</option>
-                            </select>
+            <div class="modal" id="modal_post" tabindex="-1">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">문자 보내기</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                        <button type="submit" class="btn btn-primary">보내기</button>
+                        <div class="modal-body" style="text-align: center">
+                            <p id="rec_display"></p>
+                            <p id="date_display"></p>
+                            <p id="time_display"></p>
+                            <div>
+                                <select class="msg_selector" id="msg_selector" name="msg_selector" onchange="change_sel()">
+                                    <option value="ok" selected>승인 메세지</option>
+                                    <option value="cancel">취소 메세지</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-primary">보내기</button>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-    </form>
+        </form>
 
-    <form method="post" action="{% url 'noteapp:send_notes' %}">
-        {% csrf_token %}
-        <div class="modal" id="modal_note" tabindex="-1">
-            <div class="modal-dialog modal-lg">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title">쪽지 보내기</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body" style="text-align: center; padding: 1rem; margin: 4rem;">
+        <form method="post" action="{% url 'noteapp:send_notes' %}">
+            {% csrf_token %}
+            <div class="modal" id="modal_note" tabindex="-1">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">쪽지 보내기</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body" style="text-align: center; padding: 1rem; margin: 4rem;">
 
-                        <div class="form-group">
-                            <label for="recipient_id" style="margin: 2rem;">수신자:</label>
-                            <input type="number" name="recipient_id" id="recipient_id" class="form-control" style="margin-bottom: 4rem;">
+                            <div class="form-group">
+                                <label for="recipient_id" style="margin: 2rem;">수신자:</label>
+                                <input type="number" name="recipient_id" id="recipient_id" class="form-control" style="margin-bottom: 4rem;">
+                            </div>
+                            <div class="form-group">
+                                <label for="message" style="margin: 2rem">메시지:</label>
+                                <textarea name="message" id="message" class="form-control" style="margin-bottom: 4rem"></textarea>
+                            </div>
+                            <div>
+                                <p>오늘 예약한 진료가 있는 날입니다. 예약시간에 맞추어 내원해 주세요.</p>
+                                <p>병원에서 먼저 동일시간에 예약하신 분이 계셔서 승인을 해 드릴 수가 없습니다. 다른 시간으로 예약해 주시면 감사하겠습니다.</p>
+                                <p>오늘 진료가 있는 날인데 못 오셨군요. 다음에는 미리 예약을 취소해 주시길 바랍니다.</p>
+                            </div>
+                            {#                        <button type="submit" class="btn btn-primary rounded-pill">메시지 보내기</button>#}
                         </div>
-                        <div class="form-group">
-                            <label for="message" style="margin: 2rem">메시지:</label>
-                            <textarea name="message" id="message" class="form-control" style="margin-bottom: 4rem"></textarea>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-primary">보내기</button>
                         </div>
-                        <div>
-                            <p>오늘 예약한 진료가 있는 날입니다. 예약시간에 맞추어 내원해 주세요.</p>
-                            <p>병원에서 먼저 동일시간에 예약하신 분이 계셔서 승인을 해 드릴 수가 없습니다. 다른 시간으로 예약해 주시면 감사하겠습니다.</p>
-                            <p>오늘 진료가 있는 날인데 못 오셨군요. 다음에는 미리 예약을 취소해 주시길 바랍니다.</p>
-                        </div>
-{#                        <button type="submit" class="btn btn-primary rounded-pill">메시지 보내기</button>#}
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                        <button type="submit" class="btn btn-primary">보내기</button>
                     </div>
                 </div>
             </div>
-        </div>
-    </form>
+        </form>
 
 
-    <style>
-        td, th{
-            text-align: center;
-        }
-        @media screen and (max-width: 500px) {
-            html {
-                font-size: 12px;
+        <style>
+            td, th{
+                text-align: center;
             }
-        }
-    </style>
-    <script>
-        function input_form(clicked_id){
-            let row_num = clicked_id.charAt(1)
-            let col_num = clicked_id.charAt(3)
-            let name_cell = table.rows[row_num].cells[0]
-            let date_cell = table.rows[row_num].cells[1]
-            let time_cell = table.rows[row_num].cells[2]
-            let phone_cell = table.rows[row_num].cells[3]
-            let status_cell = table.rows[row_num].cells[6]
-            let selected_name = name_cell.innerText
-            let selected_date = date_cell.innerText
-            let selected_time = time_cell.innerText
-            let selected_phone = phone_cell.innerText
-            let selected_status = status_cell.innerText
-
-            $('#modal_post').modal("show");
-            var selected_msg = document.getElementById('msg_selector').value
-            document.getElementById('rec_display').innerText= 'Phone : ' + selected_phone
-            document.getElementById('date_display').innerText = '예약날짜 :  ' + selected_date
-            document.getElementById('time_display').innerText = '예약시간 :  ' + selected_time
-            document.getElementById('rec').value = selected_phone
-            document.getElementById('name').value = selected_name
-            document.getElementById('date').value = selected_date
-            document.getElementById('time').value = selected_time
-            document.getElementById('msg').value = selected_msg
-        }
-
-        function send_note(clicked_id){
-            let id_cell = document.getElementById(clicked_id)
-            let selected_id = id_cell.innerText
-            $('#modal_note').modal("show");
-            document.getElementById('recipient_id').value = selected_id
-        }
-
-
-        function change_sel(){
-            let selected_msg = document.getElementById('msg_selector').value
-            document.getElementById('msg').value = selected_msg
-        }
-
-        const table = document.getElementsByTagName("table")[0];
-        const rows = table.getElementsByTagName("tr");
-        for (let i = 0; i < rows.length; i++) {
-            const cells = rows[i].getElementsByTagName("td");
-            for (let j = 0; j < cells.length; j++) {
-                const cell = cells[j];
-                if (cell.innerText === "예약요청") {
-                    cell.style.backgroundColor = "beige";
-                }
-                if (cell.innerText === "예약승인") {
-                    cell.style.backgroundColor = "#FFDDDD";
-                }
-                if (cell.innerText === "예약가능") {
-                    cell.style.backgroundColor = "#D7E5FF";
+            @media screen and (max-width: 500px) {
+                html {
+                    font-size: 12px;
                 }
             }
-        }
+        </style>
+        <script>
+            function input_form(clicked_id){
+                let row_num = clicked_id.charAt(1)
+                let col_num = clicked_id.charAt(3)
+                let name_cell = table.rows[row_num].cells[0]
+                let date_cell = table.rows[row_num].cells[1]
+                let time_cell = table.rows[row_num].cells[2]
+                let phone_cell = table.rows[row_num].cells[3]
+                let status_cell = table.rows[row_num].cells[6]
+                let selected_name = name_cell.innerText
+                let selected_date = date_cell.innerText
+                let selected_time = time_cell.innerText
+                let selected_phone = phone_cell.innerText
+                let selected_status = status_cell.innerText
 
-    </script>
-{% endif %}
+                $('#modal_post').modal("show");
+                var selected_msg = document.getElementById('msg_selector').value
+                document.getElementById('rec_display').innerText= 'Phone : ' + selected_phone
+                document.getElementById('date_display').innerText = '예약날짜 :  ' + selected_date
+                document.getElementById('time_display').innerText = '예약시간 :  ' + selected_time
+                document.getElementById('rec').value = selected_phone
+                document.getElementById('name').value = selected_name
+                document.getElementById('date').value = selected_date
+                document.getElementById('time').value = selected_time
+                document.getElementById('msg').value = selected_msg
+            }
+
+            function send_note(clicked_id){
+                let id_cell = document.getElementById(clicked_id)
+                let selected_id = id_cell.innerText
+                $('#modal_note').modal("show");
+                document.getElementById('recipient_id').value = selected_id
+            }
+
+
+            function change_sel(){
+                let selected_msg = document.getElementById('msg_selector').value
+                document.getElementById('msg').value = selected_msg
+            }
+
+            const table = document.getElementsByTagName("table")[0];
+            const rows = table.getElementsByTagName("tr");
+            for (let i = 0; i < rows.length; i++) {
+                const cells = rows[i].getElementsByTagName("td");
+                for (let j = 0; j < cells.length; j++) {
+                    const cell = cells[j];
+                    if (cell.innerText === "예약요청") {
+                        cell.style.backgroundColor = "beige";
+                    }
+                    if (cell.innerText === "예약승인") {
+                        cell.style.backgroundColor = "#FFDDDD";
+                    }
+                    if (cell.innerText === "예약가능") {
+                        cell.style.backgroundColor = "#D7E5FF";
+                    }
+                }
+            }
+
+        </script>
+    {% endif %}
 {% endblock %}

@@ -1,0 +1,53 @@
+{%  extends 'base.html' %}
+{% load bootstrap5 %}
+
+{% block content %}
+    {% if user.is_superuser %}
+
+        <div>
+            <div style="margin-top: 8rem; margin-bottom: 2rem; text-align: center">
+                <h2>[쪽지 송수신 기록]</h2>
+            </div>
+
+            <div>
+
+                <table id="table" class="table table-striped" style="max-width: 98%; margin: 0 auto; font-size: 0.68rem">
+                    <tr style="background-color: lightsteelblue">
+                        <th>수신자</th>
+                        <th>내용</th>
+                        <th>발송일시</th>
+                        <th>확인여부</th>
+                    </tr>
+                    {% for note in notes %}
+                        {% if note %}
+                            <tr>
+                                <td id="r{{ forloop.counter }}c1">{{ note.recipient_id }} - {{ note.recipient.profile.real_name }}</td>
+                                <td id="r{{ forloop.counter }}c2">{{ note.message }}</td>
+                                <td id="r{{ forloop.counter }}c3">{{ note.timestamp }}</td>
+                                {% if note.is_read == 1 %}
+                                    <td id="r{{ forloop.counter }}c4">읽음</td>
+                                {% else %}
+                                    <td id="r{{ forloop.counter }}c4">안 읽음</td>
+                                {% endif %}
+                            </tr>
+                        {% endif %}
+                    {% endfor %}
+                </table>
+            </div>
+        </div>
+
+
+
+        <style>
+            td, th{
+                text-align: center;
+            }
+            @media screen and (max-width: 500px) {
+                html {
+                    font-size: 12px;
+                }
+            }
+        </style>
+
+    {% endif %}
+{% endblock %}

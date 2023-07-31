@@ -2,6 +2,7 @@ from django.contrib.auth.models import User
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from noteapp.models import Note
+from django.urls import reverse
 
 
 @login_required
@@ -45,3 +46,14 @@ def display_notes(request):
     return render(request, 'noteapp/display_notes.html', {'notes': notes, 'unread_notes_count': unread_notes_count})
 
 
+@login_required
+def notes_history(request):
+    if request.user.is_superuser:
+        dict_notes = Note.objects.filter(message__isnull=False).order_by('-id')[:120]
+        context = {
+            'notes': dict_notes
+        }
+
+        return render(request, 'noteapp/notes_history.html', context)
+    elif not request.user.is_superuser:
+        return redirect(reverse('articleapp:index'))

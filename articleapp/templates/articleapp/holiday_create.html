@@ -39,9 +39,9 @@
                                 {% csrf_token %}
                                 <div style="text-align: right; margin-right: 2rem">
                                     <a href="{% url 'articleapp:holiday_update' holiday_message.id %}">
-                                        <button type="button" class="btn btn-primary btn-sm rounded-pill">수정</button>
+                                        <button type="button" class="btn btn-outline-warning btn-sm rounded-pill">수정</button>
                                     </a>
-                                    <button type="submit" class="btn btn-danger btn-sm rounded-pill">삭제</button>
+                                    <button type="submit" class="btn btn-outline-danger btn-sm rounded-pill">삭제</button>
                                 </div>
                             </form>
                         </div>
