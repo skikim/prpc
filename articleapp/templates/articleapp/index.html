@@ -125,7 +125,7 @@
                                                 <div><small class="text-muted">-{{ note.sender.profile.real_name }}-  {{ note.timestamp }}</small></div>
                                                 <form method="POST" action="{% url 'noteapp:delete_notes' note.id %}" style="display: inline">
                                                     {% csrf_token %}
-                                                    <div><button type="submit" class="btn btn-danger btn-sm rounded-pill float-right">삭제</button></div>
+                                                    <div><button type="submit" class="btn btn-outline-danger btn-sm rounded-pill float-right">삭제</button></div>
                                                 </form>
                                             </div>
                                         </li>
