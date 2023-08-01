@@ -211,11 +211,10 @@ def booking_delete(request, pk):
         booking_time_datetime = datetime.datetime.strptime(booking_time, time_format)
         current_time_datetime = datetime.datetime.strptime(current_time, time_format)
         time_diff = booking_time_datetime - current_time_datetime
-        # time_diff = current_time_datetime - booking_time_datetime
-        print(booking_time_datetime, current_time_datetime, time_diff)
-        if current_date == booking_date and time_diff < timedelta(hours=2):
+
+        if f"{current_date}" == f"{booking_date}" and time_diff < timedelta(hours=2):
             recipient_id = request_user_id
-            message = f"{booking_date} {booking_time}의 예약을 예약 시간에 임박한 {current_time}에 취소하셨군요. 가능하면 하루 전에, 늦어도 2시간 전에는 꼭 취소해 주시길 당부드립니다."
+            message = f"{booking_date} {booking_time}의 예약을 {current_date} {current_time}에 취소하셨네요. 가능하면 하루 전에, 늦어도 2시간 전에는 꼭 취소해 주시길 당부드립니다."
             recipient = User.objects.get(id=recipient_id)
             # recipient = User.objects.get(id=28)
             sender = User.objects.get(id=1)
