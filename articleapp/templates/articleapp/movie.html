@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+    <div style="margin-top: 8rem;">
+        <h2 style="text-align: center;">
+            [온라인 예약하는 법 동영상 설명]
+        </h2>
+    </div>
+
+    <div style="max-width: 680px; padding: 1rem; margin: 4rem auto; line-height: 1.96">
+        <ul><a href="https://youtu.be/oXScqAxmNJw">[전체설명]</a></ul>
+        <div class="responsive-video" style="margin-bottom: 4rem">
+            <iframe width="560" height="315" src="https://www.youtube.com/embed/oXScqAxmNJw" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+        </div>
+        <li><a href="https://youtu.be/-eU8V4rOUms">홈페이지 접속방법</a></li>
+        <div class="responsive-video" style="margin-bottom: 4rem">
+            <iframe width="560" height="315" src="https://www.youtube.com/embed/-eU8V4rOUms" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+        </div>
+        <li><a href="https://youtu.be/BVBdvvqcdAg">회원 가입</a></li>
+        <div class="responsive-video" style="margin-bottom: 4rem">
+            <iframe width="560" height="315" src="https://www.youtube.com/embed/BVBdvvqcdAg" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+        </div>
+        <li><a href="https://youtu.be/YKCuf9Apqnc">내 정보 입력</a></li>
+        <div class="responsive-video" style="margin-bottom: 4rem">
+            <iframe width="560" height="315" src="https://www.youtube.com/embed/YKCuf9Apqnc" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+        </div>
+        <li><a href="https://youtu.be/NfewWKdWrTc">예약하기</a></li>
+        <div class="responsive-video" style="margin-bottom: 4rem">
+            <iframe width="560" height="315" src="https://www.youtube.com/embed/NfewWKdWrTc" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+        </div>
+        <li><a href="https://youtu.be/cKOYs2alE5A">예약 취소하기</a></li>
+        <div class="responsive-video">
+            <iframe width="560" height="315" src="https://www.youtube.com/embed/cKOYs2alE5A" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+        </div>
+    </div>
+
+
+    <style>
+        .responsive-video {
+            position: relative;
+            overflow: hidden;
+            padding-bottom: 56.25%; /* 16:9 비디오 비례 */
+        }
+
+        .responsive-video iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+    </style>
+
+
+{% endblock %}

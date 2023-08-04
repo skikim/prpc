@@ -10,6 +10,7 @@ urlpatterns = [
     # path('list/', TemplateView.as_view(template_name='articleapp/list.html'), name='list'),
     # path('', TemplateView.as_view(template_name='articleapp/index.html'), name='index'),
     path('', index, name='index'),
+    path('movie/', TemplateView.as_view(template_name='articleapp/movie.html'), name='movie'),
     path('map/', TemplateView.as_view(template_name='articleapp/map.html'), name='map'),
     path('time_op/', TemplateView.as_view(template_name='articleapp/time_op.html'), name='time_op'),
     path('index/', index, name='index'),
