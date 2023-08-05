@@ -9,13 +9,24 @@ from articleapp.decorators import staff_required
 from articleapp.forms import WaitingCreationForm
 from articleapp.models import Waiting, Holiday
 from noteapp.models import Note
-
+import datetime
+import requests
 
 # Create your views here.
+
 
 has_ownership = [
     login_required, staff_required
 ]
+
+
+def send_message(msg):
+    TARGET_URL = 'https://notify-api.line.me/api/notify'
+    TOKEN = 'xngZHmAg4YXdRgIqMb0Rq9d7jERLOwGe1Es6jd76cJo'		# 내가 발급받은 토큰
+    headers={'Authorization': 'Bearer ' + TOKEN}
+    now = datetime.datetime.now()
+    data={'message': f"[{now.strftime('%Y-%m-%d %H:%M:%S')}] {str(msg)}"}
+    response = requests.post(TARGET_URL, headers=headers, data=data)
 
 
 @method_decorator(has_ownership, 'get')
@@ -36,6 +47,13 @@ class WaitingUpdateView(UpdateView):
     form_class = WaitingCreationForm
     success_url = reverse_lazy('home')
     template_name = 'articleapp/waiting_update.html'
+
+    def form_valid(self, form):
+        response = super().form_valid(form)  # 슈퍼클래스의 form_valid 메소드를 먼저 호출합니다.
+        # waiting_num 값을 사용하여 메시지를 보냅니다.
+        waiting_num = self.object.waiting_num  # self.object를 통해 생성된 Waiting 객체에 액세스합니다.
+        send_message(f"선착순 대기 환자수 : {waiting_num}명")
+        return response
 
 
 @login_required
@@ -86,7 +104,7 @@ def delete_holiday_message(request, holiday_message_id):
 
 def index(request):
     holiday_messages = Holiday.objects.all()
-    waiting = Waiting.objects.get(id=1)
+    waiting, created = Waiting.objects.get_or_create(id=1)
     waiting_date = waiting.added_on_datetime.strftime('%m월 %d일')
     waiting_time = waiting.added_on_datetime.strftime('%H시 %M분')
     if request.user.is_authenticated:

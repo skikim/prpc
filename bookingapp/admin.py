@@ -7,6 +7,6 @@ from bookingapp.models import Booking
 
 class BookingAdmin(admin.ModelAdmin):
     list_display=('booking_date', 'booking_time', 'user', 'booking_status', 'booked_on_datetime')
-    search_fields=['booking_date', 'booking_time', 'user', 'booking_status', 'booked_on_datetime']
+    search_fields=['booking_date', 'booking_time', 'user__username', 'booking_status', 'booked_on_datetime']
 
 admin.site.register(Booking,BookingAdmin)
