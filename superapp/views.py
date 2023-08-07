@@ -17,6 +17,18 @@ import requests
 
 from noteapp.models import Note
 
+import os, environ
+from pathlib import Path
+
+
+env = environ.Env(
+    # set casting, default value
+    DEBUG=(bool, False)
+)
+BASE_DIR = Path(__file__).resolve().parent.parent.parent
+environ.Env.read_env(
+    env_file=os.path.join(BASE_DIR, '.env')
+)
 
 # Create your views here.
 has_ownership = [
@@ -26,7 +38,7 @@ has_ownership = [
 
 def aligo_sms_send(rec, msg_2):
     send_url = 'https://apis.aligo.in/send/'  # 요청을 던지는 URL, 현재는 문자보내기
-    sms_data = {'key': 'yepy36bove0jotl0pmzvga3zhuu6oovx',  # api key
+    sms_data = {'key': env('ALIGO_KEY'),
                 'userid': 'prpc8575',  # 알리고 사이트 아이디
                 'sender': '053-801-8575',  # 발신번호
                 'receiver': rec,  # 수신번호 (,활용하여 1000명까지 추가 가능)
