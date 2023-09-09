@@ -94,11 +94,16 @@ def booking(request):
             # return redirect(reverse('accountapp:detail', kwargs={'pk': request.user.pk}))
 
         if Booking.objects.filter(Q(user=user), Q(booking_date__range=(start_date, end_date)), Q(booking_status='예약승인') | Q(booking_status='예약요청')).count() < 1:
-            Booking.objects.get(booking_date=booking_date, booking_time=booking_time).delete()
-            Booking(booking_date=booking_date, booking_time=booking_time, user=user, booking_status=booking_status).save()
-            send_message(f"{request_real_name}님이 {booking_date} {booking_time}의 예약을 요청하셨습니다.")
-            send_message_2(f"{request_real_name}님이 {booking_date} {booking_time}의 예약을 요청하셨습니다.")
-            return redirect(reverse('bookingapp:detail', kwargs={'pk': user.pk}))
+            selected_booking = Booking.objects.get(booking_date=booking_date, booking_time=booking_time)
+            if selected_booking.booking_status == '예약가능':
+                selected_booking.delete()
+                Booking(booking_date=booking_date, booking_time=booking_time, user=user, booking_status=booking_status).save()
+                send_message(f"{request_real_name}님이 {booking_date} {booking_time}의 예약을 요청하셨습니다.")
+                send_message_2(f"{request_real_name}님이 {booking_date} {booking_time}의 예약을 요청하셨습니다.")
+                return redirect(reverse('bookingapp:detail', kwargs={'pk': user.pk}))
+            else:
+                errors.append('안타깝게도 예약하시는 사이 다른 분이 먼저 예약요청 버튼을 누르셨습니다. 다른 시간대를 선택해서 예약요청해 주세요.')
+                return render(request, 'bookingapp/post_write.html', {'errors': errors})
         else:
             errors.append('온라인 예약은 주 1회만 가능합니다.')
             return render(request, 'bookingapp/post_write.html', {'errors': errors})
@@ -148,11 +153,17 @@ def booking_2(request):
             # return redirect(reverse('accountapp:detail', kwargs={'pk': request.user.pk}))
 
         if Booking.objects.filter(Q(user=user), Q(booking_date__range=(start_date, end_date)), Q(booking_status='예약승인') | Q(booking_status='예약요청')).count() < 1:
-            Booking.objects.get(booking_date=booking_date, booking_time=booking_time).delete()
-            Booking(booking_date=booking_date, booking_time=booking_time, user=user, booking_status=booking_status).save()
-            send_message(f"{request_real_name}님이 {booking_date} {booking_time}의 예약을 요청하셨습니다.")
-            send_message_2(f"{request_real_name}님이 {booking_date} {booking_time}의 예약을 요청하셨습니다.")
-            return redirect(reverse('bookingapp:detail', kwargs={'pk': user.pk}))
+            selected_booking = Booking.objects.get(booking_date=booking_date, booking_time=booking_time)
+            if selected_booking.booking_status == '예약가능':
+                selected_booking.delete()
+                Booking(booking_date=booking_date, booking_time=booking_time, user=user,
+                        booking_status=booking_status).save()
+                send_message(f"{request_real_name}님이 {booking_date} {booking_time}의 예약을 요청하셨습니다.")
+                send_message_2(f"{request_real_name}님이 {booking_date} {booking_time}의 예약을 요청하셨습니다.")
+                return redirect(reverse('bookingapp:detail', kwargs={'pk': user.pk}))
+            else:
+                errors.append('예약하시는 동안 다른 분이 먼저 예약요청 버튼을 누르셨습니다. 다른 시간대를 선택해서 예약요청해 주세요.')
+                return render(request, 'bookingapp/post_write.html', {'errors': errors})
         else:
             errors.append('온라인 예약은 주 1회만 가능합니다.')
             return render(request, 'bookingapp/post_write.html', {'errors': errors})

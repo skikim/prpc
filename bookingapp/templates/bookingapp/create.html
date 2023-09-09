@@ -1042,7 +1042,7 @@
                     {% elif inform.booking_status == '예약불가' %}
                         document.getElementById('r{{ inform.booking_time }}c1').style.cursor = 'default'
                     {% elif inform.booking_status == '예약가능' %}
-                        if (bt_total_min - t_total_min < 20) {
+                        if (bt_total_min - t_total_min < 10) {
                             document.getElementById('r{{ inform.booking_time }}c1').style.backgroundColor = ''
                             document.getElementById('r{{ inform.booking_time }}c1').style.cursor = 'default'
                             document.getElementById('r{{ inform.booking_time }}c1').innerHTML = ''
