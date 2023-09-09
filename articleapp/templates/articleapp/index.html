@@ -31,9 +31,7 @@
 {#        <p id="test123"></p>#}
     </div>
 
-    <div style="text-align: center">
-        <a href="{% url 'articleapp:movie' %}">[온라인 예약 동영상 설명]</a>
-    </div>
+
     <!-- About section-->
     {#    <div id='waiting_inform' style="margin-left: 2rem; line-height: 1.96">#}
     {#        {{ waiting_date }} {{ waiting_time }} (현재)<br> 선착순 대기환자 : <span style="color: darkred; font-weight: bold">{{ waiting.waiting_num }}</span> / 4 명#}
@@ -45,6 +43,9 @@
                     <h4 style=" margin-bottom: 1rem">[예약제에 대한 안내]</h4>
                     <p class="lead" style="font-size: 1.1rem">저희 푸른통증의학과 의원은 진료대기시간을 최소화 하고자 예약제로 운영되고 있습니다. 직접 예약하실 수 있도록 홈페이지를 만들어 운영하고 있으니 많은 이용 바랍니다.</p>
                     <P>[이용방법]</P>
+                    <div style="margin-bottom: 1rem; margin-left: 1rem">
+                        <a href="{% url 'articleapp:movie' %}">[온라인 예약 동영상 설명]</a>
+                    </div>
                     <ul>
                         <li>오늘부터 2주간만 예약을 받습니다. [2주차]를 누르면 다음주의 예약도 가능합니다.</li>
                         <li>원하는 날짜와 시간에 [에약가능-파란색]이 있으면 클릭하셔서 예약하세요.</li>
