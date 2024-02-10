@@ -127,5 +127,6 @@ def index(request):
         context = {'waiting': waiting,
                    'waiting_date': waiting_date,
                    'waiting_time': waiting_time,
+                   'holiday_messages': holiday_messages,
                    }
     return render(request, 'articleapp/index.html', context)
