@@ -29,6 +29,7 @@ urlpatterns = [
     path('supers/', include('superapp.urls')),
     path('passwords/', include('passwordapp.urls')),
     path('notes/', include('noteapp.urls')),
+    path('searches/', include('searchapp.urls')),
     path('', articleapp.views.index, name='index'),
     path('home/', articleapp.views.index, name='home'),
 

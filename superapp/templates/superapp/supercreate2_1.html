@@ -6,49 +6,57 @@
 
         <div>
             <div style="margin-top: 8rem; margin-bottom: 2rem; text-align: center">
-                <h2>[관리자 페이지 3주차]</h2>
+                <h2>[관리자 페이지 3주차]<a href="{% url 'searchapp:search' %}"><span style="font-size: 0.8rem; margin-right: 1rem">환자검색</span></a></h2>
             </div>
 
-            <form action="{% url 'superapp:supercreate2_1' %}" method="post" id="my-form">
-                {%  csrf_token %}
-                {#            {% bootstrap_form form %}#}
-                <input class="date" type="date" id="date" name="date" value="" style="width: 100%; display: none;" required/>
-                <input class="time" id="time" name="time" value="" style="width: 100%; display: none;" required/>
-                <input class="status" id="status" name="status" value="" style="width: 100%; display: none;" required/>
+        <form action="{% url 'superapp:supercreate2_1' %}" method="post" id="my-form">
+            {%  csrf_token %}
+            {#            {% bootstrap_form form %}#}
+            <input class="date" type="date" id="date" name="date" value="" style="width: 100%; display: none;" required/>
+            <input class="time" id="time" name="time" value="" style="width: 100%; display: none;" required/>
+            <input class="status" id="status" name="status" value="" style="width: 100%; display: none;" required/>
+{#            <input type="number" name="recipient_id" id="recipient_id" class="form-control"></input>#}
+{#            <textarea name="message" id="message" class="form-control"></textarea>#}
 
-                {#            <input type="submit" value="확인" class="btn btn-primary rounded-pill col-6 mt-4">#}
 
-                <!-- Modal -->
 
-                <div class="modal" id="modal_post" tabindex="-1">
-                    <div class="modal-dialog">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title">예약 확인</h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                            </div>
-                            <div class="modal-body" style="text-align: center">
-                                <p id="booking_date" style="font-weight: bold; font-size: 1.1rem"></p>
-                                <p id="booking_time" style="font-weight: bold; font-size: 1.1rem"></p>
-                                <select class="status_sel" id="status_sel" name="status_sel" onchange="change_sel()" required>
-                                    <option value="예약가능" selected>예약가능</option>
-                                    <option value="예약요청">예약요청</option>
-                                    <option value="예약승인">예약승인</option>
-                                    <option value="예약불가">예약불가</option>
-                                </select>
-                            </div>
-                            <div style="text-align: center;">
-                                <span>예약자 : &nbsp </span><input type="text" class="booking_rn" id="booking_rn" name="booking_rn" style="width: 24%;">
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                <button type="submit" class="btn btn-primary">확인</button>
-                            </div>
+{#            <input type="submit" value="확인" class="btn btn-primary rounded-pill col-6 mt-4">#}
+
+            <!-- Modal -->
+
+            <div class="modal" id="modal_post" tabindex="-1">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">예약 확인</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body" style="text-align: center">
+                            <p id="booking_date" style="font-weight: bold; font-size: 1.1rem"></p>
+                            <p id="booking_time" style="font-weight: bold; font-size: 1.1rem"></p>
+                            <select class="status_sel" id="status_sel" name="status_sel" onchange="change_sel()" required>
+                                <option value="예약가능" selected>예약가능</option>
+                                <option value="예약요청">예약요청</option>
+                                <option value="예약승인">예약승인</option>
+                                <option value="예약불가">예약불가</option>
+                            </select>
+                        </div>
+                        <div style="text-align: center">
+                            <span>예약자 이름 : &nbsp </span><input type="text" class="booking_rn" id="booking_rn" name="booking_rn" style="width: 24%;">
+                        </div>
+                        <div style="text-align: center; margin-top: 1.2rem">
+                            <span>예약자 ID : &nbsp </span><input type="number" class="booking_user_id" id="booking_user_id" name="booking_user_id" style="width: 24%;">
+                        </div>
+                        <div class="modal-footer">
+                            <h2><a href="{% url 'searchapp:search' %}"><span style="font-size: 0.8rem; margin-right: 1rem">환자검색</span></a></h2>
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-primary" id="submitBtn">확인</button>
                         </div>
                     </div>
                 </div>
+            </div>
 
-            </form>
+        </form>
 
             {#        <div style="margin-bottom: 2rem">#}
             {#            <h4>[진료예약 현황]</h4>#}

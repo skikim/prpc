@@ -59,13 +59,13 @@ def superbooking(request):
     today_6 = today_1 + timedelta(days=5)
     today_7 = today_1 + timedelta(days=6)
 
-    inform_today_1 = Booking.objects.filter(booking_date = today_1.strftime('%Y-%m-%d'))
-    inform_today_2 = Booking.objects.filter(booking_date = today_2.strftime('%Y-%m-%d'))
-    inform_today_3 = Booking.objects.filter(booking_date = today_3.strftime('%Y-%m-%d'))
-    inform_today_4 = Booking.objects.filter(booking_date = today_4.strftime('%Y-%m-%d'))
-    inform_today_5 = Booking.objects.filter(booking_date = today_5.strftime('%Y-%m-%d'))
-    inform_today_6 = Booking.objects.filter(booking_date = today_6.strftime('%Y-%m-%d'))
-    inform_today_7 = Booking.objects.filter(booking_date = today_7.strftime('%Y-%m-%d'))
+    inform_today_1 = Booking.objects.filter(booking_date=today_1.strftime('%Y-%m-%d'))
+    inform_today_2 = Booking.objects.filter(booking_date=today_2.strftime('%Y-%m-%d'))
+    inform_today_3 = Booking.objects.filter(booking_date=today_3.strftime('%Y-%m-%d'))
+    inform_today_4 = Booking.objects.filter(booking_date=today_4.strftime('%Y-%m-%d'))
+    inform_today_5 = Booking.objects.filter(booking_date=today_5.strftime('%Y-%m-%d'))
+    inform_today_6 = Booking.objects.filter(booking_date=today_6.strftime('%Y-%m-%d'))
+    inform_today_7 = Booking.objects.filter(booking_date=today_7.strftime('%Y-%m-%d'))
 
     context = {'inform_today_1': inform_today_1,
                'inform_today_2': inform_today_2,
@@ -74,50 +74,75 @@ def superbooking(request):
                'inform_today_5': inform_today_5,
                'inform_today_6': inform_today_6,
                'inform_today_7': inform_today_7,
-    }
+               }
+
     if request.user.is_superuser:
-        errors = []
         if request.method == 'POST':
             booking_date = request.POST.get('date')
             booking_time = request.POST.get('time')
             booking_status = request.POST.get('status')
             booking_rn = request.POST.get('booking_rn')
+            booking_user_id = request.POST.get('booking_user_id')
             try:
-                booking = Booking.objects.get(booking_date=booking_date, booking_time=booking_time)
-                if booking_status == '예약요청':
-                    user = booking.user
+                pre_booking = Booking.objects.filter(booking_date=booking_date, booking_time=booking_time).first()
+            except:
+                pre_booking = None
+
+            if booking_status == '예약요청':
+                if booking_user_id:
+                    user = User.objects.get(id=booking_user_id)
+                    booking = Booking.objects.filter(booking_date=booking_date, booking_time=booking_time)
+                    if booking.exists():
+                        booking.delete()
+                    Booking(booking_date=booking_date, booking_time=booking_time, booking_status=booking_status,
+                                      user=user,
+                                      booking_rn=booking_rn).save()
+                else:
+                    print("예약요청자를 선택하지 않으셨습니다.")
+            elif booking_status == '예약승인':
+                if pre_booking and pre_booking.user is not None:
+                    user = pre_booking.user
+                    booking = Booking.objects.filter(booking_date=booking_date, booking_time=booking_time)
+                    if booking.exists():
+                        booking.delete()
+                    Booking(booking_date=booking_date, booking_time=booking_time,
+                                      booking_status=booking_status,
+                                      user=user, booking_rn=booking_rn).save()
+                    recipient_id = user.id
+                    message = f"{user.profile.real_name}님, {booking_date} {booking_time}의 예약이 승인되었습니다."
+                    recipient = User.objects.get(id=recipient_id)
+                    sender = request.user
+                    Note.objects.create(sender=sender, recipient=recipient, message=message)
+                elif booking_user_id:
+                    user = User.objects.get(id=booking_user_id)
+                    booking = Booking.objects.filter(booking_date=booking_date, booking_time=booking_time)
+                    if booking.exists():
+                        booking.delete()
+                    Booking(booking_date=booking_date, booking_time=booking_time, booking_status=booking_status,
+                            user=user, booking_rn=booking_rn).save()
+                    recipient_id = booking_user_id
+                    message = f"{user.profile.real_name}님, {booking_date} {booking_time}의 예약이 승인되었습니다."
+                    recipient = User.objects.get(id=recipient_id)
+                    sender = request.user
+                    Note.objects.create(sender=sender, recipient=recipient, message=message)
+                elif booking_rn:
+                    booking = Booking.objects.filter(booking_date=booking_date, booking_time=booking_time)
+                    if booking.exists():
+                        booking.delete()
+                    Booking(booking_date=booking_date, booking_time=booking_time, booking_status=booking_status,
+                            booking_rn=booking_rn).save()
+            elif booking_status == '예약가능':
+                booking = Booking.objects.filter(booking_date=booking_date, booking_time=booking_time)
+                if booking.exists():
                     booking.delete()
-                elif booking_status == '예약승인':
-                    user = booking.user
-                    recipient_id = booking.user_id
-                    if user:
-                        message = f"{user.profile.real_name}님, {booking_date} {booking_time}의 예약이 승인되었습니다."
-                        recipient = User.objects.get(id=recipient_id)
-                        sender = request.user
-                        note = Note.objects.create(sender=sender, recipient=recipient, message=message)
+                Booking(booking_date=booking_date, booking_time=booking_time, booking_status=booking_status).save()
+            elif booking_status == '예약불가':
+                booking = Booking.objects.filter(booking_date=booking_date, booking_time=booking_time)
+                if booking.exists():
                     booking.delete()
-                elif booking_status == '예약가능':
-                    booking.delete()
-                    user = None
-                elif booking_status == '예약불가':
-                    booking.delete()
-                    user = None
-            except Booking.DoesNotExist:
-                booking = None
-                user = None
-            booking_date_parse = parse(booking_date)
-            booking_date_weekday = booking_date_parse.weekday()
-            start_date = booking_date_parse - timedelta(days=booking_date_weekday)
-            end_date = booking_date_parse + timedelta(days=(5 - booking_date_weekday))
-            request_real_name = request.user.profile.real_name
-            if Booking.objects.filter(Q(user=user), Q(booking_date__range=(start_date, end_date)), Q(booking_status='예약승인') | Q(booking_status='예약요청')).count() < 1000:
-                Booking(booking_date=booking_date, booking_time=booking_time, user=user, booking_status=booking_status, booking_rn=booking_rn).save()
-                return redirect(reverse('superapp:supercreate'))
-            else:
-                errors.append('주 2회 예약이 넘었는지 확인하세요.')
-                return render(request, 'superapp/supercreate.html', {'errors': errors})
+            return redirect(reverse('superapp:supercreate'))
         return render(request, 'superapp/supercreate.html', context)
-    elif not request.user.is_superuser:
+    else:
         return redirect(reverse('articleapp:index'))
 
 
@@ -151,50 +176,73 @@ def superbooking2(request):
                'inform_today_15': inform_today_15,
                }
     if request.user.is_superuser:
-        errors = []
         if request.method == 'POST':
             booking_date = request.POST.get('date')
             booking_time = request.POST.get('time')
             booking_status = request.POST.get('status')
             booking_rn = request.POST.get('booking_rn')
+            booking_user_id = request.POST.get('booking_user_id')
             try:
-                booking = Booking.objects.get(booking_date=booking_date, booking_time=booking_time)
-                if booking_status == '예약요청':
-                    user = booking.user
-                    booking.delete()
-                elif booking_status == '예약승인':
-                    user = booking.user
-                    recipient_id = booking.user_id
-                    if user:
-                        message = f"{user.profile.real_name}님, {booking_date} {booking_time}의 예약이 승인되었습니다."
-                        recipient = User.objects.get(id=recipient_id)
-                        sender = request.user
-                        note = Note.objects.create(sender=sender, recipient=recipient, message=message)
-                    booking.delete()
-                elif booking_status == '예약가능':
-                    booking.delete()
-                    user = None
-                elif booking_status == '예약불가':
-                    booking.delete()
-                    user = None
-            except Booking.DoesNotExist:
-                booking = None
-                user = None
-            booking_date_parse = parse(booking_date)
-            booking_date_weekday = booking_date_parse.weekday()
-            start_date = booking_date_parse - timedelta(days=booking_date_weekday)
-            end_date = booking_date_parse + timedelta(days=(5 - booking_date_weekday))
-            request_real_name = request.user.profile.real_name
-            if Booking.objects.filter(Q(user=user), Q(booking_date__range=(start_date, end_date)), Q(booking_status='예약승인') | Q(booking_status='예약요청')).count() < 1000:
-                Booking(booking_date=booking_date, booking_time=booking_time, user=user, booking_status=booking_status, booking_rn=booking_rn).save()
-                return redirect(reverse('superapp:supercreate2'))
-            else:
-                errors.append('주 2회 예약이 넘었는지 확인하세요.')
-                return render(request, 'superapp/supercreate2.html', {'errors': errors})
-        return render(request, 'superapp/supercreate2.html', context)
-    elif not request.user.is_superuser:
-        return redirect(reverse('articleapp:index'))
+                pre_booking = Booking.objects.filter(booking_date=booking_date, booking_time=booking_time).first()
+            except:
+                pre_booking = None
 
+            if booking_status == '예약요청':
+                if booking_user_id:
+                    user = User.objects.get(id=booking_user_id)
+                    booking = Booking.objects.filter(booking_date=booking_date, booking_time=booking_time)
+                    if booking.exists():
+                        booking.delete()
+                    Booking(booking_date=booking_date, booking_time=booking_time, booking_status=booking_status,
+                                      user=user,
+                                      booking_rn=booking_rn).save()
+                else:
+                    print("예약요청자를 선택하지 않으셨습니다.")
+            elif booking_status == '예약승인':
+                if pre_booking and pre_booking.user is not None:
+                    user = pre_booking.user
+                    booking = Booking.objects.filter(booking_date=booking_date, booking_time=booking_time)
+                    if booking.exists():
+                        booking.delete()
+                    Booking(booking_date=booking_date, booking_time=booking_time,
+                                      booking_status=booking_status,
+                                      user=user, booking_rn=booking_rn).save()
+                    recipient_id = user.id
+                    message = f"{user.profile.real_name}님, {booking_date} {booking_time}의 예약이 승인되었습니다."
+                    recipient = User.objects.get(id=recipient_id)
+                    sender = request.user
+                    Note.objects.create(sender=sender, recipient=recipient, message=message)
+                elif booking_user_id:
+                    user = User.objects.get(id=booking_user_id)
+                    booking = Booking.objects.filter(booking_date=booking_date, booking_time=booking_time)
+                    if booking.exists():
+                        booking.delete()
+                    Booking(booking_date=booking_date, booking_time=booking_time, booking_status=booking_status,
+                            user=user, booking_rn=booking_rn).save()
+                    recipient_id = booking_user_id
+                    message = f"{user.profile.real_name}님, {booking_date} {booking_time}의 예약이 승인되었습니다."
+                    recipient = User.objects.get(id=recipient_id)
+                    sender = request.user
+                    Note.objects.create(sender=sender, recipient=recipient, message=message)
+                elif booking_rn:
+                    booking = Booking.objects.filter(booking_date=booking_date, booking_time=booking_time)
+                    if booking.exists():
+                        booking.delete()
+                    Booking(booking_date=booking_date, booking_time=booking_time, booking_status=booking_status,
+                            booking_rn=booking_rn).save()
+            elif booking_status == '예약가능':
+                booking = Booking.objects.filter(booking_date=booking_date, booking_time=booking_time)
+                if booking.exists():
+                    booking.delete()
+                Booking(booking_date=booking_date, booking_time=booking_time, booking_status=booking_status).save()
+            elif booking_status == '예약불가':
+                booking = Booking.objects.filter(booking_date=booking_date, booking_time=booking_time)
+                if booking.exists():
+                    booking.delete()
+            return redirect(reverse('superapp:supercreate2'))
+        return render(request, 'superapp/supercreate2.html', context)
+    else:
+        return redirect(reverse('articleapp:index'))
 
 @login_required
 def superbooking2_1(request):
@@ -226,48 +274,72 @@ def superbooking2_1(request):
                'inform_today_23': inform_today_23,
                }
     if request.user.is_superuser:
-        errors = []
         if request.method == 'POST':
             booking_date = request.POST.get('date')
             booking_time = request.POST.get('time')
             booking_status = request.POST.get('status')
             booking_rn = request.POST.get('booking_rn')
+            booking_user_id = request.POST.get('booking_user_id')
             try:
-                booking = Booking.objects.get(booking_date=booking_date, booking_time=booking_time)
-                if booking_status == '예약요청':
-                    user = booking.user
+                pre_booking = Booking.objects.filter(booking_date=booking_date, booking_time=booking_time).first()
+            except:
+                pre_booking = None
+
+            if booking_status == '예약요청':
+                if booking_user_id:
+                    user = User.objects.get(id=booking_user_id)
+                    booking = Booking.objects.filter(booking_date=booking_date, booking_time=booking_time)
+                    if booking.exists():
+                        booking.delete()
+                    Booking(booking_date=booking_date, booking_time=booking_time, booking_status=booking_status,
+                                      user=user,
+                                      booking_rn=booking_rn).save()
+                else:
+                    print("예약요청자를 선택하지 않으셨습니다.")
+            elif booking_status == '예약승인':
+                if pre_booking and pre_booking.user is not None:
+                    user = pre_booking.user
+                    booking = Booking.objects.filter(booking_date=booking_date, booking_time=booking_time)
+                    if booking.exists():
+                        booking.delete()
+                    Booking(booking_date=booking_date, booking_time=booking_time,
+                                      booking_status=booking_status,
+                                      user=user, booking_rn=booking_rn).save()
+                    recipient_id = user.id
+                    message = f"{user.profile.real_name}님, {booking_date} {booking_time}의 예약이 승인되었습니다."
+                    recipient = User.objects.get(id=recipient_id)
+                    sender = request.user
+                    Note.objects.create(sender=sender, recipient=recipient, message=message)
+                elif booking_user_id:
+                    user = User.objects.get(id=booking_user_id)
+                    booking = Booking.objects.filter(booking_date=booking_date, booking_time=booking_time)
+                    if booking.exists():
+                        booking.delete()
+                    Booking(booking_date=booking_date, booking_time=booking_time, booking_status=booking_status,
+                            user=user, booking_rn=booking_rn).save()
+                    recipient_id = booking_user_id
+                    message = f"{user.profile.real_name}님, {booking_date} {booking_time}의 예약이 승인되었습니다."
+                    recipient = User.objects.get(id=recipient_id)
+                    sender = request.user
+                    Note.objects.create(sender=sender, recipient=recipient, message=message)
+                elif booking_rn:
+                    booking = Booking.objects.filter(booking_date=booking_date, booking_time=booking_time)
+                    if booking.exists():
+                        booking.delete()
+                    Booking(booking_date=booking_date, booking_time=booking_time, booking_status=booking_status,
+                            booking_rn=booking_rn).save()
+            elif booking_status == '예약가능':
+                booking = Booking.objects.filter(booking_date=booking_date, booking_time=booking_time)
+                if booking.exists():
                     booking.delete()
-                elif booking_status == '예약승인':
-                    user = booking.user
-                    recipient_id = booking.user_id
-                    if user:
-                        message = f"{user.profile.real_name}님, {booking_date} {booking_time}의 예약이 승인되었습니다."
-                        recipient = User.objects.get(id=recipient_id)
-                        sender = request.user
-                        note = Note.objects.create(sender=sender, recipient=recipient, message=message)
+                Booking(booking_date=booking_date, booking_time=booking_time, booking_status=booking_status).save()
+            elif booking_status == '예약불가':
+                booking = Booking.objects.filter(booking_date=booking_date, booking_time=booking_time)
+                if booking.exists():
                     booking.delete()
-                elif booking_status == '예약가능':
-                    booking.delete()
-                    user = None
-                elif booking_status == '예약불가':
-                    booking.delete()
-                    user = None
-            except Booking.DoesNotExist:
-                booking = None
-                user = None
-            booking_date_parse = parse(booking_date)
-            booking_date_weekday = booking_date_parse.weekday()
-            start_date = booking_date_parse - timedelta(days=booking_date_weekday)
-            end_date = booking_date_parse + timedelta(days=(5 - booking_date_weekday))
-            request_real_name = request.user.profile.real_name
-            if Booking.objects.filter(Q(user=user), Q(booking_date__range=(start_date, end_date)), Q(booking_status='예약승인') | Q(booking_status='예약요청')).count() < 1000:
-                Booking(booking_date=booking_date, booking_time=booking_time, user=user, booking_status=booking_status, booking_rn=booking_rn).save()
-                return redirect(reverse('superapp:supercreate2_1'))
-            else:
-                errors.append('주 2회 예약이 넘었는지 확인하세요.')
-                return render(request, 'superapp/supercreate2_1.html', {'errors': errors})
+            return redirect(reverse('superapp:supercreate2_1'))
         return render(request, 'superapp/supercreate2_1.html', context)
-    elif not request.user.is_superuser:
+    else:
         return redirect(reverse('articleapp:index'))
 
 
