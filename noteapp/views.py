@@ -3,7 +3,8 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from noteapp.models import Note
 from django.urls import reverse
-
+from django.http import JsonResponse
+from django.views.decorators.http import require_POST
 
 @login_required
 def send_note(request):
@@ -29,10 +30,12 @@ def delete_note(request, note_id):
     return redirect('noteapp:display_notes')
 
 
-# @login_required
-# def delete_all_notes(request):
-#     Note.objects.filter(recipient=request.user).delete()
-#     return redirect('home')
+@require_POST
+def delete_note_ajax(request, note_id):
+    note = get_object_or_404(Note, id=note_id)
+    if request.user == note.recipient:
+        note.delete()
+    return JsonResponse({"success": True})
 
 
 @login_required

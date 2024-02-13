@@ -121,14 +121,22 @@
                         <div class="modal-body">
                             <ul class="list-group">
                                 {% for note in notes reversed %}
-                                    <div style="margin: 0.2rem 0">
+                                    <div class="note-element" style="margin: 0.2rem 0">
                                         <li class="list-group-item {% if not note.is_read %}list-group-item-warning{% endif %}">
                                             <p>{{ note.message }}</p>
                                             <div style="display: flex; justify-content: space-between">
-                                                <div><small class="text-muted">-{{ note.sender.profile.real_name }}-  {{ note.timestamp }}</small></div>
-                                                <form method="POST" action="{% url 'noteapp:delete_notes' note.id %}" style="display: inline">
+                                                <div><small
+                                                        class="text-muted">-{{ note.sender.profile.real_name }}- {{ note.timestamp }}</small>
+                                                </div>
+                                                <form method="POST" action="{% url 'noteapp:delete_notes' note.id %}"
+                                                      style="display: inline">
                                                     {% csrf_token %}
-                                                    <div><button type="submit" class="btn btn-outline-danger btn-sm rounded-pill float-right">삭제</button></div>
+                                                    <div>
+                                                        <button type="submit"
+                                                                class="btn btn-outline-danger btn-sm rounded-pill float-right delete-note-button"
+                                                                data-note-id="{{ note.id }}">삭제
+                                                        </button>
+                                                    </div>
                                                 </form>
                                             </div>
                                         </li>
@@ -150,6 +158,33 @@
                 $(function() {
                     $('#notes-modal').modal('show');
                 });
+
+                $(document).ready(function () {
+                    $(".delete-note-button").click(function (e) {
+                        e.preventDefault();
+                        var noteId = $(this).data("note-id");
+                        var noteElement = $(this).closest(".note-element");
+                        $.ajax({
+                            url: "{% url 'noteapp:delete_note_ajax' note_id=0 %}".replace('0', noteId),
+                            method: "POST",
+                            data: {
+                                csrfmiddlewaretoken: "{{ csrf_token }}"
+                            },
+                            success: function (data) {
+                                if (data.success) {
+                                    noteElement.remove();
+                                }
+                            }
+                        });
+                    });
+                });
+
+                $(document).ready(function () {
+                    $('#notes-modal').on('hidden.bs.modal', function (e) {
+                        location.reload();
+                    });
+                });
+
             </script>
         {% endif %}
     </div>
@@ -228,7 +263,6 @@
         function modal_close() {
             $('#notes-modal').modal('hide');
         }
-
 
     </script>
     <style>
