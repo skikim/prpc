@@ -1,4 +1,4 @@
-{%  extends 'base.html' %}
+{% extends 'base.html' %}
 {% load bootstrap5 %}
 
 {% block content %}
@@ -6,74 +6,117 @@
 
         <div>
             <div style="margin-top: 8rem; margin-bottom: 2rem; text-align: center">
-                <h2>[관리자 페이지 3주차]<a href="{% url 'searchapp:search' %}"><span style="font-size: 0.8rem; margin-right: 1rem">환자검색</span></a></h2>
+                <h2>[관리자 페이지 3주차]<a href="{% url 'searchapp:searchpage' %}"><span
+                        style="font-size: 0.8rem; margin-right: 1rem">환자검색</span></a></h2>
             </div>
 
-        <form action="{% url 'superapp:supercreate2_1' %}" method="post" id="my-form">
-            {%  csrf_token %}
-            {#            {% bootstrap_form form %}#}
-            <input class="date" type="date" id="date" name="date" value="" style="width: 100%; display: none;" required/>
-            <input class="time" id="time" name="time" value="" style="width: 100%; display: none;" required/>
-            <input class="status" id="status" name="status" value="" style="width: 100%; display: none;" required/>
-{#            <input type="number" name="recipient_id" id="recipient_id" class="form-control"></input>#}
-{#            <textarea name="message" id="message" class="form-control"></textarea>#}
+            <form action="{% url 'superapp:supercreate2_1' %}" method="post" id="my-form">
+                {% csrf_token %}
+                {#            {% bootstrap_form form %}#}
+                <input class="date" type="date" id="date" name="date" value="" style="width: 100%; display: none;"
+                       required/>
+                <input class="time" id="time" name="time" value="" style="width: 100%; display: none;" required/>
+                <input class="status" id="status" name="status" value="" style="width: 100%; display: none;" required/>
 
+                <!-- Modal -->
+                <div class="modal" id="modal_post" tabindex="-1">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">예약 확인</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                        aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body" style="text-align: center">
+                                <p id="booking_date" style="font-weight: bold; font-size: 1.1rem"></p>
+                                <p id="booking_time" style="font-weight: bold; font-size: 1.1rem"></p>
+                                <select class="form-select" id="status_sel" name="status_sel" onchange="change_sel()"
+                                        required>
+                                    <option value="예약가능" selected>예약가능</option>
+                                    <option value="예약요청">예약요청</option>
+                                    <option value="예약승인">예약승인</option>
+                                    <option value="예약불가">예약불가</option>
+                                </select>
+                            </div>
+                            <div style="text-align: center">
+                                <span>예약자 이름 : &nbsp </span><input type="text" class="booking_rn" id="booking_rn"
+                                                                   name="booking_rn" style="width: 24%;">
+                            </div>
+                            <div style="text-align: center; margin-top: 1.2rem">
+                                <span>예약자 ID : &nbsp </span><input type="number" class="booking_user_id"
+                                                                   id="booking_user_id" name="booking_user_id"
+                                                                   style="width: 24%;">
+                            </div>
 
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-info" id="sw_btn">검색</button>
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                <button type="submit" class="btn btn-primary" id="submitBtn">확인</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
 
-{#            <input type="submit" value="확인" class="btn btn-primary rounded-pill col-6 mt-4">#}
 
             <!-- Modal -->
-
-            <div class="modal" id="modal_post" tabindex="-1">
-                <div class="modal-dialog">
+            <div class="modal" id="result_modal" tabindex="-1">
+                <div class="modal-dialog modal-lg modal-dialog-scrollable">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <h5 class="modal-title">예약 확인</h5>
+                            <h5 class="modal-title">검색 결과</h5>
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
-                        <div class="modal-body" style="text-align: center">
-                            <p id="booking_date" style="font-weight: bold; font-size: 1.1rem"></p>
-                            <p id="booking_time" style="font-weight: bold; font-size: 1.1rem"></p>
-                            <select class="status_sel" id="status_sel" name="status_sel" onchange="change_sel()" required>
-                                <option value="예약가능" selected>예약가능</option>
-                                <option value="예약요청">예약요청</option>
-                                <option value="예약승인">예약승인</option>
-                                <option value="예약불가">예약불가</option>
-                            </select>
-                        </div>
-                        <div style="text-align: center">
-                            <span>예약자 이름 : &nbsp </span><input type="text" class="booking_rn" id="booking_rn" name="booking_rn" style="width: 24%;">
-                        </div>
-                        <div style="text-align: center; margin-top: 1.2rem">
-                            <span>예약자 ID : &nbsp </span><input type="number" class="booking_user_id" id="booking_user_id" name="booking_user_id" style="width: 24%;">
+                        <div class="modal-body">
+                            <form id="searchForm" method="POST">
+                                {% csrf_token %}
+                                <div class="input-group mb-3">
+                                    <input type="text" class="form-control" id="search_term" name="search_term"
+                                           placeholder="환자이름, 폰번호, 생년월일6자리"
+                                           aria-label="환자 이름" aria-describedby="button-addon2">
+                                    <button class="btn btn-outline-primary" type="submit" value="Submit"
+                                            id="search_button">확인
+                                    </button>
+                                </div>
+                            </form>
+                            <div id="searchResults" style="margin-top: 4rem">
+                                <!-- 검색 결과가 여기에 표시됩니다 -->
+                            </div>
                         </div>
                         <div class="modal-footer">
-                            <h2><a href="{% url 'searchapp:search' %}"><span style="font-size: 0.8rem; margin-right: 1rem">환자검색</span></a></h2>
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                            <button type="submit" class="btn btn-primary" id="submitBtn">확인</button>
+                            <button type="button" class="btn btn-primary">Save changes</button>
                         </div>
                     </div>
                 </div>
             </div>
-
-        </form>
-
-            {#        <div style="margin-bottom: 2rem">#}
-            {#            <h4>[진료예약 현황]</h4>#}
-            {#        </div>#}
-            <div>
-                {#            1. 원하는 날짜와 시간의 '예약가능'(파란색) 칸을 클릭하셔서 예약하세요.<br><br>#}
-                {#            2. 예약신청 하시면 '예약요청'(노란색)으로 바뀝니다.<br><br>#}
-                {#            3. 영업일 기준 2시간 이내 승인되며(토,일, 공휴일 제외) '예약승인'(붉은색)으로 바뀝니다.<br><br>#}
-                {#            3. 예약취소 및 변경은 상단의 '나의 예약정보'에서 가능합니다.#}
-            </div>
         </div>
+
         <div style="margin-bottom: 2rem; display: flex; justify-content: space-between;">
-            <div><a style="margin-left: 4rem" href="{% url 'superapp:supercreate' %}"><button type="button" class="btn btn-outline-primary btn-sm" style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .75rem;">< 1주차</button></a></div>
-            <div><a href="{% url 'superapp:supercreate2' %}"><button type="button" class="btn btn-outline-primary btn-sm" style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .75rem;">< 2주차</button></a></div>
-            <div><a href="{% url 'superapp:supercreate3' %}"><button type="button" class="btn btn-outline-primary btn-sm" style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .75rem;">Msg ></button></a></div>
-            <div><a style="margin-right: 4rem" href="{% url 'superapp:supercreate4' %}"><button type="button" class="btn btn-outline-primary btn-sm" style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .75rem;">Msg2 ></button></a></div>
+            <div><a style="margin-left: 4rem" href="{% url 'superapp:supercreate' %}">
+                <button type="button" class="btn btn-outline-primary btn-sm"
+                        style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .75rem;">< 1주차
+                </button>
+            </a></div>
+            <div><a href="{% url 'superapp:supercreate2' %}">
+                <button type="button" class="btn btn-outline-primary btn-sm"
+                        style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .75rem;">< 2주차
+                </button>
+            </a></div>
+            <div><a href="{% url 'superapp:supercreate3' %}">
+                <button type="button" class="btn btn-outline-primary btn-sm"
+                        style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .75rem;">Msg >
+                </button>
+            </a></div>
+            <div><a style="margin-right: 4rem" href="{% url 'superapp:supercreate4' %}">
+                <button type="button" class="btn btn-outline-primary btn-sm"
+                        style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .75rem;">Msg2
+                    >
+                </button>
+            </a></div>
         </div>
+
+
         <div>
             <table id="table" class="table table-striped" style="width:98%; margin: 0 auto; ">
                 <tr>
@@ -1053,26 +1096,119 @@
             </table>
         </div>
 
+
         <div style="margin: 2rem 0; display: flex; justify-content: space-between;">
-            <div><a style="margin-left: 4rem" href="{% url 'superapp:supercreate' %}"><button type="button" class="btn btn-outline-primary btn-sm" style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .75rem;">< 1주차</button></a></div>
-            <div><a href="{% url 'superapp:supercreate2' %}"><button type="button" class="btn btn-outline-primary btn-sm" style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .75rem;">< 2주차</button></a></div>
-            <div><a href="{% url 'superapp:supercreate3' %}"><button type="button" class="btn btn-outline-primary btn-sm" style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .75rem;">Msg ></button></a></div>
-            <div><a style="margin-right: 4rem" href="{% url 'superapp:supercreate4' %}"><button type="button" class="btn btn-outline-primary btn-sm" style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .75rem;">Msg2 ></button></a></div>
+            <div><a style="margin-left: 4rem" href="{% url 'superapp:supercreate' %}">
+                <button type="button" class="btn btn-outline-primary btn-sm"
+                        style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .75rem;">< 1주차
+                </button>
+            </a></div>
+            <div><a href="{% url 'superapp:supercreate2' %}">
+                <button type="button" class="btn btn-outline-primary btn-sm"
+                        style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .75rem;">< 2주차
+                </button>
+            </a></div>
+            <div><a href="{% url 'superapp:supercreate3' %}">
+                <button type="button" class="btn btn-outline-primary btn-sm"
+                        style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .75rem;">Msg >
+                </button>
+            </a></div>
+            <div><a style="margin-right: 4rem" href="{% url 'superapp:supercreate4' %}">
+                <button type="button" class="btn btn-outline-primary btn-sm"
+                        style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .75rem;">Msg2
+                    >
+                </button>
+            </a></div>
         </div>
 
+
         <style>
-            td{
-                text-align: center; cursor: pointer;
+            td {
+                text-align: center;
+                cursor: pointer;
             }
+
             @media screen and (max-width: 500px) {
                 html {
                     font-size: 12px;
                 }
             }
+
+            #modal_post {
+                position: fixed;
+                top: 4%;
+                /* other styles */
+            }
+
+            #result_modal {
+                position: fixed;
+                top: 44%;
+                /* other styles */
+            }
+
+            #status_sel {
+                text-align: center;
+                /* For Firefox */
+                -moz-appearance: none;
+                /* For Chrome */
+                -webkit-appearance: none;
+                appearance: none;
+            }
+
+            #status_sel {
+                display: block;
+                margin-left: auto;
+                margin-right: auto;
+                width: 50%; /* 원하는 너비를 설정하세요. */
+            }
+
         </style>
 
 
         <script>
+            $(document).ready(function () {
+                $("#searchForm").submit(function (e) {
+                    e.preventDefault();
+                    $.ajax({
+                        url: "{% url 'searchapp:search' %}",
+                        type: "POST",
+                        data: {search_term: $("#search_term").val()},
+                        success: function (data) {
+                            var html = "<h3>Results:</h3>";
+                            if (data.data.length > 0) {
+                                html += "<table id='result_table' class='table table-striped table-bordered'><tr><th>User ID</th><th>User Name</th><th>Birth Date</th><th>Phone Number</th><th>Chart Number</th></tr>";
+                                for (var i = 0; i < data.data.length; i++) {
+                                    var profile = data.data[i];
+                                    html += "<tr><td style='color: darkred; font-weight: bold;'>" + profile.user_id + "</td><td>" + profile.real_name + "</td><td>" + profile.birth_date + "</td><td>" + profile.phone_num + "</td><td>" + profile.chart_num + "</td></tr>";
+                                }
+                                html += "</table>";
+                            } else {
+                                html += "<h5 style='text-align: center'>\"" + data.search_term + "\"으로 검색하신 분이 없습니다.</h5>";
+                            }
+                            $("#searchResults").html(html);
+                        }
+                    });
+                });
+            });
+
+            $(document).ready(function () {
+                $("#sw_btn").click(function () {
+                    $("#result_modal").modal('show');
+                });
+            });
+
+            $(document).ready(function () {
+                // Add click event handler to each row in the table
+                $(document).on('click', '#result_table tr', function () {
+                    // Get the user_id from the first cell of the clicked row
+                    var user_id = $(this).find("td:first").text();
+                    // Set the user_id in the input field of modal_post
+                    $("#booking_user_id").val(user_id);
+                    // Close the result_modal
+                    $("#result_modal").modal('hide');
+                });
+            });
+
             document.getElementById('table').style.fontSize = '0.68rem';
 
             const mycells = document.getElementsByTagName("td");
@@ -1125,7 +1261,8 @@
                 day = day >= 10 ? day : '0' + day;
                 return date.getFullYear() + '-' + month + '-' + day
             }
-            var week = new Array( '일', '월', '화', '수', '목', '금', '토');
+
+            var week = new Array('일', '월', '화', '수', '목', '금', '토');
 
             var today = new Date();
             var today_15 = new Date(today.setDate(today.getDate() + 15));
@@ -1220,7 +1357,7 @@
             }
 
 
-            function input_objects_16(){
+            function input_objects_16() {
                 {% for inform in inform_today_16 %}
                     {% if inform.booking_status == '예약승인' %}
                         document.getElementById('r{{ inform.booking_time }}c1').style.backgroundColor = 'lightpink'
@@ -1244,7 +1381,8 @@
                     {% endif %}
                 {% endfor %}
             }
-            function input_objects_17(){
+
+            function input_objects_17() {
                 {% for inform in inform_today_17 %}
                     {% if inform.booking_status == '예약승인' %}
                         document.getElementById('r{{ inform.booking_time }}c2').style.backgroundColor = 'lightpink'
@@ -1268,7 +1406,8 @@
                     {% endif %}
                 {% endfor %}
             }
-            function input_objects_18(){
+
+            function input_objects_18() {
                 {% for inform in inform_today_18 %}
                     {% if inform.booking_status == '예약승인' %}
                         document.getElementById('r{{ inform.booking_time }}c3').style.backgroundColor = 'lightpink'
@@ -1292,7 +1431,8 @@
                     {% endif %}
                 {% endfor %}
             }
-            function input_objects_19(){
+
+            function input_objects_19() {
                 {% for inform in inform_today_19 %}
                     {% if inform.booking_status == '예약승인' %}
                         document.getElementById('r{{ inform.booking_time }}c4').style.backgroundColor = 'lightpink'
@@ -1316,7 +1456,8 @@
                     {% endif %}
                 {% endfor %}
             }
-            function input_objects_20(){
+
+            function input_objects_20() {
                 {% for inform in inform_today_20 %}
                     {% if inform.booking_status == '예약승인' %}
                         document.getElementById('r{{ inform.booking_time }}c5').style.backgroundColor = 'lightpink'
@@ -1340,7 +1481,8 @@
                     {% endif %}
                 {% endfor %}
             }
-            function input_objects_21(){
+
+            function input_objects_21() {
                 {% for inform in inform_today_21 %}
                     {% if inform.booking_status == '예약승인' %}
                         document.getElementById('r{{ inform.booking_time }}c6').style.backgroundColor = 'lightpink'
@@ -1364,7 +1506,8 @@
                     {% endif %}
                 {% endfor %}
             }
-            function input_objects_22(){
+
+            function input_objects_22() {
                 {% for inform in inform_today_22 %}
                     {% if inform.booking_status == '예약승인' %}
                         document.getElementById('r{{ inform.booking_time }}c7').style.backgroundColor = 'lightpink'
@@ -1388,7 +1531,8 @@
                     {% endif %}
                 {% endfor %}
             }
-            function input_objects_23(){
+
+            function input_objects_23() {
                 {% for inform in inform_today_23 %}
                     {% if inform.booking_status == '예약승인' %}
                         document.getElementById('r{{ inform.booking_time }}c8').style.backgroundColor = 'lightpink'
@@ -1414,7 +1558,7 @@
             }
 
 
-            function input_form(clicked_id){
+            function input_form(clicked_id) {
                 let selected_time = clicked_id.substring(1, 6)
                 let col_num = clicked_id.charAt(7)
                 let date_cell = table.rows[0].cells[col_num]
@@ -1425,19 +1569,19 @@
                 document.getElementById('date').value = selected_date
                 document.getElementById('time').value = selected_time
                 document.getElementById('status').value = selected_status
-                document.getElementById('booking_date').innerText= '예약날짜 :  ' + selected_date
+                document.getElementById('booking_date').innerText = '예약날짜 :  ' + selected_date
                 document.getElementById('booking_time').innerText = '예약시간 :  ' + selected_time
                 document.getElementById('booking_status').innerText = '예약상태 :  ' + selected_status
             }
 
 
-            function change_sel(){
+            function change_sel() {
                 let selected_status = document.getElementById('status_sel').value
                 document.getElementById('status').value = selected_status
             }
 
 
-            function find_cell(){
+            function find_cell() {
                 {#table = document.getElementById('table')#}
                 let td = table.rows[4].cells[4];
                 td.style.backgroundColor = "red"; // 강조
