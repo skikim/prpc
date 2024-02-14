@@ -5,7 +5,6 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.db.models import Q
 from django.http import HttpResponse, HttpResponseForbidden
-
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse, reverse_lazy
 from django.utils.decorators import method_decorator
@@ -14,11 +13,10 @@ from django.views.generic import DetailView, DeleteView
 from bookingapp.decorators import booking_ownership_required
 from bookingapp.models import Booking
 import requests
-
 from noteapp.models import Note
-
 import os, environ
 from pathlib import Path
+from django.contrib import messages
 
 
 env = environ.Env(
@@ -88,17 +86,21 @@ def superbooking(request):
             except:
                 pre_booking = None
 
+            user = None
             if booking_status == '예약요청':
                 if booking_user_id:
-                    user = User.objects.get(id=booking_user_id)
+                    try:
+                        user = User.objects.get(id=booking_user_id)
+                    except User.DoesNotExist:
+                        return HttpResponse("그런 ID는 없습니다.")
                     booking = Booking.objects.filter(booking_date=booking_date, booking_time=booking_time)
                     if booking.exists():
                         booking.delete()
                     Booking(booking_date=booking_date, booking_time=booking_time, booking_status=booking_status,
-                                      user=user,
-                                      booking_rn=booking_rn).save()
+                            user=user,
+                            booking_rn=booking_rn).save()
                 else:
-                    print("예약요청자를 선택하지 않으셨습니다.")
+                    return HttpResponse("예약요청자를 선택하지 않으셨습니다.")
             elif booking_status == '예약승인':
                 if pre_booking and pre_booking.user is not None:
                     user = pre_booking.user
@@ -114,7 +116,10 @@ def superbooking(request):
                     sender = request.user
                     Note.objects.create(sender=sender, recipient=recipient, message=message)
                 elif booking_user_id:
-                    user = User.objects.get(id=booking_user_id)
+                    try:
+                        user = User.objects.get(id=booking_user_id)
+                    except User.DoesNotExist:
+                        return HttpResponse("그런 ID는 없습니다.")
                     booking = Booking.objects.filter(booking_date=booking_date, booking_time=booking_time)
                     if booking.exists():
                         booking.delete()
@@ -125,7 +130,9 @@ def superbooking(request):
                     recipient = User.objects.get(id=recipient_id)
                     sender = request.user
                     Note.objects.create(sender=sender, recipient=recipient, message=message)
-                elif booking_rn:
+                elif not booking_rn and not booking_user_id:
+                    return HttpResponse("예약승인자를 선택하지 않으셨습니다.")
+                elif booking_rn and not booking_user_id:
                     booking = Booking.objects.filter(booking_date=booking_date, booking_time=booking_time)
                     if booking.exists():
                         booking.delete()
@@ -187,17 +194,21 @@ def superbooking2(request):
             except:
                 pre_booking = None
 
+            user = None
             if booking_status == '예약요청':
                 if booking_user_id:
-                    user = User.objects.get(id=booking_user_id)
+                    try:
+                        user = User.objects.get(id=booking_user_id)
+                    except User.DoesNotExist:
+                        return HttpResponse("그런 ID는 없습니다.")
                     booking = Booking.objects.filter(booking_date=booking_date, booking_time=booking_time)
                     if booking.exists():
                         booking.delete()
                     Booking(booking_date=booking_date, booking_time=booking_time, booking_status=booking_status,
-                                      user=user,
-                                      booking_rn=booking_rn).save()
+                            user=user,
+                            booking_rn=booking_rn).save()
                 else:
-                    print("예약요청자를 선택하지 않으셨습니다.")
+                    return HttpResponse("예약요청자를 선택하지 않으셨습니다.")
             elif booking_status == '예약승인':
                 if pre_booking and pre_booking.user is not None:
                     user = pre_booking.user
@@ -213,7 +224,10 @@ def superbooking2(request):
                     sender = request.user
                     Note.objects.create(sender=sender, recipient=recipient, message=message)
                 elif booking_user_id:
-                    user = User.objects.get(id=booking_user_id)
+                    try:
+                        user = User.objects.get(id=booking_user_id)
+                    except User.DoesNotExist:
+                        return HttpResponse("그런 ID는 없습니다.")
                     booking = Booking.objects.filter(booking_date=booking_date, booking_time=booking_time)
                     if booking.exists():
                         booking.delete()
@@ -224,7 +238,9 @@ def superbooking2(request):
                     recipient = User.objects.get(id=recipient_id)
                     sender = request.user
                     Note.objects.create(sender=sender, recipient=recipient, message=message)
-                elif booking_rn:
+                elif not booking_rn and not booking_user_id:
+                    return HttpResponse("예약승인자를 선택하지 않으셨습니다.")
+                elif booking_rn and not booking_user_id:
                     booking = Booking.objects.filter(booking_date=booking_date, booking_time=booking_time)
                     if booking.exists():
                         booking.delete()
@@ -243,6 +259,7 @@ def superbooking2(request):
         return render(request, 'superapp/supercreate2.html', context)
     else:
         return redirect(reverse('articleapp:index'))
+
 
 @login_required
 def superbooking2_1(request):
@@ -285,17 +302,21 @@ def superbooking2_1(request):
             except:
                 pre_booking = None
 
+            user = None
             if booking_status == '예약요청':
                 if booking_user_id:
-                    user = User.objects.get(id=booking_user_id)
+                    try:
+                        user = User.objects.get(id=booking_user_id)
+                    except User.DoesNotExist:
+                        return HttpResponse("그런 ID는 없습니다.")
                     booking = Booking.objects.filter(booking_date=booking_date, booking_time=booking_time)
                     if booking.exists():
                         booking.delete()
                     Booking(booking_date=booking_date, booking_time=booking_time, booking_status=booking_status,
-                                      user=user,
-                                      booking_rn=booking_rn).save()
+                            user=user,
+                            booking_rn=booking_rn).save()
                 else:
-                    print("예약요청자를 선택하지 않으셨습니다.")
+                    return HttpResponse("예약요청자를 선택하지 않으셨습니다.")
             elif booking_status == '예약승인':
                 if pre_booking and pre_booking.user is not None:
                     user = pre_booking.user
@@ -311,7 +332,10 @@ def superbooking2_1(request):
                     sender = request.user
                     Note.objects.create(sender=sender, recipient=recipient, message=message)
                 elif booking_user_id:
-                    user = User.objects.get(id=booking_user_id)
+                    try:
+                        user = User.objects.get(id=booking_user_id)
+                    except User.DoesNotExist:
+                        return HttpResponse("그런 ID는 없습니다.")
                     booking = Booking.objects.filter(booking_date=booking_date, booking_time=booking_time)
                     if booking.exists():
                         booking.delete()
@@ -322,7 +346,9 @@ def superbooking2_1(request):
                     recipient = User.objects.get(id=recipient_id)
                     sender = request.user
                     Note.objects.create(sender=sender, recipient=recipient, message=message)
-                elif booking_rn:
+                elif not booking_rn and not booking_user_id:
+                    return HttpResponse("예약승인자를 선택하지 않으셨습니다.")
+                elif booking_rn and not booking_user_id:
                     booking = Booking.objects.filter(booking_date=booking_date, booking_time=booking_time)
                     if booking.exists():
                         booking.delete()
@@ -341,7 +367,6 @@ def superbooking2_1(request):
         return render(request, 'superapp/supercreate2_1.html', context)
     else:
         return redirect(reverse('articleapp:index'))
-
 
 
 @login_required

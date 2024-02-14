@@ -1117,8 +1117,16 @@
                     var user_id = $(this).find("td:first").text();
                     // Set the user_id in the input field of modal_post
                     $("#booking_user_id").val(user_id);
+                    $("#booking_rn").val(1);
                     // Close the result_modal
                     $("#result_modal").modal('hide');
+                });
+            });
+
+            $(document).ready(function () {
+                $("#booking_user_id").on('input', function () {
+                    // Set the value of booking_rn input field to "1"
+                    $("#booking_rn").val("1");
                 });
             });
 
@@ -1475,5 +1483,6 @@
             input_form()
 
         </script>
+
     {% endif %}
 {% endblock %}
