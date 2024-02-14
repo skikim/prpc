@@ -13,7 +13,7 @@
             </h2>
         </div>
         <div style="max-width: 820px; padding: 1rem; margin: 4rem auto; line-height: 1.96">
-            <form method="POST" action="{% url 'searchapp:search' %}">
+            <form method="POST" action="{% url 'searchapp:searchpage' %}">
                 {% csrf_token %}
                 <div class="input-group mb-3">
                     <input type="text" class="form-control" id="search_term" name="search_term"
