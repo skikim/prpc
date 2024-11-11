@@ -9,22 +9,10 @@ services:
       # volume 이름:node상 디렉토리 위치
       - static-volume:/data/static
       - media-volume:/data/media
-      - ./certbot/conf:/etc/letsencrypt        # 추가
-      - ./certbot/www:/var/www/certbot         # 추가
     ports:
       - 80:80
-      - 443:443                                # 추가
     depends_on:
       - prpc_container_gunicorn
-
-  certbot:                                     # 새로 추가하는 서비스
-    image: certbot/certbot
-    volumes:
-      - ./certbot/conf:/etc/letsencrypt
-      - ./certbot/www:/var/www/certbot
-    command: certonly --webroot -w /var/www/certbot 
-              --email kshhyh00@gmail.com -d prpc.co.kr -d www.prpc.co.kr 
-              --agree-tos --force-renewal
 
   prpc_container_gunicorn: #network로 묶이기 때문에 name-space 정보로 넣어줘야한다. django로 넣으면 안된다.
     image: prpc_image:4
