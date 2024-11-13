@@ -27,7 +27,7 @@ SECRET_KEY = read_secret('DJANGO_SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ['prpc.co.kr','www.prpc.co.kr','13.209.205.199']
+ALLOWED_HOSTS = ['prpc.co.kr','www.prpc.co.kr','13.209.205.199','cloudfront.net']
 
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
