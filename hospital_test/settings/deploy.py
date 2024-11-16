@@ -27,7 +27,16 @@ SECRET_KEY = read_secret('DJANGO_SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ['prpc.co.kr','www.prpc.co.kr','13.209.205.199','d26aw35aenrwn1.cloudfront.net']
+ALLOWED_HOSTS = ['prpc.co.kr','www.prpc.co.kr','13.209.205.199']
+
+# CSRF 설정
+CSRF_COOKIE_SECURE = True
+SESSION_COOKIE_SECURE = True
+CSRF_TRUSTED_ORIGINS = ['https://prpc.co.kr', 'https://www.prpc.co.kr']
+
+# 보안 설정
+SECURE_SSL_REDIRECT = True
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
