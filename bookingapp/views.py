@@ -26,21 +26,29 @@ has_ownership = [
 
 
 def send_message(msg):
-    TARGET_URL = 'https://notify-api.line.me/api/notify'
-    TOKEN = 'xngZHmAg4YXdRgIqMb0Rq9d7jERLOwGe1Es6jd76cJo'		# 내가 발급받은 토큰
-    headers={'Authorization': 'Bearer ' + TOKEN}
-    now = datetime.datetime.now()
-    data={'message': f"[{now.strftime('%Y-%m-%d %H:%M:%S')}] {str(msg)}"}
-    response = requests.post(TARGET_URL, headers=headers, data=data)
+    DISCORD_WEBHOOK_URL = "https://discord.com/api/webhooks/1356587370324951091/MHKCSbmJKFcjIRlbM1iYQoMCvbgiQuUk7aco5WJv5HzCXolt2x4_u9PZQSa3VEkIacx4"       #나의 디스코드 웹훅 주소
+    dt_now = datetime.datetime.now()
+    message = {"content": f"[{dt_now.strftime('%Y-%m-%d %H:%M:%S')}] {str(msg)}"}
+    requests.post(DISCORD_WEBHOOK_URL, data=message)
+    # TARGET_URL = 'https://notify-api.line.me/api/notify'
+    # TOKEN = 'xngZHmAg4YXdRgIqMb0Rq9d7jERLOwGe1Es6jd76cJo'		# 내가 발급받은 토큰
+    # headers={'Authorization': 'Bearer ' + TOKEN}
+    # now = datetime.datetime.now()
+    # data={'message': f"[{now.strftime('%Y-%m-%d %H:%M:%S')}] {str(msg)}"}
+    # response = requests.post(TARGET_URL, headers=headers, data=data)
 
 
 def send_message_2(msg):
-    TARGET_URL = 'https://notify-api.line.me/api/notify'
-    TOKEN = 'QGfhpZOSYthQBxVhEB5UP7lC75XyWCEtMg8VsTwqrqY'  # 장은미씨 발급받은 토큰
-    headers = {'Authorization': 'Bearer ' + TOKEN}
-    now = datetime.datetime.now()
-    data = {'message': f"[{now.strftime('%Y-%m-%d %H:%M:%S')}] {str(msg)}"}
-    response = requests.post(TARGET_URL, headers=headers, data=data)
+    DISCORD_WEBHOOK_URL = "https://discord.com/api/webhooks/1355052960316657745/GKW7wh35fe0hqa3sHwjYE1MB-WwNej2Ndv61EpRzTmqg6SLCZ5TAPog1bueJioyNA7At"       #장은미의 디스코드 웹훅 주소
+    dt_now = datetime.datetime.now()
+    message = {"content": f"[{dt_now.strftime('%Y-%m-%d %H:%M:%S')}] {str(msg)}"}
+    requests.post(DISCORD_WEBHOOK_URL, data=message)
+    # TARGET_URL = 'https://notify-api.line.me/api/notify'
+    # TOKEN = 'QGfhpZOSYthQBxVhEB5UP7lC75XyWCEtMg8VsTwqrqY'  # 장은미씨 발급받은 토큰
+    # headers = {'Authorization': 'Bearer ' + TOKEN}
+    # now = datetime.datetime.now()
+    # data = {'message': f"[{now.strftime('%Y-%m-%d %H:%M:%S')}] {str(msg)}"}
+    # response = requests.post(TARGET_URL, headers=headers, data=data)
 
 
     # """디스코드 메세지 전송"""

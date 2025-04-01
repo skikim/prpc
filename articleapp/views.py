@@ -21,12 +21,19 @@ has_ownership = [
 
 
 def send_message(msg):
-    TARGET_URL = 'https://notify-api.line.me/api/notify'
-    TOKEN = 'xngZHmAg4YXdRgIqMb0Rq9d7jERLOwGe1Es6jd76cJo'		# 내가 발급받은 토큰
-    headers={'Authorization': 'Bearer ' + TOKEN}
-    now = datetime.datetime.now()
-    data={'message': f"[{now.strftime('%Y-%m-%d %H:%M:%S')}] {str(msg)}"}
-    response = requests.post(TARGET_URL, headers=headers, data=data)
+    DISCORD_WEBHOOK_URL = "https://discord.com/api/webhooks/1356587370324951091/MHKCSbmJKFcjIRlbM1iYQoMCvbgiQuUk7aco5WJv5HzCXolt2x4_u9PZQSa3VEkIacx4"       #나의 디스코드 웹훅 주소
+    dt_now = datetime.datetime.now()
+    message = {"content": f"[{dt_now.strftime('%Y-%m-%d %H:%M:%S')}] {str(msg)}"}
+    requests.post(DISCORD_WEBHOOK_URL, data=message)
+
+
+# def send_message(msg):
+#     TARGET_URL = 'https://notify-api.line.me/api/notify'
+#     TOKEN = 'xngZHmAg4YXdRgIqMb0Rq9d7jERLOwGe1Es6jd76cJo'		# 내가 발급받은 토큰
+#     headers={'Authorization': 'Bearer ' + TOKEN}
+#     now = datetime.datetime.now()
+#     data={'message': f"[{now.strftime('%Y-%m-%d %H:%M:%S')}] {str(msg)}"}
+#     response = requests.post(TARGET_URL, headers=headers, data=data)
 
 
 @method_decorator(has_ownership, 'get')
