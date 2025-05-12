@@ -19,6 +19,7 @@ urlpatterns = [
     path('pm_disease/', TemplateView.as_view(template_name='articleapp/pm_disease.html'), name='pm_disease'),
     path('privacy_concent/', TemplateView.as_view(template_name='articleapp/privacy_concent.html'), name='privacy_concent'),
     path('cctv/', TemplateView.as_view(template_name='articleapp/cctv.html'), name='cctv'),
+    path('price/', TemplateView.as_view(template_name='articleapp/price.html'), name='price'),
     path('waiting_create/', WaitingCreateView.as_view(), name='waiting_create'),
     path('waiting_update/<int:pk>', WaitingUpdateView.as_view(), name='waiting_update'),
     path('holiday_create/', HolidayPageView, name='holiday_create'),
