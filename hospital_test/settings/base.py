@@ -134,6 +134,21 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 LOGIN_REDIRECT_URL = reverse_lazy('articleapp:index')
 LOGOUT_REDIRECT_URL = reverse_lazy('accountapp:login')
 
+# Cache 설정
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        'LOCATION': 'unique-snowflake',
+        'TIMEOUT': 300,  # 기본 5분
+        'OPTIONS': {
+            'MAX_ENTRIES': 1000,
+        }
+    }
+}
+
+# 예약 차단 관련 설정
+BOOKING_BLOCK_TIMEOUT = 180  # 3분 (초 단위)
+BOOKING_BLOCK_PERIOD_DAYS = 14  # 차단 대상 기간 (일 단위)
 
 # Email 전송 #
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'

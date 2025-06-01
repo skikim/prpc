@@ -103,6 +103,28 @@
                         style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .75rem;">< 2주차
                 </button>
             </a></div>
+            <!-- 온라인 예약 차단 버튼 -->
+            <div>
+                {% if is_blocking_active %}
+                    <form method="post" action="{% url 'superapp:unblock_bookings' %}" style="display: inline;">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-success btn-sm" 
+                                style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .75rem;"
+                                onclick="return confirm('온라인 예약 차단을 해제하시겠습니까?')">
+                            차단 해제
+                        </button>
+                    </form>
+                {% else %}
+                    <form method="post" action="{% url 'superapp:block_bookings' %}" style="display: inline;">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger btn-sm" 
+                                style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .75rem;"
+                                onclick="return confirm('온라인 예약을 차단하시겠습니까? (3분 후 자동 해제)')">
+                            예약 차단
+                        </button>
+                    </form>
+                {% endif %}
+            </div>
             <div><a href="{% url 'superapp:supercreate3' %}">
                 <button type="button" class="btn btn-outline-primary btn-sm"
                         style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .75rem;">Msg >
@@ -115,6 +137,19 @@
                 </button>
             </a></div>
         </div>
+
+        <!-- 차단 상태 정보 표시 -->
+        {% if is_blocking_active and block_status %}
+            <div style="margin-bottom: 1rem; text-align: center;">
+                <div class="alert alert-warning" role="alert" style="margin: 0 4rem; padding: 0.5rem;">
+                    <small>
+                        <strong>온라인 예약 차단 중</strong> - 
+                        차단된 시간대: {{ block_status.success_count }}개 | 
+                        시작: {{ block_status.blocked_at|slice:":19" }}
+                    </small>
+                </div>
+            </div>
+        {% endif %}
 
 
         <div>

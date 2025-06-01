@@ -75,6 +75,17 @@ def superbooking(request):
                }
 
     if request.user.is_superuser:
+        # 차단 상태 정보 추가
+        from .utils import get_block_status, get_blocked_slots
+        block_status = get_block_status()
+        blocked_slots = get_blocked_slots()
+        
+        context.update({
+            'block_status': block_status,
+            'blocked_slots': blocked_slots,
+            'is_blocking_active': block_status is not None,
+        })
+
         if request.method == 'POST':
             booking_date = request.POST.get('date')
             booking_time = request.POST.get('time')
@@ -183,6 +194,17 @@ def superbooking2(request):
                'inform_today_15': inform_today_15,
                }
     if request.user.is_superuser:
+        # 차단 상태 정보 추가
+        from .utils import get_block_status, get_blocked_slots
+        block_status = get_block_status()
+        blocked_slots = get_blocked_slots()
+        
+        context.update({
+            'block_status': block_status,
+            'blocked_slots': blocked_slots,
+            'is_blocking_active': block_status is not None,
+        })
+
         if request.method == 'POST':
             booking_date = request.POST.get('date')
             booking_time = request.POST.get('time')
@@ -291,6 +313,17 @@ def superbooking2_1(request):
                'inform_today_23': inform_today_23,
                }
     if request.user.is_superuser:
+        # 차단 상태 정보 추가
+        from .utils import get_block_status, get_blocked_slots
+        block_status = get_block_status()
+        blocked_slots = get_blocked_slots()
+        
+        context.update({
+            'block_status': block_status,
+            'blocked_slots': blocked_slots,
+            'is_blocking_active': block_status is not None,
+        })
+
         if request.method == 'POST':
             booking_date = request.POST.get('date')
             booking_time = request.POST.get('time')
@@ -415,6 +448,89 @@ def superbooking4(request):
         return render(request, 'superapp/supercreate4.html', context)
     elif not request.user.is_superuser:
         return redirect(reverse('articleapp:index'))
+
+
+@login_required
+def block_online_bookings(request):
+    """
+    온라인 예약을 일괄 차단하는 뷰 함수
+    """
+    if not request.user.is_superuser:
+        return HttpResponseForbidden("슈퍼유저만 접근 가능합니다.")
+    
+    if request.method == 'POST':
+        from .utils import block_all_available_bookings
+        
+        try:
+            result = block_all_available_bookings(user_id=request.user.id)
+            
+            if result['success'] > 0:
+                messages.success(
+                    request, 
+                    f"온라인 예약이 일괄 차단되었습니다. "
+                    f"총 {result['total']}개 시간대 중 {result['success']}개 차단 완료"
+                    + (f", {result['failed']}개 실패" if result['failed'] > 0 else "")
+                )
+            else:
+                messages.error(request, "예약 차단에 실패했습니다.")
+                
+        except Exception as e:
+            messages.error(request, f"예약 차단 중 오류가 발생했습니다: {str(e)}")
+    
+    # 요청이 온 페이지로 리다이렉트
+    referer = request.META.get('HTTP_REFERER')
+    if referer and 'supercreate' in referer:
+        if 'supercreate2' in referer:
+            return redirect(reverse('superapp:supercreate2'))
+        elif 'supercreate2_1' in referer:
+            return redirect(reverse('superapp:supercreate2_1'))
+        elif 'supercreate3' in referer:
+            return redirect(reverse('superapp:supercreate3'))
+        elif 'supercreate4' in referer:
+            return redirect(reverse('superapp:supercreate4'))
+        else:
+            return redirect(reverse('superapp:supercreate'))
+    
+    return redirect(reverse('superapp:supercreate'))
+
+
+@login_required
+def unblock_online_bookings(request):
+    """
+    온라인 예약 차단을 수동으로 해제하는 뷰 함수
+    """
+    if not request.user.is_superuser:
+        return HttpResponseForbidden("슈퍼유저만 접근 가능합니다.")
+    
+    if request.method == 'POST':
+        from .utils import unblock_all_bookings
+        
+        try:
+            success = unblock_all_bookings()
+            
+            if success:
+                messages.success(request, "온라인 예약 차단이 해제되었습니다.")
+            else:
+                messages.error(request, "예약 차단 해제에 실패했습니다.")
+                
+        except Exception as e:
+            messages.error(request, f"예약 차단 해제 중 오류가 발생했습니다: {str(e)}")
+    
+    # 요청이 온 페이지로 리다이렉트
+    referer = request.META.get('HTTP_REFERER')
+    if referer and 'supercreate' in referer:
+        if 'supercreate2' in referer:
+            return redirect(reverse('superapp:supercreate2'))
+        elif 'supercreate2_1' in referer:
+            return redirect(reverse('superapp:supercreate2_1'))
+        elif 'supercreate3' in referer:
+            return redirect(reverse('superapp:supercreate3'))
+        elif 'supercreate4' in referer:
+            return redirect(reverse('superapp:supercreate4'))
+        else:
+            return redirect(reverse('superapp:supercreate'))
+    
+    return redirect(reverse('superapp:supercreate'))
 
 
 # @method_decorator(login_required, 'get')

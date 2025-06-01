@@ -16,6 +16,7 @@ import requests
 
 from noteapp.models import Note
 from django.contrib.auth.models import User
+from superapp.utils import is_booking_blocked
 
 
 # Create your views here.
@@ -102,6 +103,11 @@ def booking(request):
             # return redirect(reverse('accountapp:detail', kwargs={'pk': request.user.pk}))
 
         if Booking.objects.filter(Q(user=user), Q(booking_date__range=(start_date, end_date)), Q(booking_status='예약승인') | Q(booking_status='예약요청')).count() < 1:
+            # 예약 차단 확인 로직 추가
+            if is_booking_blocked(booking_date, booking_time):
+                errors.append('현재 병원에서 다른 환자의 예약이 진행 중이어서 요청하신 시간의 온라인 예약이 불가능합니다. 잠시 후 다시 시도해 주십시오.')
+                return render(request, 'bookingapp/post_write.html', {'errors': errors})
+            
             selected_booking = Booking.objects.get(booking_date=booking_date, booking_time=booking_time)
             if selected_booking.booking_status == '예약가능':
                 selected_booking.delete()
@@ -161,6 +167,11 @@ def booking_2(request):
             # return redirect(reverse('accountapp:detail', kwargs={'pk': request.user.pk}))
 
         if Booking.objects.filter(Q(user=user), Q(booking_date__range=(start_date, end_date)), Q(booking_status='예약승인') | Q(booking_status='예약요청')).count() < 1:
+            # 예약 차단 확인 로직 추가
+            if is_booking_blocked(booking_date, booking_time):
+                errors.append('현재 병원에서 다른 환자의 예약이 진행 중이어서 요청하신 시간의 온라인 예약이 불가능합니다. 잠시 후 다시 시도해 주십시오.')
+                return render(request, 'bookingapp/post_write.html', {'errors': errors})
+            
             selected_booking = Booking.objects.get(booking_date=booking_date, booking_time=booking_time)
             if selected_booking.booking_status == '예약가능':
                 selected_booking.delete()
