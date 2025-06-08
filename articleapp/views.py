@@ -21,7 +21,7 @@ has_ownership = [
 
 
 def send_message(msg):
-    DISCORD_WEBHOOK_URL = "https://discord.com/api/webhooks/1356587370324951091/MHKCSbmJKFcjIRlbM1iYQoMCvbgiQuUk7aco5WJv5HzCXolt2x4_u9PZQSa3VEkIacx4"       #나의 디스코드 웹훅 주소
+    DISCORD_WEBHOOK_URL = "https://discord.com/api/webhooks/1381414880778780682/ihbkezBF2a1u1qsWuhGMf1TQnNpVNq01K08tYJaWLUNuQl4kHTlkub3z6p3L4WMqyVeu"       #나의 디스코드 웹훅 주소
     dt_now = datetime.datetime.now()
     message = {"content": f"[{dt_now.strftime('%Y-%m-%d %H:%M:%S')}] {str(msg)}"}
     requests.post(DISCORD_WEBHOOK_URL, data=message)
