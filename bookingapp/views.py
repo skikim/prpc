@@ -40,7 +40,7 @@ def send_message(msg):
 
 
 def send_message_2(msg):
-    DISCORD_WEBHOOK_URL = "https://discord.com/api/webhooks/1355052960316657745/GKW7wh35fe0hqa3sHwjYE1MB-WwNej2Ndv61EpRzTmqg6SLCZ5TAPog1bueJioyNA7At"       #장은미의 디스코드 웹훅 주소
+    DISCORD_WEBHOOK_URL = "https://discord.com/api/webhooks/1381532618868260914/7fQ-NysJL6Tczu0z67MlEkNkIn2DY1KKevOq2-7OsrQSfz8AFIPteWW--pq3uO3tfwim"       #장은미의 디스코드 웹훅 주소
     dt_now = datetime.datetime.now()
     message = {"content": f"[{dt_now.strftime('%Y-%m-%d %H:%M:%S')}] {str(msg)}"}
     requests.post(DISCORD_WEBHOOK_URL, data=message)
