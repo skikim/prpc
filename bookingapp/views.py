@@ -16,7 +16,7 @@ import requests
 
 from noteapp.models import Note
 from django.contrib.auth.models import User
-from superapp.utils import is_booking_blocked
+from superapp.utils import is_booking_blocked, send_discord_message_both
 
 
 # Create your views here.
@@ -26,38 +26,7 @@ has_ownership = [
 ]
 
 
-def send_message(msg):
-    DISCORD_WEBHOOK_URL = "https://discord.com/api/webhooks/1381414880778780682/ihbkezBF2a1u1qsWuhGMf1TQnNpVNq01K08tYJaWLUNuQl4kHTlkub3z6p3L4WMqyVeu"       #나의 디스코드 웹훅 주소
-    dt_now = datetime.datetime.now()
-    message = {"content": f"[{dt_now.strftime('%Y-%m-%d %H:%M:%S')}] {str(msg)}"}
-    requests.post(DISCORD_WEBHOOK_URL, data=message)
-    # TARGET_URL = 'https://notify-api.line.me/api/notify'
-    # TOKEN = 'xngZHmAg4YXdRgIqMb0Rq9d7jERLOwGe1Es6jd76cJo'		# 내가 발급받은 토큰
-    # headers={'Authorization': 'Bearer ' + TOKEN}
-    # now = datetime.datetime.now()
-    # data={'message': f"[{now.strftime('%Y-%m-%d %H:%M:%S')}] {str(msg)}"}
-    # response = requests.post(TARGET_URL, headers=headers, data=data)
-
-
-def send_message_2(msg):
-    DISCORD_WEBHOOK_URL = "https://discord.com/api/webhooks/1381532618868260914/7fQ-NysJL6Tczu0z67MlEkNkIn2DY1KKevOq2-7OsrQSfz8AFIPteWW--pq3uO3tfwim"       #장은미의 디스코드 웹훅 주소
-    dt_now = datetime.datetime.now()
-    message = {"content": f"[{dt_now.strftime('%Y-%m-%d %H:%M:%S')}] {str(msg)}"}
-    requests.post(DISCORD_WEBHOOK_URL, data=message)
-    # TARGET_URL = 'https://notify-api.line.me/api/notify'
-    # TOKEN = 'QGfhpZOSYthQBxVhEB5UP7lC75XyWCEtMg8VsTwqrqY'  # 장은미씨 발급받은 토큰
-    # headers = {'Authorization': 'Bearer ' + TOKEN}
-    # now = datetime.datetime.now()
-    # data = {'message': f"[{now.strftime('%Y-%m-%d %H:%M:%S')}] {str(msg)}"}
-    # response = requests.post(TARGET_URL, headers=headers, data=data)
-
-
-    # """디스코드 메세지 전송"""
-    # DISCORD_WEBHOOK_URL = "https://discord.com/api/webhooks/1071627279836397578/7yNetkPT0o1gX8TTMuJHXce6CjbovaY7RyOqwEoEOJtMYS72Kx6A7GKFH2n1jl4_phws"
-    # dt_now = datetime.datetime.now()
-    # message = {"content": f"[{dt_now.strftime('%Y-%m-%d %H:%M:%S')}] {str(msg)}"}
-    # requests.post(DISCORD_WEBHOOK_URL, data=message)
-    # print(message)
+# Discord 알림 함수들은 superapp.utils로 이동되었습니다.
 
 
 @login_required
@@ -112,8 +81,7 @@ def booking(request):
             if selected_booking.booking_status == '예약가능':
                 selected_booking.delete()
                 Booking(booking_date=booking_date, booking_time=booking_time, user=user, booking_status=booking_status).save()
-                send_message(f"{request_real_name}님이 {booking_date} {booking_time}의 예약을 요청하셨습니다.")
-                send_message_2(f"{request_real_name}님이 {booking_date} {booking_time}의 예약을 요청하셨습니다.")
+                send_discord_message_both(f"{request_real_name}님이 {booking_date} {booking_time}의 예약을 요청하셨습니다.")
                 return redirect(reverse('bookingapp:detail', kwargs={'pk': user.pk}))
             else:
                 errors.append('안타깝게도 예약하시는 사이 다른 분이 먼저 예약요청 버튼을 누르셨습니다. 다른 시간대를 선택해서 예약요청해 주세요.')
@@ -177,8 +145,7 @@ def booking_2(request):
                 selected_booking.delete()
                 Booking(booking_date=booking_date, booking_time=booking_time, user=user,
                         booking_status=booking_status).save()
-                send_message(f"{request_real_name}님이 {booking_date} {booking_time}의 예약을 요청하셨습니다.")
-                send_message_2(f"{request_real_name}님이 {booking_date} {booking_time}의 예약을 요청하셨습니다.")
+                send_discord_message_both(f"{request_real_name}님이 {booking_date} {booking_time}의 예약을 요청하셨습니다.")
                 return redirect(reverse('bookingapp:detail', kwargs={'pk': user.pk}))
             else:
                 errors.append('예약하시는 동안 다른 분이 먼저 예약요청 버튼을 누르셨습니다. 다른 시간대를 선택해서 예약요청해 주세요.')
@@ -234,8 +201,7 @@ def booking_delete(request, pk):
     if request.method == 'POST':
         booking.delete()
         old_booking.delete()
-        send_message(f"{request_real_name}님이 {booking_date} {booking_time}의 예약을 취소하셨습니다.")
-        send_message_2(f"{request_real_name}님이 {booking_date} {booking_time}의 예약을 취소하셨습니다.")
+        send_discord_message_both(f"{request_real_name}님이 {booking_date} {booking_time}의 예약을 취소하셨습니다.")
 
         time_format = "%H:%M"
         booking_time_datetime = datetime.datetime.strptime(booking_time, time_format)

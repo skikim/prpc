@@ -7,6 +7,7 @@ from django.core.cache import cache
 from django.conf import settings
 from bookingapp.models import Booking
 import logging
+import requests
 
 logger = logging.getLogger(__name__)
 
@@ -223,4 +224,62 @@ def get_blocked_slots():
                     'blocked_by': block_data.get('blocked_by'),
                 })
     
-    return blocked_slots 
+    return blocked_slots
+
+
+def send_discord_message(message, webhook_type=1):
+    """
+    Discord 웹훅을 통해 메시지를 전송합니다.
+    
+    Args:
+        message (str): 전송할 메시지 내용
+        webhook_type (int): 웹훅 타입 (1 또는 2, 기본값: 1)
+    
+    Returns:
+        bool: 전송 성공 시 True, 실패 시 False
+    """
+    try:
+        # 웹훅 URL 선택
+        if webhook_type == 2:
+            webhook_url = settings.DISCORD_WEBHOOK_URL_2
+        else:
+            webhook_url = settings.DISCORD_WEBHOOK_URL_1
+        
+        # 타임스탬프 추가
+        dt_now = datetime.datetime.now()
+        formatted_message = {
+            "content": f"[{dt_now.strftime('%Y-%m-%d %H:%M:%S')}] {str(message)}"
+        }
+        
+        # Discord 웹훅으로 메시지 전송
+        response = requests.post(webhook_url, data=formatted_message)
+        
+        if response.status_code == 204:  # Discord 웹훅 성공 응답 코드
+            logger.info(f"Discord message sent successfully: {message}")
+            return True
+        else:
+            logger.error(f"Discord message failed with status {response.status_code}: {message}")
+            return False
+            
+    except Exception as e:
+        logger.error(f"Failed to send Discord message: {str(e)}")
+        return False
+
+
+def send_discord_message_both(message):
+    """
+    두 개의 Discord 웹훅 모두에 메시지를 전송합니다.
+    
+    Args:
+        message (str): 전송할 메시지 내용
+    
+    Returns:
+        dict: 각 웹훅의 전송 결과
+    """
+    results = {
+        'webhook_1': send_discord_message(message, webhook_type=1),
+        'webhook_2': send_discord_message(message, webhook_type=2)
+    }
+    
+    logger.info(f"Discord message sent to both webhooks: {results}")
+    return results

@@ -10,7 +10,7 @@ from articleapp.forms import WaitingCreationForm
 from articleapp.models import Waiting, Holiday
 from noteapp.models import Note
 import datetime
-import requests
+from superapp.utils import send_discord_message
 
 # Create your views here.
 
@@ -20,11 +20,7 @@ has_ownership = [
 ]
 
 
-def send_message(msg):
-    DISCORD_WEBHOOK_URL = "https://discord.com/api/webhooks/1381414880778780682/ihbkezBF2a1u1qsWuhGMf1TQnNpVNq01K08tYJaWLUNuQl4kHTlkub3z6p3L4WMqyVeu"       #나의 디스코드 웹훅 주소
-    dt_now = datetime.datetime.now()
-    message = {"content": f"[{dt_now.strftime('%Y-%m-%d %H:%M:%S')}] {str(msg)}"}
-    requests.post(DISCORD_WEBHOOK_URL, data=message)
+# Discord 알림 함수는 superapp.utils로 이동되었습니다.
 
 
 # def send_message(msg):
@@ -59,7 +55,7 @@ class WaitingUpdateView(UpdateView):
         response = super().form_valid(form)  # 슈퍼클래스의 form_valid 메소드를 먼저 호출합니다.
         # waiting_num 값을 사용하여 메시지를 보냅니다.
         waiting_num = self.object.waiting_num  # self.object를 통해 생성된 Waiting 객체에 액세스합니다.
-        send_message(f"선착순 대기 환자수 : {waiting_num}명")
+        send_discord_message(f"선착순 대기 환자수 : {waiting_num}명")
         return response
 
 
