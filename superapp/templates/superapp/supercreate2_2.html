@@ -6,11 +6,11 @@
 
         <div>
             <div style="margin-top: 8rem; margin-bottom: 2rem; text-align: center">
-                <h2>[관리자 페이지 3주차]<a href="{% url 'searchapp:searchpage' %}"><span
+                <h2>[관리자 페이지 4주차]<a href="{% url 'searchapp:searchpage' %}"><span
                         style="font-size: 0.8rem; margin-right: 1rem">환자검색</span></a></h2>
             </div>
 
-            <form action="{% url 'superapp:supercreate2_1' %}" method="post" id="my-form">
+            <form action="{% url 'superapp:supercreate2_2' %}" method="post" id="my-form">
                 {% csrf_token %}
                 {#            {% bootstrap_form form %}#}
                 <input class="date" type="date" id="date" name="date" value="" style="width: 100%; display: none;"
@@ -103,9 +103,9 @@
                         style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .75rem;">< 2주차
                 </button>
             </a></div>
-            <div><a href="{% url 'superapp:supercreate2_2' %}">
+            <div><a href="{% url 'superapp:supercreate2_1' %}">
                 <button type="button" class="btn btn-outline-primary btn-sm"
-                        style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .75rem;">4주차 >
+                        style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .75rem;">< 3주차
                 </button>
             </a></div>
             <!-- 온라인 예약 차단 버튼 -->
@@ -1313,69 +1313,70 @@
             var week = new Array('일', '월', '화', '수', '목', '금', '토');
 
             var today = new Date();
-            var today_15 = new Date(today.setDate(today.getDate() + 15));
-            document.getElementById('r0c1').innerHTML = dateFormat(today_15)
-            document.getElementById('r1c1').innerHTML = week[today_15.getDay()]
-            document.getElementById('r13:00c1').innerHTML = dateFormat(today_15)
-            document.getElementById('r13:05c1').innerHTML = week[today_15.getDay()]
-            document.getElementById('r17:31c1').innerHTML = dateFormat(today_15)
-            document.getElementById('r17:32c1').innerHTML = week[today_15.getDay()]
+            var today_24 = new Date(today.setDate(today.getDate() + 23));
+            document.getElementById('r0c1').innerHTML = dateFormat(today_24)
+            document.getElementById('r1c1').innerHTML = week[today_24.getDay()]
+            document.getElementById('r13:00c1').innerHTML = dateFormat(today_24)
+            document.getElementById('r13:05c1').innerHTML = week[today_24.getDay()]
+            document.getElementById('r17:31c1').innerHTML = dateFormat(today_24)
+            document.getElementById('r17:32c1').innerHTML = week[today_24.getDay()]
             var today = new Date();
-            var today_16 = new Date(today.setDate(today.getDate() + 16));
-            document.getElementById('r0c2').innerHTML = dateFormat(today_16)
-            document.getElementById('r1c2').innerHTML = week[today_16.getDay()]
-            document.getElementById('r13:00c2').innerHTML = dateFormat(today_16)
-            document.getElementById('r13:05c2').innerHTML = week[today_16.getDay()]
-            document.getElementById('r17:31c2').innerHTML = dateFormat(today_16)
-            document.getElementById('r17:32c2').innerHTML = week[today_16.getDay()]
+            var today_25 = new Date(today.setDate(today.getDate() + 24));
+            document.getElementById('r0c2').innerHTML = dateFormat(today_25)
+            document.getElementById('r1c2').innerHTML = week[today_25.getDay()]
+            document.getElementById('r13:00c2').innerHTML = dateFormat(today_25)
+            document.getElementById('r13:05c2').innerHTML = week[today_25.getDay()]
+            document.getElementById('r17:31c2').innerHTML = dateFormat(today_25)
+            document.getElementById('r17:32c2').innerHTML = week[today_25.getDay()]
             var today = new Date();
-            var today_17 = new Date(today.setDate(today.getDate() + 17));
-            document.getElementById('r0c3').innerHTML = dateFormat(today_17)
-            document.getElementById('r1c3').innerHTML = week[today_17.getDay()]
-            document.getElementById('r13:00c3').innerHTML = dateFormat(today_17)
-            document.getElementById('r13:05c3').innerHTML = week[today_17.getDay()]
-            document.getElementById('r17:31c3').innerHTML = dateFormat(today_17)
-            document.getElementById('r17:32c3').innerHTML = week[today_17.getDay()]
+            var today_26 = new Date(today.setDate(today.getDate() + 25));
+            document.getElementById('r0c3').innerHTML = dateFormat(today_26)
+            document.getElementById('r1c3').innerHTML = week[today_26.getDay()]
+            document.getElementById('r13:00c3').innerHTML = dateFormat(today_26)
+            document.getElementById('r13:05c3').innerHTML = week[today_26.getDay()]
+            document.getElementById('r17:31c3').innerHTML = dateFormat(today_26)
+            document.getElementById('r17:32c3').innerHTML = week[today_26.getDay()]
             var today = new Date();
-            var today_18 = new Date(today.setDate(today.getDate() + 18));
-            document.getElementById('r0c4').innerHTML = dateFormat(today_18)
-            document.getElementById('r1c4').innerHTML = week[today_18.getDay()]
-            document.getElementById('r13:00c4').innerHTML = dateFormat(today_18)
-            document.getElementById('r13:05c4').innerHTML = week[today_18.getDay()]
-            document.getElementById('r17:31c4').innerHTML = dateFormat(today_18)
-            document.getElementById('r17:32c4').innerHTML = week[today_18.getDay()]
+            var today_27 = new Date(today.setDate(today.getDate() + 26));
+            document.getElementById('r0c4').innerHTML = dateFormat(today_27)
+            document.getElementById('r1c4').innerHTML = week[today_27.getDay()]
+            document.getElementById('r13:00c4').innerHTML = dateFormat(today_27)
+            document.getElementById('r13:05c4').innerHTML = week[today_27.getDay()]
+            document.getElementById('r17:31c4').innerHTML = dateFormat(today_27)
+            document.getElementById('r17:32c4').innerHTML = week[today_27.getDay()]
             var today = new Date();
-            var today_19 = new Date(today.setDate(today.getDate() + 19));
-            document.getElementById('r0c5').innerHTML = dateFormat(today_19)
-            document.getElementById('r1c5').innerHTML = week[today_19.getDay()]
-            document.getElementById('r13:00c5').innerHTML = dateFormat(today_19)
-            document.getElementById('r13:05c5').innerHTML = week[today_19.getDay()]
-            document.getElementById('r17:31c5').innerHTML = dateFormat(today_19)
-            document.getElementById('r17:32c5').innerHTML = week[today_19.getDay()]
+            var today_28 = new Date(today.setDate(today.getDate() + 27));
+            document.getElementById('r0c5').innerHTML = dateFormat(today_28)
+            document.getElementById('r1c5').innerHTML = week[today_28.getDay()]
+            document.getElementById('r13:00c5').innerHTML = dateFormat(today_28)
+            document.getElementById('r13:05c5').innerHTML = week[today_28.getDay()]
+            document.getElementById('r17:31c5').innerHTML = dateFormat(today_28)
+            document.getElementById('r17:32c5').innerHTML = week[today_28.getDay()]
             var today = new Date();
-            var today_20 = new Date(today.setDate(today.getDate() + 20));
-            document.getElementById('r0c6').innerHTML = dateFormat(today_20)
-            document.getElementById('r1c6').innerHTML = week[today_20.getDay()]
-            document.getElementById('r13:00c6').innerHTML = dateFormat(today_20)
-            document.getElementById('r13:05c6').innerHTML = week[today_20.getDay()]
-            document.getElementById('r17:31c6').innerHTML = dateFormat(today_20)
-            document.getElementById('r17:32c6').innerHTML = week[today_20.getDay()]
+            var today_29 = new Date(today.setDate(today.getDate() + 28));
+            document.getElementById('r0c6').innerHTML = dateFormat(today_29)
+            document.getElementById('r1c6').innerHTML = week[today_29.getDay()]
+            document.getElementById('r13:00c6').innerHTML = dateFormat(today_29)
+            document.getElementById('r13:05c6').innerHTML = week[today_29.getDay()]
+            document.getElementById('r17:31c6').innerHTML = dateFormat(today_29)
+            document.getElementById('r17:32c6').innerHTML = week[today_29.getDay()]
             var today = new Date();
-            var today_21 = new Date(today.setDate(today.getDate() + 21));
-            document.getElementById('r0c7').innerHTML = dateFormat(today_21)
-            document.getElementById('r1c7').innerHTML = week[today_21.getDay()]
-            document.getElementById('r13:00c7').innerHTML = dateFormat(today_21)
-            document.getElementById('r13:05c7').innerHTML = week[today_21.getDay()]
-            document.getElementById('r17:31c7').innerHTML = dateFormat(today_21)
-            document.getElementById('r17:32c7').innerHTML = week[today_21.getDay()]
+            var today_30 = new Date(today.setDate(today.getDate() + 29));
+            document.getElementById('r0c7').innerHTML = dateFormat(today_30)
+            document.getElementById('r1c7').innerHTML = week[today_30.getDay()]
+            document.getElementById('r13:00c7').innerHTML = dateFormat(today_30)
+            document.getElementById('r13:05c7').innerHTML = week[today_30.getDay()]
+            document.getElementById('r17:31c7').innerHTML = dateFormat(today_30)
+            document.getElementById('r17:32c7').innerHTML = week[today_30.getDay()]
             var today = new Date();
-            var today_22 = new Date(today.setDate(today.getDate() + 22));
-            document.getElementById('r0c8').innerHTML = dateFormat(today_22)
-            document.getElementById('r1c8').innerHTML = week[today_22.getDay()]
-            document.getElementById('r13:00c8').innerHTML = dateFormat(today_22)
-            document.getElementById('r13:05c8').innerHTML = week[today_22.getDay()]
-            document.getElementById('r17:31c8').innerHTML = dateFormat(today_22)
-            document.getElementById('r17:32c8').innerHTML = week[today_22.getDay()]
+            var today_31 = new Date(today.setDate(today.getDate() + 30));
+            document.getElementById('r0c8').innerHTML = dateFormat(today_31)
+            document.getElementById('r1c8').innerHTML = week[today_31.getDay()]
+            document.getElementById('r13:00c8').innerHTML = dateFormat(today_31)
+            document.getElementById('r13:05c8').innerHTML = week[today_31.getDay()]
+            document.getElementById('r17:31c8').innerHTML = dateFormat(today_31)
+            document.getElementById('r17:32c8').innerHTML = week[today_31.getDay()]
+
 
 
             const table = document.getElementsByTagName("table")[0];
@@ -1405,8 +1406,8 @@
             }
 
 
-            function input_objects_16() {
-                {% for inform in inform_today_16 %}
+            function input_objects_24() {
+                {% for inform in inform_today_24 %}
                     {% if inform.booking_status == '예약승인' %}
                         document.getElementById('r{{ inform.booking_time }}c1').style.backgroundColor = 'lightpink'
                         document.getElementById('r{{ inform.booking_time }}c1').style.cursor = 'default'
@@ -1430,8 +1431,8 @@
                 {% endfor %}
             }
 
-            function input_objects_17() {
-                {% for inform in inform_today_17 %}
+            function input_objects_25() {
+                {% for inform in inform_today_25 %}
                     {% if inform.booking_status == '예약승인' %}
                         document.getElementById('r{{ inform.booking_time }}c2').style.backgroundColor = 'lightpink'
                         document.getElementById('r{{ inform.booking_time }}c2').style.cursor = 'default'
@@ -1455,8 +1456,8 @@
                 {% endfor %}
             }
 
-            function input_objects_18() {
-                {% for inform in inform_today_18 %}
+            function input_objects_26() {
+                {% for inform in inform_today_26 %}
                     {% if inform.booking_status == '예약승인' %}
                         document.getElementById('r{{ inform.booking_time }}c3').style.backgroundColor = 'lightpink'
                         document.getElementById('r{{ inform.booking_time }}c3').style.cursor = 'default'
@@ -1480,8 +1481,8 @@
                 {% endfor %}
             }
 
-            function input_objects_19() {
-                {% for inform in inform_today_19 %}
+            function input_objects_27() {
+                {% for inform in inform_today_27 %}
                     {% if inform.booking_status == '예약승인' %}
                         document.getElementById('r{{ inform.booking_time }}c4').style.backgroundColor = 'lightpink'
                         document.getElementById('r{{ inform.booking_time }}c4').style.cursor = 'default'
@@ -1505,8 +1506,8 @@
                 {% endfor %}
             }
 
-            function input_objects_20() {
-                {% for inform in inform_today_20 %}
+            function input_objects_28() {
+                {% for inform in inform_today_28 %}
                     {% if inform.booking_status == '예약승인' %}
                         document.getElementById('r{{ inform.booking_time }}c5').style.backgroundColor = 'lightpink'
                         document.getElementById('r{{ inform.booking_time }}c5').style.cursor = 'default'
@@ -1530,8 +1531,8 @@
                 {% endfor %}
             }
 
-            function input_objects_21() {
-                {% for inform in inform_today_21 %}
+            function input_objects_29() {
+                {% for inform in inform_today_29 %}
                     {% if inform.booking_status == '예약승인' %}
                         document.getElementById('r{{ inform.booking_time }}c6').style.backgroundColor = 'lightpink'
                         document.getElementById('r{{ inform.booking_time }}c6').style.cursor = 'default'
@@ -1555,8 +1556,8 @@
                 {% endfor %}
             }
 
-            function input_objects_22() {
-                {% for inform in inform_today_22 %}
+            function input_objects_30() {
+                {% for inform in inform_today_30 %}
                     {% if inform.booking_status == '예약승인' %}
                         document.getElementById('r{{ inform.booking_time }}c7').style.backgroundColor = 'lightpink'
                         document.getElementById('r{{ inform.booking_time }}c7').style.cursor = 'default'
@@ -1580,8 +1581,8 @@
                 {% endfor %}
             }
 
-            function input_objects_23() {
-                {% for inform in inform_today_23 %}
+            function input_objects_31() {
+                {% for inform in inform_today_31 %}
                     {% if inform.booking_status == '예약승인' %}
                         document.getElementById('r{{ inform.booking_time }}c8').style.backgroundColor = 'lightpink'
                         document.getElementById('r{{ inform.booking_time }}c8').style.cursor = 'default'
@@ -1637,14 +1638,14 @@
             }
 
 
-            input_objects_16()
-            input_objects_17()
-            input_objects_18()
-            input_objects_19()
-            input_objects_20()
-            input_objects_21()
-            input_objects_22()
-            input_objects_23()
+            input_objects_24()
+            input_objects_25()
+            input_objects_26()
+            input_objects_27()
+            input_objects_28()
+            input_objects_29()
+            input_objects_30()
+            input_objects_31()
             input_form()
 
         </script>
