@@ -2,47 +2,315 @@
 {% load bootstrap5 %}
 
 {% block content %}
-    <div style="text-align: center; max-width: 600px; margin: 8rem auto">
-        <h2>[회원정보]</h2><br>
-        <p>
-            가입일 : {{ user.date_joined }}
-        </p>
-        <h4 style="margin: 4rem 0 2rem 0; font-family: 'NanumSquareB';">
-            ID : {{ user.username }}
-        </h4>
-        <h4 style="margin: 2rem 0 4rem 0; font-family: 'NanumSquareB';">
-            이름 : {{ user.profile.real_name }}
-        </h4>
-        {% if user.profile %}
-            <p style="margin-top: 2rem;">
-               Phone : {{ user.profile.phone_num }}&nbsp &nbsp &nbsp
-            {% if request.user == user %}
-                <a href="{% url 'profileapp:update' pk=user.profile.pk %}">프로필 수정</a>
+<!-- Header Section -->
+<div class="hero-section" style="padding: 2rem 0; margin-top: 4rem;">
+    <div class="container hero-content text-center">
+        <div class="icon-feature mx-auto mb-3">
+            <i class="fas fa-user-circle fa-lg"></i>
+        </div>
+        <h2 class="fw-bold mb-2" style="font-family: 'Noto Sans KR', sans-serif;">
+            {% if user.profile %}
+                {{ user.profile.real_name }} 님
+            {% else %}
+                {{ user.username }} 님
             {% endif %}
-            </p>
-            <p>
-               생년월일 : {{ user.profile.birth_date }}&nbsp &nbsp &nbsp
-{#            {% if request.user == user %}#}
-{#            <a href="{% url 'profileapp:update' pk=user.profile.pk %}">프로필 수정</a>#}
-{#            {% endif %}#}
-            </p>
-        {% else %}
-            <p style="color: darkred; font-size: 1.2rem"><strong>예약하시려면 '프로필' 입력을 하셔야 합니다.</strong></p>
-            <a href = "{% url 'profileapp:create' %}">
-                <button type="button" class="btn btn-primary">프로필 입력</button>
-{#               <h2 style = "font-family: 'NanumSquareB'">#}
-{#                   프로필 입력#}
-{#               </h2>#}
-
-            </a>
-        {% endif %}
-        {% if request.user == user %}
-            <a href="{% url 'accountapp:update' pk=user.pk %}">
-                <p style="margin-top: 4rem;">회원정보 수정</p><br>
-            </a>
-            <a href="{% url 'accountapp:delete' pk=user.pk %}">
-                <p style="color: darkred">회원 탈퇴</p>
-            </a>
-        {% endif %}
+        </h2>
+        <p class="lead mb-0">내 계정 정보를 확인하고 관리하세요</p>
     </div>
+</div>
+
+<div class="container my-5" style="max-width: 1000px; padding: 0 2rem;">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <!-- Account Information Cards -->
+            <div class="row g-4 mb-5" style="margin-top: -2rem;">
+                <div class="col-md-6">
+                    <div class="info-card" style="background: white; border-radius: 16px; padding: 2rem; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); border: 1px solid #f1f5f9; position: relative; overflow: hidden;">
+                        <div class="card-decoration" style="position: absolute; top: -20px; right: -20px; width: 80px; height: 80px; background: linear-gradient(135deg, #3b82f6, #1d4ed8); border-radius: 50%; opacity: 0.1;"></div>
+                        <div class="d-flex align-items-center position-relative">
+                            <div class="info-icon me-4" style="width: 48px; height: 48px; background: linear-gradient(135deg, #dbeafe, #bfdbfe); border-radius: 12px; display: flex; align-items: center; justify-content: center;">
+                                <i class="fas fa-id-card" style="color: #3b82f6; font-size: 1.2rem;"></i>
+                            </div>
+                            <div>
+                                <p class="text-muted mb-1" style="font-size: 0.875rem; font-weight: 500;">사용자 ID</p>
+                                <h5 class="fw-bold mb-0" style="color: #1e293b;">{{ user.username }}</h5>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-6">
+                    <div class="info-card" style="background: white; border-radius: 16px; padding: 2rem; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); border: 1px solid #f1f5f9; position: relative; overflow: hidden;">
+                        <div class="card-decoration" style="position: absolute; top: -20px; right: -20px; width: 80px; height: 80px; background: linear-gradient(135deg, #10b981, #059669); border-radius: 50%; opacity: 0.1;"></div>
+                        <div class="d-flex align-items-center position-relative">
+                            <div class="info-icon me-4" style="width: 48px; height: 48px; background: linear-gradient(135deg, #d1fae5, #a7f3d0); border-radius: 12px; display: flex; align-items: center; justify-content: center;">
+                                <i class="fas fa-calendar-check" style="color: #10b981; font-size: 1.2rem;"></i>
+                            </div>
+                            <div>
+                                <p class="text-muted mb-1" style="font-size: 0.875rem; font-weight: 500;">가입일</p>
+                                <h5 class="fw-bold mb-0" style="color: #1e293b;">{{ user.date_joined|date:"Y.m.d" }}</h5>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+                
+                {% if user.profile %}
+                    <!-- Profile Information Card -->
+                    <div class="profile-info-card mb-5" style="background: white; border-radius: 20px; padding: 2.5rem; box-shadow: 0 10px 25px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); border: 1px solid #e2e8f0; position: relative; overflow: hidden;">
+                        <div class="profile-decoration" style="position: absolute; top: -100px; right: -100px; width: 200px; height: 200px; background: linear-gradient(135deg, #10b981, #059669); border-radius: 50%; opacity: 0.05;"></div>
+                        
+                        <div class="text-center mb-4">
+                            <div class="profile-badge mx-auto mb-3" style="width: 60px; height: 60px; background: linear-gradient(135deg, #10b981, #059669); border-radius: 16px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);">
+                                <i class="fas fa-user-check text-white fa-lg"></i>
+                            </div>
+                            <h4 class="fw-bold mb-2" style="color: #1e293b;">프로필 정보</h4>
+                            <p class="text-muted mb-0">등록된 개인정보를 확인하세요</p>
+                        </div>
+                        
+                        <div class="row g-4">
+                            <div class="col-md-4">
+                                <div class="profile-item text-center p-3" style="background: #f8fafc; border-radius: 12px; border: 1px solid #f1f5f9;">
+                                    <div class="item-icon mx-auto mb-3" style="width: 40px; height: 40px; background: linear-gradient(135deg, #dbeafe, #bfdbfe); border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+                                        <i class="fas fa-user-tag" style="color: #3b82f6;"></i>
+                                    </div>
+                                    <p class="text-muted mb-1" style="font-size: 0.875rem;">성명</p>
+                                    <h6 class="fw-bold mb-0" style="color: #1e293b;">{{ user.profile.real_name }}</h6>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-4">
+                                <div class="profile-item text-center p-3" style="background: #f8fafc; border-radius: 12px; border: 1px solid #f1f5f9;">
+                                    <div class="item-icon mx-auto mb-3" style="width: 40px; height: 40px; background: linear-gradient(135deg, #fef3c7, #fde68a); border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+                                        <i class="fas fa-phone" style="color: #f59e0b;"></i>
+                                    </div>
+                                    <p class="text-muted mb-1" style="font-size: 0.875rem;">연락처</p>
+                                    <h6 class="fw-bold mb-0" style="color: #1e293b;">{{ user.profile.phone_num }}</h6>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-4">
+                                <div class="profile-item text-center p-3" style="background: #f8fafc; border-radius: 12px; border: 1px solid #f1f5f9;">
+                                    <div class="item-icon mx-auto mb-3" style="width: 40px; height: 40px; background: linear-gradient(135deg, #fce7f3, #fbcfe8); border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+                                        <i class="fas fa-birthday-cake" style="color: #ec4899;"></i>
+                                    </div>
+                                    <p class="text-muted mb-1" style="font-size: 0.875rem;">생년월일</p>
+                                    <h6 class="fw-bold mb-0" style="color: #1e293b;">{{ user.profile.birth_date }}</h6>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% else %}
+                    <!-- Profile Missing Alert -->
+                    <div class="alert-modern mb-5" style="border-left-color: #ef4444; background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%); padding: 2rem;">
+                        <div class="d-flex align-items-center">
+                            <div class="me-4">
+                                <i class="fas fa-exclamation-triangle text-danger fa-lg"></i>
+                            </div>
+                            <div>
+                                <h6 class="fw-bold mb-3 text-danger" style="font-size: 1.2rem;">프로필 정보가 필요합니다</h6>
+                                <p class="mb-0" style="font-size: 1.1rem;">예약 서비스를 이용하시려면 프로필 입력이 필요합니다.</p>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+                
+                <!-- Action Buttons -->
+                {% if request.user == user %}
+                    <div class="action-buttons-section" style="background: white; border-radius: 20px; padding: 2.5rem; box-shadow: 0 10px 25px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); border: 1px solid #e2e8f0; margin-top: 2rem;">
+                        <div class="text-center mb-4">
+                            <h4 class="fw-bold mb-2" style="color: #1e293b;">계정 관리</h4>
+                            <p class="text-muted mb-0">계정 정보를 수정하거나 관리하세요</p>
+                        </div>
+                        
+                        <div class="row g-4 justify-content-center">
+                            {% if user.profile %}
+                                <div class="col-auto">
+                                    <a href="{% url 'profileapp:update' pk=user.profile.pk %}" class="action-btn primary">
+                                        <div class="btn-icon">
+                                            <i class="fas fa-edit"></i>
+                                        </div>
+                                        <span>프로필 수정</span>
+                                    </a>
+                                </div>
+                            {% else %}
+                                <div class="col-auto">
+                                    <a href="{% url 'profileapp:create' %}" class="action-btn primary">
+                                        <div class="btn-icon">
+                                            <i class="fas fa-user-plus"></i>
+                                        </div>
+                                        <span>프로필 입력</span>
+                                    </a>
+                                </div>
+                            {% endif %}
+                            
+                            <div class="col-auto">
+                                <a href="{% url 'accountapp:update' pk=user.pk %}" class="action-btn secondary">
+                                    <div class="btn-icon">
+                                        <i class="fas fa-cog"></i>
+                                    </div>
+                                    <span>회원정보 수정</span>
+                                </a>
+                            </div>
+                            
+                            <div class="col-auto">
+                                <a href="{% url 'accountapp:delete' pk=user.pk %}" class="action-btn danger">
+                                    <div class="btn-icon">
+                                        <i class="fas fa-user-times"></i>
+                                    </div>
+                                    <span>회원 탈퇴</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+
+/* 액션 버튼 스타일 */
+.action-btn {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 1.5rem 2rem;
+    border-radius: 16px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    min-width: 140px;
+    border: 2px solid transparent;
+}
+
+.action-btn .btn-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 0.75rem;
+    font-size: 1.25rem;
+    transition: all 0.3s ease;
+}
+
+.action-btn span {
+    font-weight: 600;
+    font-size: 0.875rem;
+    text-align: center;
+}
+
+.action-btn.primary {
+    background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+    color: #1e40af;
+}
+
+.action-btn.primary .btn-icon {
+    background: white;
+    color: #3b82f6;
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.25);
+}
+
+.action-btn.primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(59, 130, 246, 0.3);
+    border-color: #3b82f6;
+    color: #1e40af;
+    text-decoration: none;
+}
+
+.action-btn.secondary {
+    background: linear-gradient(135deg, #f1f5f9, #e2e8f0);
+    color: #475569;
+}
+
+.action-btn.secondary .btn-icon {
+    background: white;
+    color: #64748b;
+    box-shadow: 0 4px 12px rgba(100, 116, 139, 0.25);
+}
+
+.action-btn.secondary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(100, 116, 139, 0.3);
+    border-color: #64748b;
+    color: #475569;
+    text-decoration: none;
+}
+
+.action-btn.danger {
+    background: linear-gradient(135deg, #fee2e2, #fecaca);
+    color: #b91c1c;
+}
+
+.action-btn.danger .btn-icon {
+    background: white;
+    color: #ef4444;
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.25);
+}
+
+.action-btn.danger:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(239, 68, 68, 0.3);
+    border-color: #ef4444;
+    color: #b91c1c;
+    text-decoration: none;
+}
+
+/* 모바일 반응형 */
+@media (max-width: 768px) {
+    .hero-section h2 {
+        font-size: 1.5rem !important;
+    }
+    
+    .hero-section .lead {
+        font-size: 1rem !important;
+    }
+    
+    .info-card, .profile-info-card, .action-buttons-section {
+        padding: 1.5rem !important;
+        border-radius: 16px !important;
+    }
+    
+    .action-btn {
+        min-width: 120px;
+        padding: 1.25rem 1.5rem;
+    }
+    
+    .action-btn .btn-icon {
+        width: 40px;
+        height: 40px;
+        font-size: 1rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .container {
+        padding: 0 1rem !important;
+    }
+    
+    .profile-info-card .row {
+        flex-direction: column;
+    }
+    
+    .profile-item {
+        margin-bottom: 1rem;
+    }
+    
+    .action-buttons-section .row {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .action-btn {
+        width: 100%;
+        max-width: 200px;
+        margin-bottom: 1rem;
+    }
+}
+</style>
 {% endblock %}

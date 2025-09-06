@@ -1,30 +1,213 @@
 {% extends 'base.html' %}
 
 {% block content %}
-
-    <div style="margin-top: 8rem;">
-        <h2 style="text-align: center;">
-            [비급여 가격 정보]
-        </h2>
+<!-- Header Section -->
+<div class="hero-section" style="padding: 2rem 0; margin-top: 4rem;">
+    <div class="container hero-content text-center">
+        <div class="icon-feature mx-auto mb-3">
+            <i class="fas fa-file-invoice-dollar fa-lg"></i>
+        </div>
+        <h2 class="fw-bold mb-2" style="font-family: 'Noto Sans KR', sans-serif;">비급여 가격 정보</h2>
+        <p class="lead mb-0">투명하고 합리적인 진료비 안내를 제공합니다</p>
     </div>
-    <div style="max-width: 680px; padding: 1rem; margin: 4rem auto; line-height: 1.96">
-        <p>푸른통증의학과의원은 다음과 같은 비급여 가격 정보를 안내해 드립니다.</p>
+</div>
 
-        <h5>진단서 및 증명서 발급 비용</h5>
-        <ul>일반진단서 : 10,000원</ul>
-        <ul>진료기록사본 1~5매 : 1,000원</ul>
-        <ul>진료기록사본 6매 이상 : 100원/장</ul>
-        <ul>진료확인서 : 1000원</ul>
-        <ul>필름복사 : 5000원</ul>
+<div class="container my-5" style="max-width: 700px; padding: 0 2rem;">
+    <div class="info-card" style="background: white; border-radius: 20px; padding: 2.5rem; box-shadow: 0 10px 25px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); border: 1px solid #f1f5f9; position: relative; overflow: hidden;">
+        <div class="card-decoration" style="position: absolute; top: -30px; right: -30px; width: 100px; height: 100px; background: linear-gradient(135deg, #fde68a, #fbbf24); border-radius: 50%; opacity: 0.1;"></div>
+        
+        <div class="text-center mb-4 position-relative">
+            <div class="user-avatar mx-auto mb-3" style="width: 70px; height: 70px; background: linear-gradient(135deg, #fde68a, #fbbf24); border-radius: 16px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(245, 158, 11, 0.25);">
+                <i class="fas fa-file-invoice-dollar" style="color: #f59e0b; font-size: 2rem;"></i>
+            </div>
+            <h4 class="fw-bold mb-1" style="color: #1e293b;">가격 정보</h4>
+            <p class="text-muted mb-0" style="font-size: 0.9rem;">진단서 및 증명서 발급 비용을 안내해 드립니다</p>
+        </div>
 
-        <p style="margin-top: 2rem; font-size: 0.9rem; color: #666;">
-            ※ 위 금액은 건강보험이 적용되지 않는 비급여 항목에 대한 가격입니다.<br>
-            ※ 가격은 의료기관의 사정에 따라 변경될 수 있습니다.<br>
-            ※ 자세한 사항은 의원으로 문의해 주시기 바랍니다. (053-801-8575)
-        </p>
+        <!-- Content Sections -->
+        <div class="content-sections">
+            <div class="content-item mb-4" style="background: #fffbeb; border-radius: 12px; padding: 1.5rem; border: 1px solid #fed7aa;">
+                <div class="d-flex align-items-start">
+                    <div class="content-icon me-3" style="width: 40px; height: 40px; background: linear-gradient(135deg, #fef3c7, #fde68a); border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+                        <i class="fas fa-file-medical" style="color: #f59e0b;"></i>
+                    </div>
+                    <div style="flex-grow: 1;">
+                        <h6 class="fw-bold mb-3" style="color: #d97706; font-size: 0.95rem;">일반진단서</h6>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span style="font-size: 0.85rem; color: #475569;">진료 내용을 증명하는 일반진단서</span>
+                            <span class="fw-bold" style="color: #1e293b; font-size: 1.1rem;">10,000원</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="content-item mb-4" style="background: #f0f9ff; border-radius: 12px; padding: 1.5rem; border: 1px solid #e0f2fe;">
+                <div class="d-flex align-items-start">
+                    <div class="content-icon me-3" style="width: 40px; height: 40px; background: linear-gradient(135deg, #dbeafe, #bfdbfe); border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+                        <i class="fas fa-copy" style="color: #3b82f6;"></i>
+                    </div>
+                    <div style="flex-grow: 1;">
+                        <h6 class="fw-bold mb-3" style="color: #1e40af; font-size: 0.95rem;">진료기록사본</h6>
+                        <div class="mb-2">
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <span style="font-size: 0.85rem; color: #475569;">1~5매</span>
+                                <span class="fw-bold" style="color: #1e293b;">1,000원</span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span style="font-size: 0.85rem; color: #475569;">6매 이상</span>
+                                <span class="fw-bold" style="color: #1e293b;">100원/장</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="content-item mb-4" style="background: #f0fdf4; border-radius: 12px; padding: 1.5rem; border: 1px solid #dcfce7;">
+                <div class="d-flex align-items-start">
+                    <div class="content-icon me-3" style="width: 40px; height: 40px; background: linear-gradient(135deg, #d1fae5, #a7f3d0); border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+                        <i class="fas fa-check-circle" style="color: #10b981;"></i>
+                    </div>
+                    <div style="flex-grow: 1;">
+                        <h6 class="fw-bold mb-3" style="color: #047857; font-size: 0.95rem;">진료확인서</h6>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span style="font-size: 0.85rem; color: #475569;">진료 사실을 확인하는 증명서</span>
+                            <span class="fw-bold" style="color: #1e293b; font-size: 1.1rem;">1,000원</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="content-item mb-4" style="background: #f5f3ff; border-radius: 12px; padding: 1.5rem; border: 1px solid #e9d5ff;">
+                <div class="d-flex align-items-start">
+                    <div class="content-icon me-3" style="width: 40px; height: 40px; background: linear-gradient(135deg, #ede9fe, #ddd6fe); border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+                        <i class="fas fa-film" style="color: #8b5cf6;"></i>
+                    </div>
+                    <div style="flex-grow: 1;">
+                        <h6 class="fw-bold mb-3" style="color: #7c3aed; font-size: 0.95rem;">필름복사</h6>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span style="font-size: 0.85rem; color: #475569;">의료영상 필름 복사본</span>
+                            <span class="fw-bold" style="color: #1e293b; font-size: 1.1rem;">5,000원</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="content-item mb-4" style="background: #fef2f2; border-radius: 12px; padding: 1.5rem; border: 1px solid #fecaca;">
+                <div class="d-flex align-items-start">
+                    <div class="content-icon me-3" style="width: 40px; height: 40px; background: linear-gradient(135deg, #fee2e2, #fecaca); border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+                        <i class="fas fa-exclamation-triangle" style="color: #ef4444;"></i>
+                    </div>
+                    <div style="flex-grow: 1;">
+                        <h6 class="fw-bold mb-2" style="color: #dc2626; font-size: 0.95rem;">유의사항</h6>
+                        <ul class="mb-0" style="font-size: 0.85rem; color: #475569; line-height: 1.6; padding-left: 1.2rem;">
+                            <li class="mb-1">위 금액은 건강보험이 적용되지 않는 비급여 항목입니다</li>
+                            <li class="mb-1">가격은 의료기관 사정에 따라 변경될 수 있습니다</li>
+                            <li>자세한 문의: <strong style="color: #dc2626;">053-801-8575</strong></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Action Button -->
+        <div class="text-center mt-4">
+            <a href="{% url 'bookingapp:create' %}" class="btn-action" style="background: white; color: #f59e0b; padding: 0.875rem 2.5rem; border-radius: 12px; border: 2px solid #f59e0b; font-weight: 700; box-shadow: 0 4px 12px rgba(245, 158, 11, 0.15); transition: all 0.2s ease; display: inline-flex; align-items: center; font-size: 1rem; text-decoration: none;">
+                <i class="fas fa-calendar-plus me-2"></i>진료 예약하기
+            </a>
+        </div>
     </div>
+</div>
 
-    <style>
-    </style>
+<style>
+    .btn-action:hover {
+        background: #f59e0b !important;
+        color: white !important;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 16px rgba(245, 158, 11, 0.4);
+        border-color: #f59e0b !important;
+        text-decoration: none;
+    }
 
+    .info-card:hover {
+        box-shadow: 0 12px 28px -3px rgba(0, 0, 0, 0.12), 0 6px 8px -2px rgba(0, 0, 0, 0.05);
+    }
+
+    .content-item:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        transition: all 0.2s ease;
+    }
+
+    /* 모바일 반응형 */
+    @media (max-width: 768px) {
+        .container {
+            padding: 0 0.5rem !important;
+            max-width: 100% !important;
+        }
+
+        .hero-section {
+            padding: 1.5rem 0 !important;
+            margin-top: 3rem !important;
+        }
+
+        .hero-section h2 {
+            font-size: 1.5rem !important;
+        }
+
+        .hero-section .lead {
+            font-size: 1rem !important;
+        }
+
+        .info-card {
+            padding: 1rem !important;
+            border-radius: 16px !important;
+        }
+
+        .user-avatar {
+            width: 60px !important;
+            height: 60px !important;
+        }
+
+        .user-avatar i {
+            font-size: 1.5rem !important;
+        }
+
+        .content-item {
+            padding: 1.25rem !important;
+        }
+
+        .content-icon {
+            width: 35px !important;
+            height: 35px !important;
+        }
+
+        .btn-action {
+            width: 100%;
+            justify-content: center;
+            padding: 0.75rem 2rem !important;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .container {
+            padding: 0 0.25rem !important;
+        }
+
+        .info-card {
+            padding: 0.75rem !important;
+        }
+
+        .content-item {
+            padding: 1rem !important;
+        }
+
+        .content-item h6 {
+            font-size: 0.9rem !important;
+        }
+
+        .content-item span {
+            font-size: 0.8rem !important;
+        }
+    }
+</style>
 {% endblock %} 

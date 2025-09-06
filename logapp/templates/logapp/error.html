@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% load bootstrap5 %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="text-center py-5">
+                <i class="fas fa-exclamation-triangle fa-5x text-warning mb-4"></i>
+                <h2>오류가 발생했습니다</h2>
+                <p class="text-muted">{{ error|default:"알 수 없는 오류가 발생했습니다." }}</p>
+                
+                <div class="mt-4">
+                    <a href="{% url 'logapp:log_list' %}" class="btn btn-primary me-2">
+                        <i class="fas fa-list"></i> 로그 목록으로
+                    </a>
+                    <a href="{% url 'logapp:log_search' %}" class="btn btn-secondary">
+                        <i class="fas fa-search"></i> 검색 페이지로
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -3,48 +3,195 @@
 
 {% block content %}
     {% if user.is_superuser %}
-
-        <div>
-            <div style="margin-top: 8rem; margin-bottom: 2rem; text-align: center">
-                <h2>[쪽지 송수신 기록]</h2>
-            </div>
-
-            <div>
-
-                <table id="table" class="table table-striped" style="max-width: 98%; margin: 0 auto; font-size: 0.68rem">
-                    <tr style="background-color: lightsteelblue">
-                        <th>수신자</th>
-                        <th>내용</th>
-                        <th>발송일시</th>
-                        <th>확인여부</th>
-                    </tr>
-                    {% for note in notes %}
-                        {% if note %}
-                            <tr>
-                                <td id="r{{ forloop.counter }}c1">{{ note.recipient_id }} - {{ note.recipient.profile.real_name }}</td>
-                                <td id="r{{ forloop.counter }}c2">{{ note.message }}</td>
-                                <td id="r{{ forloop.counter }}c3">{{ note.timestamp }}</td>
-                                {% if note.is_read == 1 %}
-                                    <td id="r{{ forloop.counter }}c4">읽음</td>
-                                {% else %}
-                                    <td id="r{{ forloop.counter }}c4">안 읽음</td>
-                                {% endif %}
-                            </tr>
-                        {% endif %}
-                    {% endfor %}
-                </table>
+        <!-- Header Section -->
+        <div class="hero-section" style="padding: 2rem 0; margin-top: 4rem;">
+            <div class="container hero-content text-center">
+                <div class="icon-feature mx-auto mb-3">
+                    <i class="fas fa-history fa-lg"></i>
+                </div>
+                <h2 class="fw-bold mb-2" style="font-family: 'Noto Sans KR', sans-serif;">쪽지 송수신 기록</h2>
+                <p class="lead mb-0">발송한 모든 메시지의 상태를 확인하세요</p>
             </div>
         </div>
 
-
+        <div class="container my-5" style="max-width: 1200px; padding: 0 2rem;">
+            <div class="row justify-content-center">
+                <div class="col-12">
+                    <div class="card-modern" style="padding: 2rem;">
+                        <div class="text-center mb-5">
+                            <div class="icon-feature mx-auto mb-4" style="background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);">
+                                <i class="fas fa-chart-line fa-lg"></i>
+                            </div>
+                            <h3 class="section-title text-center">발송 이력</h3>
+                            <p class="text-muted" style="font-size: 1.1rem;">환자들에게 발송한 메시지와 확인 상태를 관리합니다</p>
+                        </div>
+                        
+                        {% if notes %}
+                            <!-- Desktop Table -->
+                            <div class="table-responsive d-none d-md-block">
+                                <table class="table table-hover" style="background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);">
+                                    <thead style="background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);">
+                                        <tr>
+                                            <th class="py-3 px-4" style="border: none; color: #374151; font-weight: 600;">
+                                                <i class="fas fa-user me-2"></i>수신자
+                                            </th>
+                                            <th class="py-3 px-4" style="border: none; color: #374151; font-weight: 600;">
+                                                <i class="fas fa-comment me-2"></i>내용
+                                            </th>
+                                            <th class="py-3 px-4" style="border: none; color: #374151; font-weight: 600;">
+                                                <i class="fas fa-clock me-2"></i>발송일시
+                                            </th>
+                                            <th class="py-3 px-4" style="border: none; color: #374151; font-weight: 600;">
+                                                <i class="fas fa-eye me-2"></i>확인여부
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for note in notes %}
+                                            {% if note %}
+                                                <tr class="{% if note.is_read %}table-success-light{% else %}table-warning-light{% endif %}">
+                                                    <td class="py-3 px-4" style="border: none;">
+                                                        <div class="d-flex align-items-center">
+                                                            <div class="user-avatar me-2" style="width: 32px; height: 32px; background: linear-gradient(135deg, #3b82f6, #1d4ed8); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 0.8rem;">
+                                                                {{ note.recipient.profile.real_name|first }}
+                                                            </div>
+                                                            <div>
+                                                                <strong>{{ note.recipient.profile.real_name }}</strong><br>
+                                                                <small class="text-muted">ID: {{ note.recipient_id }}</small>
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                    <td class="py-3 px-4" style="border: none;">
+                                                        <div style="max-width: 300px;">
+                                                            {% if note.message|length > 50 %}
+                                                                <span title="{{ note.message }}">{{ note.message|truncatechars:50 }}</span>
+                                                            {% else %}
+                                                                {{ note.message }}
+                                                            {% endif %}
+                                                        </div>
+                                                    </td>
+                                                    <td class="py-3 px-4" style="border: none;">
+                                                        <small>{{ note.timestamp }}</small>
+                                                    </td>
+                                                    <td class="py-3 px-4" style="border: none;">
+                                                        {% if note.is_read == 1 %}
+                                                            <span class="badge bg-success rounded-pill">
+                                                                <i class="fas fa-check me-1"></i>읽음
+                                                            </span>
+                                                        {% else %}
+                                                            <span class="badge bg-warning rounded-pill">
+                                                                <i class="fas fa-clock me-1"></i>안 읽음
+                                                            </span>
+                                                        {% endif %}
+                                                    </td>
+                                                </tr>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                            
+                            <!-- Mobile Cards -->
+                            <div class="d-md-none">
+                                {% for note in notes %}
+                                    {% if note %}
+                                        <div class="message-card mb-3">
+                                            <div class="alert-modern" style="{% if note.is_read %}border-left-color: #10b981; background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);{% else %}border-left-color: #f59e0b; background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);{% endif %} padding: 1.5rem;">
+                                                <div class="d-flex align-items-start mb-3">
+                                                    <div class="user-avatar me-3" style="width: 40px; height: 40px; background: linear-gradient(135deg, #3b82f6, #1d4ed8); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold;">
+                                                        {{ note.recipient.profile.real_name|first }}
+                                                    </div>
+                                                    <div class="flex-grow-1">
+                                                        <h6 class="mb-1">{{ note.recipient.profile.real_name }}</h6>
+                                                        <small class="text-muted">ID: {{ note.recipient_id }}</small>
+                                                    </div>
+                                                    <div>
+                                                        {% if note.is_read == 1 %}
+                                                            <span class="badge bg-success rounded-pill">
+                                                                <i class="fas fa-check me-1"></i>읽음
+                                                            </span>
+                                                        {% else %}
+                                                            <span class="badge bg-warning rounded-pill">
+                                                                <i class="fas fa-clock me-1"></i>안 읽음
+                                                            </span>
+                                                        {% endif %}
+                                                    </div>
+                                                </div>
+                                                
+                                                <div class="message-content mb-2">
+                                                    <p class="mb-0" style="line-height: 1.6;">{{ note.message }}</p>
+                                                </div>
+                                                
+                                                <div class="text-end">
+                                                    <small class="text-muted">
+                                                        <i class="fas fa-clock me-1"></i>{{ note.timestamp }}
+                                                    </small>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            <!-- No Messages -->
+                            <div class="alert-modern" style="border-left-color: #6b7280; background: linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%); padding: 3rem; text-align: center;">
+                                <div class="mb-3">
+                                    <i class="fas fa-inbox text-muted" style="font-size: 3rem;"></i>
+                                </div>
+                                <h5 class="text-muted mb-2">발송 기록이 없습니다</h5>
+                                <p class="text-muted mb-0">메시지를 발송하면 이곳에 기록이 표시됩니다.</p>
+                            </div>
+                        {% endif %}
+                        
+                        <!-- Action Button -->
+                        <div class="text-center mt-5">
+                            <a href="{% url 'noteapp:send_notes' %}" class="btn-modern">
+                                <i class="fas fa-paper-plane me-2"></i>새 메시지 작성
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
         <style>
-            td, th{
-                text-align: center;
+            .table-success-light {
+                background-color: rgba(16, 185, 129, 0.05) !important;
             }
-            @media screen and (max-width: 500px) {
-                html {
-                    font-size: 12px;
+            
+            .table-warning-light {
+                background-color: rgba(245, 158, 11, 0.05) !important;
+            }
+            
+            .table-hover tbody tr:hover {
+                background-color: rgba(59, 130, 246, 0.1) !important;
+                transform: translateY(-1px);
+                transition: all 0.2s ease;
+            }
+            
+            .message-card {
+                transition: transform 0.2s ease;
+            }
+            
+            .message-card:hover {
+                transform: translateY(-2px);
+            }
+            
+            .user-avatar {
+                text-transform: uppercase;
+            }
+            
+            @media (max-width: 768px) {
+                .hero-section h2 {
+                    font-size: 1.5rem;
+                }
+                
+                .hero-section .lead {
+                    font-size: 1rem;
+                }
+                
+                .card-modern {
+                    padding: 1rem !important;
                 }
             }
         </style>

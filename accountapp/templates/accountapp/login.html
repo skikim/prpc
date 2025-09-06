@@ -2,17 +2,285 @@
 {% load bootstrap5 %}
 
 {% block content %}
-    <div style="margin-top: 8rem;">
-        <div style="text-align: center;">
-            <h3>[로그인]</h3>
+<!-- Header Section -->
+<div class="hero-section" style="padding: 2rem 0; margin-top: 4rem;">
+    <div class="container hero-content text-center">
+        <div class="icon-feature mx-auto mb-3">
+            <i class="fas fa-sign-in-alt fa-lg"></i>
         </div>
-        <div style="max-width: 480px; padding: 2rem; margin: 4rem auto; line-height: 1.96; text-align: center;">
-            <form action="{% url 'accountapp:login' %}" method="post">
-                {% csrf_token %}
-                {% bootstrap_form form %}
-                <div style="margin-top: 4rem"><input type="submit" value="로그인" class="btn btn-primary rounded-pill col-6 mt-4"/></div>
-            </form>
-            <div style="margin-top: 2rem"><a href="/passwords/password_reset"><p>비밀번호를 잊으셨나요?</p></a></div>
+        <h2 class="fw-bold mb-2" style="font-family: 'Noto Sans KR', sans-serif;">로그인</h2>
+        <p class="lead mb-0">안전하고 편리한 예약 서비스를 이용하세요</p>
+    </div>
+</div>
+
+<div class="container my-5" style="max-width: 600px; padding: 0 2rem;">
+    <div class="login-card" style="background: white; border-radius: 20px; padding: 2.5rem; box-shadow: 0 10px 25px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); border: 1px solid #f1f5f9; position: relative; overflow: hidden;">
+        <div class="card-decoration" style="position: absolute; top: -30px; right: -30px; width: 100px; height: 100px; background: linear-gradient(135deg, #bfdbfe, #93c5fd); border-radius: 50%; opacity: 0.1;"></div>
+        
+        <div class="text-center mb-4 position-relative">
+            <div class="user-avatar mx-auto mb-3" style="width: 70px; height: 70px; background: linear-gradient(135deg, #bfdbfe, #93c5fd); border-radius: 16px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(59, 130, 246, 0.25);">
+                <i class="fas fa-sign-in-alt" style="color: #3b82f6; font-size: 2rem;"></i>
+            </div>
+            <h4 class="fw-bold mb-1" style="color: #1e293b;">계정 로그인</h4>
+            <p class="text-muted mb-0" style="font-size: 0.9rem;">사용자 ID와 비밀번호를 입력해 주세요</p>
+        </div>
+        
+        <form action="{% url 'accountapp:login' %}" method="post" class="login-form">
+            {% csrf_token %}
+            
+            <div class="form-sections">
+                {% for field in form %}
+                    <div class="form-group mb-3" style="position: relative;">
+                        <div class="form-field-wrapper" style="background: #f8fafc; border-radius: 12px; padding: 1rem; border: 1px solid #e2e8f0; transition: all 0.2s ease;">
+                            <label for="{{ field.id_for_label }}" class="form-label fw-semibold mb-2" style="color: #374151; font-size: 0.9rem; display: flex; align-items: center;">
+                                {% if field.name == 'username' %}
+                                    <i class="fas fa-user me-2" style="color: #3b82f6; width: 16px;"></i>
+                                {% elif field.name == 'password' %}
+                                    <i class="fas fa-lock me-2" style="color: #ef4444; width: 16px;"></i>
+                                {% else %}
+                                    <i class="fas fa-info-circle me-2" style="color: #6b7280; width: 16px;"></i>
+                                {% endif %}
+                                {{ field.label }}
+                                {% if field.field.required %}
+                                    <span class="text-danger ms-1">*</span>
+                                {% endif %}
+                            </label>
+                            {{ field }}
+                            {% if field.help_text %}
+                                <small class="form-text text-muted mt-1" style="font-size: 0.8rem;">{{ field.help_text }}</small>
+                            {% endif %}
+                            {% if field.errors %}
+                                <div class="text-danger mt-1" style="font-size: 0.8rem;">
+                                    {% for error in field.errors %}
+                                        <div><i class="fas fa-exclamation-circle me-1"></i>{{ error }}</div>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+
+            <div class="form-actions mt-5 text-center">
+                <button type="submit" class="btn-submit" style="background: white; color: #3b82f6; padding: 0.875rem 2.5rem; border-radius: 12px; border: 2px solid #3b82f6; font-weight: 700; box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15); transition: all 0.2s ease; display: inline-flex; align-items: center; font-size: 1rem; cursor: pointer;">
+                    <i class="fas fa-sign-in-alt me-2"></i>로그인
+                </button>
+            </div>
+        </form>
+        
+        <!-- Password Reset Link -->
+        <div class="text-center mt-3 mb-4">
+            <a href="/passwords/password_reset" class="text-decoration-none" style="color: #6b7280; font-size: 0.9rem; transition: color 0.2s ease;">
+                <i class="fas fa-key me-1"></i>비밀번호를 잊으셨나요?
+            </a>
+        </div>
+        
+        <!-- Signup Link -->
+        <div class="text-center mt-4">
+            <div class="signup-link-wrapper" style="background: #f1f5f9; border-radius: 12px; padding: 1.25rem; border: 1px solid #e2e8f0;">
+                <p class="mb-2" style="color: #475569; font-size: 0.9rem;">
+                    <i class="fas fa-user-plus me-2"></i>아직 계정이 없으신가요?
+                </p>
+                <a href="{% url 'accountapp:agreement' %}" class="btn-signup" style="background: white; color: #475569; padding: 0.5rem 1.5rem; border-radius: 8px; text-decoration: none; font-weight: 600; border: 1px solid #cbd5e1; transition: all 0.2s ease; display: inline-flex; align-items: center;">
+                    <i class="fas fa-user-plus me-2"></i>회원가입
+                </a>
+            </div>
         </div>
     </div>
+</div>
+
+<style>
+/* 폼 필드 스타일 */
+.login-form .form-control {
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    padding: 0.75rem;
+    font-size: 0.9rem;
+    background: white;
+    transition: all 0.2s ease;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    text-align: center;
+}
+
+.login-form .form-control:focus {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    background: white;
+}
+
+.form-field-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.login-form .form-label {
+    justify-content: center;
+    margin-bottom: 0.75rem;
+}
+
+.login-form .form-text {
+    text-align: center;
+    margin-top: 0.5rem;
+}
+
+.login-form .text-danger {
+    text-align: center;
+    margin-top: 0.5rem;
+}
+
+.form-field-wrapper:hover {
+    background: #f1f5f9 !important;
+    border-color: #cbd5e1 !important;
+}
+
+/* 버튼 호버 효과 */
+.btn-submit:hover {
+    background: #3b82f6 !important;
+    color: white !important;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(59, 130, 246, 0.4);
+    border-color: #3b82f6 !important;
+}
+
+.btn-signup:hover {
+    background: #f8fafc !important;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 6px rgba(71, 85, 105, 0.2);
+    color: #334155 !important;
+    text-decoration: none;
+}
+
+.login-card:hover {
+    box-shadow: 0 12px 28px -3px rgba(0, 0, 0, 0.12), 0 6px 8px -2px rgba(0, 0, 0, 0.05);
+}
+
+/* 모바일 반응형 */
+@media (max-width: 768px) {
+    .container {
+        padding: 0 0.5rem !important;
+        max-width: 100% !important;
+        margin-left: auto !important;
+        margin-right: auto !important;
+    }
+    
+    .hero-section {
+        padding: 1.5rem 0 !important;
+        margin-top: 3rem !important;
+    }
+    
+    .hero-section h2 {
+        font-size: 1.5rem !important;
+    }
+    
+    .hero-section .lead {
+        font-size: 1rem !important;
+    }
+    
+    .login-card {
+        padding: 1rem !important;
+        border-radius: 16px !important;
+        margin: 0 !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+    }
+    
+    .user-avatar {
+        width: 60px !important;
+        height: 60px !important;
+        margin-bottom: 1rem !important;
+    }
+    
+    .user-avatar i {
+        font-size: 1.5rem !important;
+    }
+    
+    .form-field-wrapper {
+        padding: 0.8rem !important;
+        margin: 0 0 1rem 0 !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+    }
+    
+    .login-form .form-control {
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+        padding: 0.6rem !important;
+    }
+    
+    .btn-submit {
+        width: 100%;
+        justify-content: center;
+        padding: 0.75rem 2rem !important;
+    }
+    
+    .signup-link-wrapper {
+        padding: 1rem !important;
+        margin: 0 !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+    }
+}
+
+@media (max-width: 576px) {
+    .container {
+        padding: 0 0.25rem !important;
+        max-width: 100vw !important;
+        margin: 0 !important;
+    }
+    
+    .hero-section {
+        padding: 1rem 0 !important;
+        margin-top: 2.5rem !important;
+    }
+    
+    .login-card {
+        padding: 0.75rem !important;
+        margin: 0 !important;
+        width: 100% !important;
+        max-width: 100% !important;
+    }
+    
+    .form-field-wrapper {
+        padding: 0.6rem !important;
+        margin: 0 0 0.75rem 0 !important;
+        width: 100% !important;
+        max-width: calc(100vw - 1rem) !important;
+        box-sizing: border-box !important;
+        overflow: hidden !important;
+    }
+    
+    .form-label {
+        font-size: 0.8rem !important;
+    }
+    
+    .login-form .form-control {
+        font-size: 0.8rem !important;
+        padding: 0.5rem !important;
+        width: 100% !important;
+        max-width: calc(100% - 0.5rem) !important;
+        box-sizing: border-box !important;
+        border: 1px solid #d1d5db !important;
+    }
+    
+    .btn-submit {
+        padding: 0.7rem 2rem !important;
+        font-size: 0.9rem !important;
+    }
+    
+    .signup-link-wrapper {
+        padding: 0.8rem !important;
+        margin: 0 !important;
+        width: 100% !important;
+        max-width: calc(100vw - 1rem) !important;
+        box-sizing: border-box !important;
+    }
+}
+</style>
 {% endblock %}

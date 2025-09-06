@@ -1,0 +1,129 @@
+# AWS 서버 배포 계획 - 중학생도 따라할 수 있는 순서 📚
+
+## 🔍 현재 상황 파악
+- **수정된 코드**: UI/UX 디자인 통일화 (홈페이지, 병원안내 페이지 등)
+- **새로운 모델**: logapp/models.py에 BookingLog 모델 추가됨
+- **배포 방식**: GitHub → Dockerfile → Portainer → Docker Compose Stack
+
+## 📋 배포 순서 (따라하기)
+
+### 1️⃣ 로컬에서 코드 정리하기
+```bash
+# 1-1. 현재 변경사항 확인
+git status
+
+# 1-2. 모든 변경된 파일을 스테이징에 추가
+git add .
+
+# 1-3. 커밋 메시지 작성하여 커밋
+git commit -m "UI/UX 통일화 및 BookingLog 모델 추가
+
+🎨 디자인 개선:
+- 홈페이지를 일관된 카드 디자인으로 재설계  
+- 병원안내 서브페이지들 통일된 스타일 적용
+- Footer 모바일 텍스트 중앙 정렬 수정
+- 회원 탈퇴 시 진료기록 삭제 문구 제거
+
+✨ 기능 추가:
+- logapp 추가: 예약 변경 로그 관리 시스템
+- BookingLog 모델로 예약 생성/변경/취소 이력 추적
+
+🤖 Generated with Claude Code
+Co-Authored-By: Claude <noreply@anthropic.com>"
+
+# 1-4. GitHub에 푸시
+git push origin main
+```
+
+### 2️⃣ Dockerfile 수정하기 ⚠️ **중요!**
+현재 Dockerfile의 21번째 줄을 다음과 같이 수정:
+
+**기존:**
+```dockerfile
+CMD ["bash", "-c", "python manage.py collectstatic --noinput --settings=hospital_test.settings.deploy && gunicorn hospital_test.wsgi --env DJANGO_SETTINGS_MODULE=hospital_test.settings.deploy --bind 0.0.0.0:8000"]
+```
+
+**수정 후:**
+```dockerfile  
+CMD ["bash", "-c", "python manage.py collectstatic --noinput --settings=hospital_test.settings.deploy && python manage.py makemigrations --settings=hospital_test.settings.deploy && python manage.py migrate --settings=hospital_test.settings.deploy && gunicorn hospital_test.wsgi --env DJANGO_SETTINGS_MODULE=hospital_test.settings.deploy --bind 0.0.0.0:8000"]
+```
+
+**왜 이렇게 해야 하나요?** 🤔
+- makemigrations: 새로운 BookingLog 모델을 위한 마이그레이션 파일 생성
+- migrate: 데이터베이스에 새 테이블 실제 생성
+- 이 과정 없이는 새 모델이 작동하지 않음!
+
+### 3️⃣ 수정된 Dockerfile을 GitHub에 반영
+```bash
+# 3-1. Dockerfile 변경사항 추가
+git add Dockerfile
+
+# 3-2. 커밋
+git commit -m "Dockerfile에 makemigrations, migrate 명령어 추가
+
+- 새로운 BookingLog 모델 배포를 위해 마이그레이션 명령어 활성화
+- 서버 배포 시 자동으로 데이터베이스 스키마 업데이트"
+
+# 3-3. GitHub에 푸시  
+git push origin main
+```
+
+### 4️⃣ AWS 서버에서 배포하기
+1. **Portainer 접속**
+   - AWS 서버의 Portainer 웹 페이지에 로그인
+
+2. **기존 스택 중지 및 삭제** ⚠️
+   - 현재 실행 중인 스택을 **중지(Stop)**
+   - 스택을 **삭제(Remove)** 
+   - **왜?** 새 모델 마이그레이션이 필요하기 때문
+
+3. **새 이미지 빌드**
+   - Images 메뉴에서 Build a new image 클릭
+   - Repository URL: https://github.com/skikim/prpc.git
+   - Image name: prpc:latest (또는 새 버전명)
+   - Build Image 클릭하여 빌드 시작
+
+4. **빌드 완료 대기** ⏳
+   - 빌드 로그에서 다음 메시지들 확인:
+     ```
+     ✅ makemigrations 성공
+     ✅ migrate 성공  
+     ✅ collectstatic 성공
+     ```
+
+5. **새 스택 생성**
+   - Stacks 메뉴에서 Add stack 클릭
+   - 기존 docker-compose.yml 내용 사용
+   - 이미지명이 새로 빌드한 이미지와 일치하는지 확인
+   - Deploy the stack 클릭
+
+### 5️⃣ 배포 확인하기 ✅
+1. **스택 상태 확인**
+   - 모든 서비스가 running 상태인지 확인
+
+2. **웹사이트 접속 테스트**
+   - 홈페이지 접속하여 새 디자인 확인
+   - 병원안내 페이지들이 일관된 스타일로 보이는지 확인
+
+3. **로그 기능 테스트** (관리자 계정으로)
+   - 예약 생성/변경/취소 시 로그가 기록되는지 확인
+   - /admin에서 BookingLog 모델 데이터 확인
+
+## ⚠️ 주의사항
+- **데이터 백업**: 중요한 운영 서버라면 DB 백업 먼저!
+- **downtime 발생**: 스택 재시작 중 잠시 서비스 중단
+- **마이그레이션 실패 시**: 로그를 확인하고 문제 해결 후 재시작
+
+## 🆘 문제 발생 시
+1. Portainer의 Container 로그 확인
+2. 마이그레이션 오류라면 Django admin에서 확인  
+3. 이미지 빌드 실패라면 GitHub 코드 재확인
+
+## 📝 체크리스트
+□ 로컬 코드 커밋 및 푸시 완료
+□ Dockerfile 마이그레이션 명령어 추가 완료
+□ 기존 스택 중지 및 삭제 완료
+□ 새 이미지 빌드 성공 확인
+□ 새 스택 배포 완료
+□ 웹사이트 정상 작동 확인
+□ 로그 기능 정상 작동 확인

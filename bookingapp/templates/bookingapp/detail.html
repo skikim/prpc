@@ -2,30 +2,253 @@
 {% load bootstrap5 %}
 
 {% block content %}
-    <div>
-        <div class="mb-4"  style="margin-top: 8rem; margin-bottom: 2rem; text-align: center">
-            <h2>[진료예약 정보]</h2>
-        </div>
+<style>
+    /* 파스텔 색상 정의 */
+    .badge.pastel-available { background-color: #E3F2FD !important; color: #1976D2 !important; }
+    .badge.pastel-requested { background-color: #FFF9C4 !important; color: #F57F17 !important; }
+    .badge.pastel-approved { background-color: #FFCDD2 !important; color: #D32F2F !important; }
+    .badge.pastel-cancelled { background-color: #E0E0E0 !important; color: #424242 !important; }
+</style>
 
-        <div style="text-align: center; margin-bottom: 4rem">
-            <h3 style="margin: 4rem; font-family: 'NanumSquareB';">
-                {{ user.profile.real_name }} 님의 예약
-            </h3>
-            {% if request.user == user %}
-                {% for book in user.booking.all %}
-{#                    {% if book.booking_status == '예약요청' %}#}
-                    {% if book.booking_status == '예약요청' and book.booking_date >= today %}
-                        <div>
-                            <p style="margin: 2rem; font-size: 1.2rem">예약일자 : {{ book.booking_date }} &nbsp &nbsp 예약시간 : {{ book.booking_time }} &nbsp &nbsp<strong style="text-decoration: underline">{{ book.booking_status }}</strong> 상태&nbsp &nbsp &nbsp<a href="{% url 'bookingapp:delete' book.id %}">예약취소</a></p>
+<!-- Header Section -->
+<div class="hero-section" style="padding: 2rem 0; margin-top: 4rem;">
+    <div class="container hero-content text-center">
+        <div class="icon-feature mx-auto mb-3">
+            <i class="fas fa-calendar-check fa-lg"></i>
+        </div>
+        <h2 class="fw-bold mb-2" style="font-family: 'Noto Sans KR', sans-serif;">진료예약 정보</h2>
+        <p class="lead mb-0">나의 예약 현황을 확인하고 관리하세요</p>
+    </div>
+</div>
+
+<div class="container my-5" style="max-width: 1000px; padding: 0 2rem;">
+    {% if request.user == user %}
+        <!-- 사용자 정보 카드 -->
+        <div class="user-info-card mb-4" style="background: white; border-radius: 16px; padding: 2rem; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); border: 1px solid #f1f5f9; position: relative; overflow: hidden;">
+            <div class="card-decoration" style="position: absolute; top: -20px; right: -20px; width: 80px; height: 80px; background: linear-gradient(135deg, #10b981, #059669); border-radius: 50%; opacity: 0.1;"></div>
+            <div class="d-flex align-items-center position-relative">
+                <div class="user-avatar me-4" style="width: 60px; height: 60px; background: linear-gradient(135deg, #d1fae5, #a7f3d0); border-radius: 16px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25);">
+                    <i class="fas fa-user" style="color: #10b981; font-size: 1.5rem;"></i>
+                </div>
+                <div class="flex-grow-1">
+                    <h4 class="fw-bold mb-1" style="color: #1e293b;">{{ user.profile.real_name }} 님</h4>
+                    <p class="text-muted mb-0">예약 현황을 확인하고 관리하세요</p>
+                </div>
+            </div>
+        </div>
+            
+            {% regroup user.booking.all by booking_date as bookings_by_date %}
+            {% if user.booking.all %}
+                <!-- 예약 목록 -->
+                <div class="booking-list">
+                    <h5 class="fw-bold mb-4" style="color: #1e293b;">다가오는 예약</h5>
+                    
+                    {% for book in user.booking.all %}
+                        {% if book.booking_status == '예약요청' and book.booking_date >= today %}
+                            <div class="booking-card requested mb-3" style="background: white; border-radius: 12px; padding: 1.5rem; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); border-left: 4px solid #f59e0b; position: relative; overflow: hidden;">
+                                <div class="card-accent" style="position: absolute; top: 0; right: 0; width: 60px; height: 60px; background: linear-gradient(135deg, #f59e0b, #d97706); border-radius: 0 12px 0 50px; opacity: 0.1;"></div>
+                                
+                                <div class="d-flex align-items-center justify-content-between position-relative">
+                                    <div class="booking-info d-flex align-items-center">
+                                        <div class="booking-icon me-3" style="width: 48px; height: 48px; background: linear-gradient(135deg, #fef3c7, #fde68a); border-radius: 12px; display: flex; align-items: center; justify-content: center;">
+                                            <i class="fas fa-clock" style="color: #f59e0b; font-size: 1.125rem;"></i>
+                                        </div>
+                                        <div>
+                                            <h6 class="fw-bold mb-1" style="color: #1e293b; font-size: 1.125rem;">{{ book.booking_date }}</h6>
+                                            <p class="text-muted mb-2" style="font-size: 0.875rem;">{{ book.booking_time }}</p>
+                                            <span class="status-badge requested" style="background: #fef3c7; color: #92400e; padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.75rem; font-weight: 600;">
+                                                {{ book.booking_status }}
+                                            </span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="booking-actions">
+                                        <a href="{% url 'bookingapp:delete' book.id %}" class="cancel-btn" style="background: #fee2e2; color: #dc2626; padding: 0.5rem 1rem; border-radius: 8px; text-decoration: none; font-size: 0.875rem; font-weight: 600; transition: all 0.2s ease;">
+                                            <i class="fas fa-times me-1"></i>취소
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        {% elif book.booking_status == '예약승인' and book.booking_date >= today %}
+                            <div class="booking-card approved mb-3" style="background: white; border-radius: 12px; padding: 1.5rem; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); border-left: 4px solid #10b981; position: relative; overflow: hidden;">
+                                <div class="card-accent" style="position: absolute; top: 0; right: 0; width: 60px; height: 60px; background: linear-gradient(135deg, #10b981, #059669); border-radius: 0 12px 0 50px; opacity: 0.1;"></div>
+                                
+                                <div class="d-flex align-items-center justify-content-between position-relative">
+                                    <div class="booking-info d-flex align-items-center">
+                                        <div class="booking-icon me-3" style="width: 48px; height: 48px; background: linear-gradient(135deg, #d1fae5, #a7f3d0); border-radius: 12px; display: flex; align-items: center; justify-content: center;">
+                                            <i class="fas fa-check-circle" style="color: #10b981; font-size: 1.125rem;"></i>
+                                        </div>
+                                        <div>
+                                            <h6 class="fw-bold mb-1" style="color: #1e293b; font-size: 1.125rem;">{{ book.booking_date }}</h6>
+                                            <p class="text-muted mb-2" style="font-size: 0.875rem;">{{ book.booking_time }}</p>
+                                            <span class="status-badge approved" style="background: #d1fae5; color: #065f46; padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.75rem; font-weight: 600;">
+                                                {{ book.booking_status }}
+                                            </span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="booking-actions">
+                                        <a href="{% url 'bookingapp:delete' book.id %}" class="cancel-btn" style="background: #fee2e2; color: #dc2626; padding: 0.5rem 1rem; border-radius: 8px; text-decoration: none; font-size: 0.875rem; font-weight: 600; transition: all 0.2s ease;">
+                                            <i class="fas fa-times me-1"></i>취소
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endif %}
+                    {% empty %}
+                        <!-- 빈 상태 -->
+                        <div class="empty-state" style="background: white; border-radius: 16px; padding: 4rem 2rem; text-align: center; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); border: 2px dashed #e5e7eb;">
+                            <div class="empty-icon mx-auto mb-4" style="width: 80px; height: 80px; background: linear-gradient(135deg, #f3f4f6, #e5e7eb); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                                <i class="fas fa-calendar-plus" style="color: #9ca3af; font-size: 2rem;"></i>
+                            </div>
+                            <h5 class="fw-bold mb-3" style="color: #6b7280;">아직 예약이 없습니다</h5>
+                            <p class="text-muted mb-4" style="max-width: 300px; margin: 0 auto;">첫 번째 진료 예약을 등록하여<br>편리한 예약 서비스를 이용해보세요</p>
+                            <a href="{% url 'bookingapp:create' %}" class="btn-new-booking" style="background: linear-gradient(135deg, #3b82f6, #1d4ed8); color: white !important; padding: 0.875rem 2rem; border-radius: 12px; text-decoration: none; font-weight: 600; box-shadow: 0 4px 12px rgba(59, 130, 246, 0.25); transition: all 0.2s ease; display: inline-flex; align-items: center; -webkit-text-fill-color: white !important;">
+                                <i class="fas fa-plus me-2" style="color: white !important;"></i>첫 예약 등록하기
+                            </a>
                         </div>
-                    {% elif book.booking_status == '예약승인' and book.booking_date >= today %}
-                        <div>
-                            <p style="margin: 2rem; font-size: 1.2rem">예약일자 : {{ book.booking_date }} &nbsp &nbsp 예약시간 : {{ book.booking_time }} &nbsp &nbsp<strong style="text-decoration: underline">{{ book.booking_status }}</strong> 상태&nbsp &nbsp &nbsp<a href="{% url 'bookingapp:delete' book.id %}">예약취소</a></p>
+                    {% endfor %}
+                </div>
+                
+                <!-- 예약이 있는 경우에만 새 예약 버튼 표시 -->
+                {% if user.booking.all %}
+                    <div class="new-booking-section mt-5" style="background: white; border-radius: 16px; padding: 2rem; text-align: center; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); border: 1px solid #f1f5f9;">
+                        <div class="d-flex align-items-center justify-content-center mb-3">
+                            <div class="plus-icon me-3" style="width: 40px; height: 40px; background: linear-gradient(135deg, #dbeafe, #bfdbfe); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                                <i class="fas fa-plus" style="color: #3b82f6; font-size: 1rem;"></i>
+                            </div>
+                            <h6 class="fw-bold mb-0" style="color: #1e293b;">추가 예약이 필요하신가요?</h6>
                         </div>
-                    {% else %}
-                    {% endif %}
-                {% endfor %}
+                        <p class="text-muted mb-4" style="font-size: 0.875rem;">새로운 진료 날짜와 시간을 선택해보세요</p>
+                        <a href="{% url 'bookingapp:create' %}" class="btn-add-booking" style="background: linear-gradient(135deg, #3b82f6, #1d4ed8); color: white !important; padding: 0.75rem 1.5rem; border-radius: 10px; text-decoration: none; font-weight: 600; box-shadow: 0 3px 10px rgba(59, 130, 246, 0.25); transition: all 0.2s ease; display: inline-flex; align-items: center; font-size: 0.875rem; -webkit-text-fill-color: white !important;">
+                            <i class="fas fa-calendar-plus me-2" style="color: white !important;"></i>새 예약 등록
+                        </a>
+                    </div>
+                {% endif %}
             {% endif %}
         </div>
-    </div>
+    {% endif %}
+</div>
+
+<style>
+/* 호버 효과 */
+.cancel-btn:hover {
+    background: #fecaca !important;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(220, 38, 38, 0.2);
+}
+
+.btn-new-booking,
+.btn-add-booking {
+    color: white !important;
+    -webkit-text-fill-color: white !important;
+}
+
+.btn-new-booking *,
+.btn-add-booking * {
+    color: white !important;
+    -webkit-text-fill-color: white !important;
+}
+
+.btn-new-booking:hover,
+.btn-add-booking:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(59, 130, 246, 0.4);
+    color: white !important;
+    -webkit-text-fill-color: white !important;
+}
+
+.booking-card:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    transform: translateY(-1px);
+}
+
+.user-info-card:hover {
+    box-shadow: 0 6px 12px -1px rgba(0, 0, 0, 0.15), 0 4px 8px -1px rgba(0, 0, 0, 0.1);
+}
+
+/* 모바일 반응형 */
+@media (max-width: 768px) {
+    .container {
+        padding: 0 1rem !important;
+    }
+    
+    .user-info-card,
+    .booking-card,
+    .empty-state,
+    .new-booking-section {
+        padding: 1.5rem !important;
+        border-radius: 12px !important;
+    }
+    
+    .booking-info {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+    }
+    
+    .booking-icon {
+        width: 40px !important;
+        height: 40px !important;
+        margin-bottom: 1rem !important;
+    }
+    
+    .booking-actions {
+        margin-top: 1rem;
+        align-self: flex-start;
+    }
+    
+    .d-flex.justify-content-between {
+        flex-direction: column !important;
+    }
+    
+    .booking-stats {
+        text-align: left !important;
+        margin-top: 1rem;
+    }
+    
+    .hero-section h2 {
+        font-size: 1.5rem !important;
+    }
+    
+    .hero-section .lead {
+        font-size: 1rem !important;
+    }
+}
+
+@media (max-width: 576px) {
+    .user-info-card .d-flex {
+        flex-direction: column !important;
+        text-align: center !important;
+    }
+    
+    .user-avatar {
+        align-self: center !important;
+        margin-bottom: 1rem !important;
+    }
+    
+    .booking-stats {
+        text-align: center !important;
+        margin-top: 1rem;
+    }
+    
+    .empty-state {
+        padding: 3rem 1.5rem !important;
+    }
+    
+    .empty-icon {
+        width: 60px !important;
+        height: 60px !important;
+    }
+    
+    .empty-icon i {
+        font-size: 1.5rem !important;
+    }
+    
+    .btn-new-booking,
+    .btn-add-booking {
+        width: 100%;
+        justify-content: center;
+    }
+}
+</style>
 {% endblock %}

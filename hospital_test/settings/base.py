@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'passwordapp',
     'noteapp',
     'searchapp',
+    'logapp',
 ]
 
 MIDDLEWARE = [
@@ -57,6 +58,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'middleware.CheckProfileMiddleware',
+    'logapp.middleware.LoggingMiddleware',
 ]
 
 ROOT_URLCONF = 'hospital_test.urls'

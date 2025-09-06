@@ -2,31 +2,148 @@
 {% load bootstrap5 %}
 
 {% block content %}
-
-    <div style="margin-top: 8rem;">
-        <h2 style="text-align: center;">
-            [메시지 관리]
-        </h2>
+<!-- Header Section -->
+<div class="hero-section" style="padding: 2rem 0; margin-top: 4rem;">
+    <div class="container hero-content text-center">
+        <div class="icon-feature mx-auto mb-3">
+            <i class="fas fa-envelope fa-lg"></i>
+        </div>
+        <h2 class="fw-bold mb-2" style="font-family: 'Noto Sans KR', sans-serif;">메시지 관리</h2>
+        <p class="lead mb-0">병원에서 보낸 중요한 메시지들을 확인하세요</p>
     </div>
-    <div style="max-width: 600px; padding: 1rem; margin: 4rem auto; line-height: 1.96">
-        {% for note in notes reversed %}
-            <div style="margin: 0.4rem">
-                <li class="list-group-item {% if not note.is_read %}list-group-item-warning{% endif %}">
-                    <p>{{ note.message }}</p>
-                    <div style="display: flex; justify-content: space-between;">
-                        <div><small class="text-muted">-{{ note.sender.profile.real_name }}-  {{ note.timestamp }}</small></div>
-                        <form method="POST" action="{% url 'noteapp:delete_notes' note.id %}" style="display: inline">
-                            {% csrf_token %}
-                            <div><button type="submit" class="btn btn-outline-danger btn-sm rounded-pill">삭제</button></div>
-                        </form>
+</div>
+
+<div class="container my-5" style="max-width: 800px; padding: 0 2rem;">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="card-modern" style="padding: 2rem;">
+                <div class="text-center mb-5">
+                    <div class="icon-feature mx-auto mb-4" style="background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);">
+                        <i class="fas fa-comments fa-lg"></i>
                     </div>
-                </li>
+                    <h3 class="section-title text-center">수신 메시지</h3>
+                    <p class="text-muted" style="font-size: 1.1rem;">새로운 메시지는 강조 표시됩니다</p>
+                </div>
+                
+                <!-- Messages List -->
+                {% if notes %}
+                    <div class="message-list">
+                        {% for note in notes reversed %}
+                            <div class="message-item mb-4">
+                                <div class="alert-modern {% if not note.is_read %}message-unread{% else %}message-read{% endif %}" style="{% if not note.is_read %}border-left-color: #f59e0b; background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);{% else %}border-left-color: #10b981; background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);{% endif %} padding: 1.5rem;">
+                                    <div class="d-flex align-items-start">
+                                        <div class="me-3">
+                                            {% if not note.is_read %}
+                                                <i class="fas fa-envelope text-warning fa-lg"></i>
+                                            {% else %}
+                                                <i class="fas fa-envelope-open text-success fa-lg"></i>
+                                            {% endif %}
+                                        </div>
+                                        <div class="flex-grow-1">
+                                            <div class="message-content mb-3">
+                                                <p class="mb-0" style="line-height: 1.7; font-size: 1.1rem;">{{ note.message }}</p>
+                                            </div>
+                                            
+                                            <div class="message-meta d-flex justify-content-between align-items-center flex-wrap">
+                                                <div class="message-info">
+                                                    <small class="text-muted d-flex align-items-center">
+                                                        <i class="fas fa-user me-1"></i>
+                                                        <strong>{{ note.sender.profile.real_name }}</strong>
+                                                        <span class="mx-2">•</span>
+                                                        <i class="fas fa-clock me-1"></i>
+                                                        {{ note.timestamp }}
+                                                    </small>
+                                                </div>
+                                                
+                                                <div class="message-actions">
+                                                    <form method="POST" action="{% url 'noteapp:delete_notes' note.id %}" style="display: inline;" onsubmit="return confirm('이 메시지를 삭제하시겠습니까?');">
+                                                        {% csrf_token %}
+                                                        <button type="submit" class="btn btn-sm btn-outline-danger rounded-pill">
+                                                            <i class="fas fa-trash-alt me-1"></i>삭제
+                                                        </button>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <!-- No Messages -->
+                    <div class="alert-modern" style="border-left-color: #6b7280; background: linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%); padding: 3rem; text-align: center;">
+                        <div class="mb-3">
+                            <i class="fas fa-inbox text-muted" style="font-size: 3rem;"></i>
+                        </div>
+                        <h5 class="text-muted mb-2">메시지가 없습니다</h5>
+                        <p class="text-muted mb-0">새로운 메시지가 도착하면 여기에 표시됩니다.</p>
+                    </div>
+                {% endif %}
+                
+                <!-- Action Button -->
+                <div class="text-center mt-5">
+                    <a href="{% url 'bookingapp:create' %}" class="btn-modern">
+                        <i class="fas fa-calendar-plus me-2"></i>새 예약 하기
+                    </a>
+                </div>
             </div>
-        {% endfor %}
+        </div>
     </div>
+</div>
 
-    <style>
-    </style>
+<style>
+    .message-item {
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    
+    .message-item:hover {
+        transform: translateY(-2px);
+    }
+    
+    .message-unread {
+        position: relative;
+        animation: pulse-glow 2s infinite;
+    }
+    
+    .message-unread::before {
+        content: "";
+        position: absolute;
+        top: -2px;
+        left: -2px;
+        right: -2px;
+        bottom: -2px;
+        background: linear-gradient(135deg, #fbbf24, #f59e0b);
+        border-radius: 12px;
+        z-index: -1;
+        opacity: 0.3;
+    }
+    
+    @keyframes pulse-glow {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.8; }
+    }
+    
+    @media (max-width: 768px) {
+        .message-meta {
+            flex-direction: column;
+            align-items: flex-start !important;
+            gap: 1rem;
+        }
+        
+        .message-actions {
+            align-self: flex-end;
+        }
+        
+        .hero-section h2 {
+            font-size: 1.5rem;
+        }
+        
+        .hero-section .lead {
+            font-size: 1rem;
+        }
+    }
+</style>
 
 {% endblock %}
 

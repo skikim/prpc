@@ -1,48 +1,191 @@
 {% extends 'base.html' %}
 
 {% block content %}
-
-    <div style="margin-top: 8rem;">
-        <h2 style="text-align: center;">
-            [개인정보 처리방침]
-        </h2>
+<!-- Header Section -->
+<div class="hero-section" style="padding: 2rem 0; margin-top: 4rem;">
+    <div class="container hero-content text-center">
+        <div class="icon-feature mx-auto mb-3">
+            <i class="fas fa-shield-alt fa-lg"></i>
+        </div>
+        <h2 class="fw-bold mb-2" style="font-family: 'Noto Sans KR', sans-serif;">개인정보 처리방침</h2>
+        <p class="lead mb-0">환자 개인정보 보호와 안전한 관리를 위한 처리방침입니다</p>
     </div>
-    <div style="max-width: 680px; padding: 1rem; margin: 4rem auto; line-height: 1.96">
-        <h5>1. 개인정보 수집 항목</h5>
-        <p>병원은 다음과 같은 개인정보를 수집합니다.</p>
+</div>
 
-        <ul>수집항목: 성명, 생년월일, 주소, 전화번호, 이메일, 진료과목, 예약일자, 진단서, 검사결과, 진료비 결제정보 등</ul>
-        <ul>수집목적: 진료서비스 제공, 예약관리, 환자의 건강상태 파악 및 치료, 진료비 정산 및 환급, 건강보험심사평가원 등의 기관과의 의무 이행 등</ul>
-        <ul>보유 및 이용기간: 개인정보의 수집목적이 달성된 후 지체 없이 파기, 단 보존기간은 5년 이내로 한정</ul><br>
+<div class="container my-5" style="max-width: 700px; padding: 0 2rem;">
+    <div class="info-card" style="background: white; border-radius: 20px; padding: 2.5rem; box-shadow: 0 10px 25px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); border: 1px solid #f1f5f9; position: relative; overflow: hidden;">
+        <div class="card-decoration" style="position: absolute; top: -30px; right: -30px; width: 100px; height: 100px; background: linear-gradient(135deg, #a7f3d0, #6ee7b7); border-radius: 50%; opacity: 0.1;"></div>
+        
+        <div class="text-center mb-4 position-relative">
+            <div class="user-avatar mx-auto mb-3" style="width: 70px; height: 70px; background: linear-gradient(135deg, #a7f3d0, #6ee7b7); border-radius: 16px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25);">
+                <i class="fas fa-shield-alt" style="color: #10b981; font-size: 2rem;"></i>
+            </div>
+            <h4 class="fw-bold mb-1" style="color: #1e293b;">개인정보 보호</h4>
+            <p class="text-muted mb-0" style="font-size: 0.9rem;">환자분들의 개인정보를 안전하게 보호합니다</p>
+        </div>
 
-        <h5>2.개인정보의 이용 목적</h5>
-        <p>병원은 다음과 같은 목적으로 개인정보를 이용합니다.</p>
+        <!-- Content Sections -->
+        <div class="content-sections">
+            <div class="content-item mb-4" style="background: #f0f9ff; border-radius: 12px; padding: 1.5rem; border: 1px solid #e0f2fe;">
+                <div class="d-flex align-items-start">
+                    <div class="content-icon me-3" style="width: 40px; height: 40px; background: linear-gradient(135deg, #dbeafe, #bfdbfe); border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+                        <i class="fas fa-database" style="color: #3b82f6;"></i>
+                    </div>
+                    <div>
+                        <h6 class="fw-bold mb-2" style="color: #1e40af; font-size: 0.95rem;">개인정보 수집 항목</h6>
+                        <p class="mb-0" style="font-size: 0.85rem; color: #475569; line-height: 1.6;">
+                            <strong>수집항목:</strong> 성명, 생년월일, 전화번호, 이메일, 진료과목, 예약일자 등<br>
+                            <strong>수집목적:</strong> 진료서비스 제공, 예약관리, 건강상태 파악 및 치료<br>
+                            <strong>보유기간:</strong> 목적 달성 후 지체 없이 파기 (법정 보존기간 5년 이내)
+                        </p>
+                    </div>
+                </div>
+            </div>
 
-        <ul>진료서비스 제공 및 예약관리</ul>
-        <ul>환자의 건강상태 파악 및 치료를 위한 진료 및 검사</ul>
-        <ul>진료비 정산 및 환급</ul>
-        <ul>건강보험심사평가원 등의 기관과의 의무 이행</ul><br>
+            <div class="content-item mb-4" style="background: #f0fdf4; border-radius: 12px; padding: 1.5rem; border: 1px solid #dcfce7;">
+                <div class="d-flex align-items-start">
+                    <div class="content-icon me-3" style="width: 40px; height: 40px; background: linear-gradient(135deg, #d1fae5, #a7f3d0); border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+                        <i class="fas fa-clipboard-check" style="color: #10b981;"></i>
+                    </div>
+                    <div>
+                        <h6 class="fw-bold mb-2" style="color: #047857; font-size: 0.95rem;">개인정보 이용 목적</h6>
+                        <p class="mb-0" style="font-size: 0.85rem; color: #475569; line-height: 1.6;">
+                            • 진료서비스 제공 및 예약관리 • 환자 건강상태 파악 및 치료<br>
+                            • 진료비 정산 및 환급 • 건강보험 관련 의무 이행
+                        </p>
+                    </div>
+                </div>
+            </div>
 
-        <h5>3.개인정보의 제공</h5>
-        <p>병원은 고객의 개인정보를 제3자에게 제공하지 않습니다. 다만, 아래의 경우에는 예외로 합니다.</p>
+            <div class="content-item mb-4" style="background: #fffbeb; border-radius: 12px; padding: 1.5rem; border: 1px solid #fed7aa;">
+                <div class="d-flex align-items-start">
+                    <div class="content-icon me-3" style="width: 40px; height: 40px; background: linear-gradient(135deg, #fef3c7, #fde68a); border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+                        <i class="fas fa-share-alt" style="color: #f59e0b;"></i>
+                    </div>
+                    <div>
+                        <h6 class="fw-bold mb-2" style="color: #d97706; font-size: 0.95rem;">개인정보 제3자 제공</h6>
+                        <p class="mb-0" style="font-size: 0.85rem; color: #475569; line-height: 1.6;">
+                            기본적으로 제3자에게 제공하지 않으나, 건강보험심사평가원 등 법정 기관에는 건강보험 관련 업무 수행을 위해 제공할 수 있습니다.
+                        </p>
+                    </div>
+                </div>
+            </div>
 
-        <ul>제공받는자: 건강보험심사평가원, 국민건강보험공단 등 관련 기관</ul>
-        <ul>제공목적: 건강보험급여, 진료비 정산 등 건강보험 관련 업무 수행</ul>
-        <ul>제공항목: 성명, 생년월일, 주소, 진료과목, 진단서, 검사결과, 진료비 결제정보 등</ul>
-        <ul>보유 및 이용기간: 제공받는 기관의 보유 및 이용기간에 따름</ul><br>
+            <div class="content-item mb-4" style="background: #f5f3ff; border-radius: 12px; padding: 1.5rem; border: 1px solid #e9d5ff;">
+                <div class="d-flex align-items-start">
+                    <div class="content-icon me-3" style="width: 40px; height: 40px; background: linear-gradient(135deg, #ede9fe, #ddd6fe); border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+                        <i class="fas fa-calendar-alt" style="color: #8b5cf6;"></i>
+                    </div>
+                    <div>
+                        <h6 class="fw-bold mb-2" style="color: #7c3aed; font-size: 0.95rem;">보유 및 이용기간</h6>
+                        <p class="mb-0" style="font-size: 0.85rem; color: #475569; line-height: 1.6;">
+                            고객 개인정보는 수집목적 달성 후 지체 없이 파기하며, 법령에 의한 보존기간은 다음과 같습니다:<br>
+                            • 환자명부: 5년 • 진료기록부: 10년 • 처방전: 2년(5년) • 진단서 부본: 3년
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-        <h5>4.개인정보의 보유 및 이용기간</h5>
-        <p>병원은 고객의 개인정보를 수집목적 또는 제공목적이 달성된 후에는 지체 없이 파기합니다.<br> 단, 관련 법령에 의하여 보존할 필요가 있는 경우에는 일정기간동안 보관합니다.<br> 예를 들면,</p>
-
-        <ul>환자명부: 5년간 보관</ul>
-        <ul>진료기록부: 10년간 보관</ul>
-        <ul>처방전: 2년간 보관(건강보험 청구건: 5년)</ul>
-        <ul>방사선 사진 및 그 소견서: 5년간 보관</ul>
-        <ul>진단서 등의 부본: 3년간 보관</ul>
-
+        <!-- Action Button -->
+        <div class="text-center mt-4">
+            <a href="{% url 'bookingapp:create' %}" class="btn-action" style="background: white; color: #10b981; padding: 0.875rem 2.5rem; border-radius: 12px; border: 2px solid #10b981; font-weight: 700; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.15); transition: all 0.2s ease; display: inline-flex; align-items: center; font-size: 1rem; text-decoration: none;">
+                <i class="fas fa-calendar-plus me-2"></i>안전한 진료 예약
+            </a>
+        </div>
     </div>
+</div>
 
-    <style>
-    </style>
+<style>
+    .btn-action:hover {
+        background: #10b981 !important;
+        color: white !important;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 16px rgba(16, 185, 129, 0.4);
+        border-color: #10b981 !important;
+        text-decoration: none;
+    }
 
+    .info-card:hover {
+        box-shadow: 0 12px 28px -3px rgba(0, 0, 0, 0.12), 0 6px 8px -2px rgba(0, 0, 0, 0.05);
+    }
+
+    .content-item:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        transition: all 0.2s ease;
+    }
+
+    /* 모바일 반응형 */
+    @media (max-width: 768px) {
+        .container {
+            padding: 0 0.5rem !important;
+            max-width: 100% !important;
+        }
+
+        .hero-section {
+            padding: 1.5rem 0 !important;
+            margin-top: 3rem !important;
+        }
+
+        .hero-section h2 {
+            font-size: 1.5rem !important;
+        }
+
+        .hero-section .lead {
+            font-size: 1rem !important;
+        }
+
+        .info-card {
+            padding: 1rem !important;
+            border-radius: 16px !important;
+        }
+
+        .user-avatar {
+            width: 60px !important;
+            height: 60px !important;
+        }
+
+        .user-avatar i {
+            font-size: 1.5rem !important;
+        }
+
+        .content-item {
+            padding: 1.25rem !important;
+        }
+
+        .content-icon {
+            width: 35px !important;
+            height: 35px !important;
+        }
+
+        .btn-action {
+            width: 100%;
+            justify-content: center;
+            padding: 0.75rem 2rem !important;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .container {
+            padding: 0 0.25rem !important;
+        }
+
+        .info-card {
+            padding: 0.75rem !important;
+        }
+
+        .content-item {
+            padding: 1rem !important;
+        }
+
+        .content-item h6 {
+            font-size: 0.9rem !important;
+        }
+
+        .content-item p {
+            font-size: 0.8rem !important;
+        }
+    }
+</style>
 {% endblock %}

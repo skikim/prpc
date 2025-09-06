@@ -1,56 +1,233 @@
 {% extends 'base.html' %}
 
 {% block content %}
-
-    <div style="margin-top: 8rem;">
-        <h2 style="text-align: center;">
-            [온라인 예약하는 법 동영상 설명]
-        </h2>
+<!-- Header Section -->
+<div class="hero-section" style="padding: 2rem 0; margin-top: 4rem;">
+    <div class="container hero-content text-center">
+        <div class="icon-feature mx-auto mb-3">
+            <i class="fas fa-play-circle fa-lg"></i>
+        </div>
+        <h2 class="fw-bold mb-2" style="font-family: 'Noto Sans KR', sans-serif;">온라인 예약 동영상 가이드</h2>
+        <p class="lead mb-0">단계별 예약 방법을 동영상으로 쉽게 알아보세요</p>
     </div>
+</div>
 
-    <div style="max-width: 680px; padding: 1rem; margin: 4rem auto; line-height: 1.96">
-        <ul><a href="https://youtu.be/oXScqAxmNJw">[전체설명]</a></ul>
-        <div class="responsive-video" style="margin-bottom: 4rem">
-            <iframe width="560" height="315" src="https://www.youtube.com/embed/oXScqAxmNJw" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+<div class="container my-5" style="max-width: 700px; padding: 0 2rem;">
+    <div class="info-card" style="background: white; border-radius: 20px; padding: 2.5rem; box-shadow: 0 10px 25px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); border: 1px solid #f1f5f9; position: relative; overflow: hidden;">
+        <div class="card-decoration" style="position: absolute; top: -30px; right: -30px; width: 100px; height: 100px; background: linear-gradient(135deg, #f3e8ff, #e9d5ff); border-radius: 50%; opacity: 0.1;"></div>
+        
+        <div class="text-center mb-4 position-relative">
+            <div class="user-avatar mx-auto mb-3" style="width: 70px; height: 70px; background: linear-gradient(135deg, #f3e8ff, #e9d5ff); border-radius: 16px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(139, 92, 246, 0.25);">
+                <i class="fas fa-play-circle" style="color: #8b5cf6; font-size: 2rem;"></i>
+            </div>
+            <h4 class="fw-bold mb-1" style="color: #1e293b;">동영상 가이드</h4>
+            <p class="text-muted mb-0" style="font-size: 0.9rem;">단계별 온라인 예약 방법을 안내합니다</p>
         </div>
-        <li><a href="https://youtu.be/-eU8V4rOUms">홈페이지 접속방법</a></li>
-        <div class="responsive-video" style="margin-bottom: 4rem">
-            <iframe width="560" height="315" src="https://www.youtube.com/embed/-eU8V4rOUms" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+
+        <!-- Content Sections -->
+        <div class="content-sections">
+            <div class="content-item mb-4" style="background: #fef2f2; border-radius: 12px; padding: 1.5rem; border: 1px solid #fecaca;">
+                <div class="d-flex align-items-start">
+                    <div class="content-icon me-3" style="width: 40px; height: 40px; background: linear-gradient(135deg, #fee2e2, #fecaca); border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+                        <i class="fas fa-play" style="color: #ef4444;"></i>
+                    </div>
+                    <div style="flex-grow: 1;">
+                        <h6 class="fw-bold mb-2" style="color: #dc2626; font-size: 0.95rem;">전체 예약 과정</h6>
+                        <p class="mb-3" style="font-size: 0.85rem; color: #475569; line-height: 1.6;">
+                            온라인 예약의 전체 과정을 한 번에 확인하실 수 있습니다.
+                        </p>
+                        <div class="video-wrapper" style="position: relative; overflow: hidden; padding-bottom: 56.25%; border-radius: 8px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+                            <iframe src="https://www.youtube.com/embed/oXScqAxmNJw" title="전체 예약 설명" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border-radius: 8px;"></iframe>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="content-item mb-4" style="background: #f0f9ff; border-radius: 12px; padding: 1.5rem; border: 1px solid #e0f2fe;">
+                <div class="d-flex align-items-start">
+                    <div class="content-icon me-3" style="width: 40px; height: 40px; background: linear-gradient(135deg, #dbeafe, #bfdbfe); border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+                        <i class="fas fa-home" style="color: #3b82f6;"></i>
+                    </div>
+                    <div style="flex-grow: 1;">
+                        <h6 class="fw-bold mb-2" style="color: #1e40af; font-size: 0.95rem;">홈페이지 접속방법</h6>
+                        <p class="mb-3" style="font-size: 0.85rem; color: #475569; line-height: 1.6;">
+                            푸른마취통증의학과의원 홈페이지에 접속하는 방법을 안내합니다.
+                        </p>
+                        <div class="video-wrapper" style="position: relative; overflow: hidden; padding-bottom: 56.25%; border-radius: 8px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+                            <iframe src="https://www.youtube.com/embed/-eU8V4rOUms" title="홈페이지 접속방법" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border-radius: 8px;"></iframe>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="content-item mb-4" style="background: #f0fdf4; border-radius: 12px; padding: 1.5rem; border: 1px solid #dcfce7;">
+                <div class="d-flex align-items-start">
+                    <div class="content-icon me-3" style="width: 40px; height: 40px; background: linear-gradient(135deg, #d1fae5, #a7f3d0); border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+                        <i class="fas fa-user-plus" style="color: #10b981;"></i>
+                    </div>
+                    <div style="flex-grow: 1;">
+                        <h6 class="fw-bold mb-2" style="color: #047857; font-size: 0.95rem;">회원 가입</h6>
+                        <p class="mb-3" style="font-size: 0.85rem; color: #475569; line-height: 1.6;">
+                            처음 이용하시는 분들을 위한 회원가입 과정을 설명합니다.
+                        </p>
+                        <div class="video-wrapper" style="position: relative; overflow: hidden; padding-bottom: 56.25%; border-radius: 8px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+                            <iframe src="https://www.youtube.com/embed/BVBdvvqcdAg" title="회원 가입" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border-radius: 8px;"></iframe>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="content-item mb-4" style="background: #fffbeb; border-radius: 12px; padding: 1.5rem; border: 1px solid #fed7aa;">
+                <div class="d-flex align-items-start">
+                    <div class="content-icon me-3" style="width: 40px; height: 40px; background: linear-gradient(135deg, #fef3c7, #fde68a); border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+                        <i class="fas fa-edit" style="color: #f59e0b;"></i>
+                    </div>
+                    <div style="flex-grow: 1;">
+                        <h6 class="fw-bold mb-2" style="color: #d97706; font-size: 0.95rem;">내 정보 입력</h6>
+                        <p class="mb-3" style="font-size: 0.85rem; color: #475569; line-height: 1.6;">
+                            예약에 필요한 개인정보와 프로필 정보를 입력하는 방법입니다.
+                        </p>
+                        <div class="video-wrapper" style="position: relative; overflow: hidden; padding-bottom: 56.25%; border-radius: 8px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+                            <iframe src="https://www.youtube.com/embed/YKCuf9Apqnc" title="내 정보 입력" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border-radius: 8px;"></iframe>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="content-item mb-4" style="background: #f5f3ff; border-radius: 12px; padding: 1.5rem; border: 1px solid #e9d5ff;">
+                <div class="d-flex align-items-start">
+                    <div class="content-icon me-3" style="width: 40px; height: 40px; background: linear-gradient(135deg, #ede9fe, #ddd6fe); border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+                        <i class="fas fa-calendar-plus" style="color: #8b5cf6;"></i>
+                    </div>
+                    <div style="flex-grow: 1;">
+                        <h6 class="fw-bold mb-2" style="color: #7c3aed; font-size: 0.95rem;">예약하기</h6>
+                        <p class="mb-3" style="font-size: 0.85rem; color: #475569; line-height: 1.6;">
+                            원하시는 날짜와 시간에 진료 예약을 하는 방법을 안내합니다.
+                        </p>
+                        <div class="video-wrapper" style="position: relative; overflow: hidden; padding-bottom: 56.25%; border-radius: 8px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+                            <iframe src="https://www.youtube.com/embed/NfewWKdWrTc" title="예약하기" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border-radius: 8px;"></iframe>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="content-item mb-4" style="background: #fdf2f8; border-radius: 12px; padding: 1.5rem; border: 1px solid #fce7f3;">
+                <div class="d-flex align-items-start">
+                    <div class="content-icon me-3" style="width: 40px; height: 40px; background: linear-gradient(135deg, #fce7f3, #fbcfe8); border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+                        <i class="fas fa-times-circle" style="color: #e11d48;"></i>
+                    </div>
+                    <div style="flex-grow: 1;">
+                        <h6 class="fw-bold mb-2" style="color: #be185d; font-size: 0.95rem;">예약 취소하기</h6>
+                        <p class="mb-3" style="font-size: 0.85rem; color: #475569; line-height: 1.6;">
+                            예약을 취소하거나 변경하는 방법을 설명합니다.
+                        </p>
+                        <div class="video-wrapper" style="position: relative; overflow: hidden; padding-bottom: 56.25%; border-radius: 8px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+                            <iframe src="https://www.youtube.com/embed/cKOYs2alE5A" title="예약 취소하기" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border-radius: 8px;"></iframe>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-        <li><a href="https://youtu.be/BVBdvvqcdAg">회원 가입</a></li>
-        <div class="responsive-video" style="margin-bottom: 4rem">
-            <iframe width="560" height="315" src="https://www.youtube.com/embed/BVBdvvqcdAg" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
-        </div>
-        <li><a href="https://youtu.be/YKCuf9Apqnc">내 정보 입력</a></li>
-        <div class="responsive-video" style="margin-bottom: 4rem">
-            <iframe width="560" height="315" src="https://www.youtube.com/embed/YKCuf9Apqnc" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
-        </div>
-        <li><a href="https://youtu.be/NfewWKdWrTc">예약하기</a></li>
-        <div class="responsive-video" style="margin-bottom: 4rem">
-            <iframe width="560" height="315" src="https://www.youtube.com/embed/NfewWKdWrTc" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
-        </div>
-        <li><a href="https://youtu.be/cKOYs2alE5A">예약 취소하기</a></li>
-        <div class="responsive-video">
-            <iframe width="560" height="315" src="https://www.youtube.com/embed/cKOYs2alE5A" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+
+        <!-- Action Button -->
+        <div class="text-center mt-4">
+            <a href="{% url 'bookingapp:create' %}" class="btn-action" style="background: white; color: #8b5cf6; padding: 0.875rem 2.5rem; border-radius: 12px; border: 2px solid #8b5cf6; font-weight: 700; box-shadow: 0 4px 12px rgba(139, 92, 246, 0.15); transition: all 0.2s ease; display: inline-flex; align-items: center; font-size: 1rem; text-decoration: none;">
+                <i class="fas fa-calendar-plus me-2"></i>지금 예약하기
+            </a>
         </div>
     </div>
+</div>
 
+<style>
+    .btn-action:hover {
+        background: #8b5cf6 !important;
+        color: white !important;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 16px rgba(139, 92, 246, 0.4);
+        border-color: #8b5cf6 !important;
+        text-decoration: none;
+    }
 
-    <style>
-        .responsive-video {
-            position: relative;
-            overflow: hidden;
-            padding-bottom: 56.25%; /* 16:9 비디오 비례 */
+    .info-card:hover {
+        box-shadow: 0 12px 28px -3px rgba(0, 0, 0, 0.12), 0 6px 8px -2px rgba(0, 0, 0, 0.05);
+    }
+
+    .content-item:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        transition: all 0.2s ease;
+    }
+
+    /* 모바일 반응형 */
+    @media (max-width: 768px) {
+        .container {
+            padding: 0 0.5rem !important;
+            max-width: 100% !important;
         }
 
-        .responsive-video iframe {
-            position: absolute;
-            top: 0;
-            left: 0;
+        .hero-section {
+            padding: 1.5rem 0 !important;
+            margin-top: 3rem !important;
+        }
+
+        .hero-section h2 {
+            font-size: 1.5rem !important;
+        }
+
+        .hero-section .lead {
+            font-size: 1rem !important;
+        }
+
+        .info-card {
+            padding: 1rem !important;
+            border-radius: 16px !important;
+        }
+
+        .user-avatar {
+            width: 60px !important;
+            height: 60px !important;
+        }
+
+        .user-avatar i {
+            font-size: 1.5rem !important;
+        }
+
+        .content-item {
+            padding: 1.25rem !important;
+        }
+
+        .content-icon {
+            width: 35px !important;
+            height: 35px !important;
+        }
+
+        .btn-action {
             width: 100%;
-            height: 100%;
+            justify-content: center;
+            padding: 0.75rem 2rem !important;
         }
-    </style>
+    }
 
+    @media (max-width: 576px) {
+        .container {
+            padding: 0 0.25rem !important;
+        }
 
+        .info-card {
+            padding: 0.75rem !important;
+        }
+
+        .content-item {
+            padding: 1rem !important;
+        }
+
+        .content-item h6 {
+            font-size: 0.9rem !important;
+        }
+
+        .content-item p {
+            font-size: 0.8rem !important;
+        }
+    }
+</style>
 {% endblock %}

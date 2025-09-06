@@ -33,10 +33,10 @@ class AccountCreateView(CreateView):
     success_url = reverse_lazy('accountapp:login')
     template_name = 'accountapp/create.html'
 
-    def dispatch(self, request, *args, **kwargs):
-        if not request.session.get('agreed'):
-            return redirect('accountapp:agreement')
-        return super().dispatch(request, *args, **kwargs)
+    def form_valid(self, form):
+        # terms_agreement 필드는 폼에서 자동으로 유효성 검사됨
+        # required=True이므로 체크하지 않으면 폼 에러 발생
+        return super().form_valid(form)
 
 
 class CustomLoginView(LoginView):

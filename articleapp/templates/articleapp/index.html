@@ -1,92 +1,553 @@
 {% extends 'base.html' %}
 
 {% block content %}
-    <header class="bg-gradient text-white" style="background-color: #417690 !important;">
-        <div class="container px-4 text-center">
-            <h1 class="fw-bolder" style="font-family: 'NanumSquareB'">푸른 마취통증의학과 의원</h1>
-            <p class="lead">근골격계 고유의 기능을 회복시켜 근본적인 치유를 추구하는 병원입니다</p>
-            <a class="btn btn-lg btn-light" href="{% url 'bookingapp:create' %}" style="margin-top: 2.8rem">예약하기!</a>
+<style>
+    /* 파스텔 색상 정의 */
+    .badge.pastel-available { background-color: #E3F2FD !important; color: #1976D2 !important; }
+    .badge.pastel-requested { background-color: #FFF9C4 !important; color: #F57F17 !important; }
+    .badge.pastel-approved { background-color: #FFCDD2 !important; color: #D32F2F !important; }
+    .badge.pastel-cancelled { background-color: #E0E0E0 !important; color: #424242 !important; }
+    
+    /* 알림카드 컨테이너 */
+    .alert-cards-container {
+        display: grid;
+        gap: 1.5rem;
+        grid-template-columns: 1fr;
+        margin-bottom: 3rem;
+    }
+    
+    @media (min-width: 768px) {
+        .alert-cards-container {
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+    }
+    
+    /* 알림카드 공통 스타일 */
+    .alert-card {
+        position: relative;
+        padding: 1.75rem;
+        border-radius: 16px;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        transition: all 0.3s ease;
+        overflow: hidden;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    
+    .alert-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        z-index: 1;
+    }
+    
+    .alert-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    }
+    
+    /* 메시지 카드 */
+    .message-card {
+        background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 50%, #93c5fd 100%);
+        color: #1e40af;
+    }
+    
+    .message-card::before {
+        background: linear-gradient(90deg, #3b82f6, #1d4ed8);
+    }
+    
+    /* 휴일 카드 */
+    .holiday-card {
+        background: linear-gradient(135deg, #fce7f3 0%, #f3e8ff 50%, #e9d5ff 100%);
+        color: #7c2d92;
+    }
+    
+    .holiday-card::before {
+        background: linear-gradient(90deg, #d946ef, #9333ea);
+    }
+    
+    /* 대기환자 카드 */
+    .waiting-card {
+        background: linear-gradient(135deg, #fef3c7 0%, #fde68a 50%, #f59e0b 20%);
+        color: #92400e;
+    }
+    
+    .waiting-card::before {
+        background: linear-gradient(90deg, #f59e0b, #d97706);
+    }
+    
+    /* 아이콘 스타일 */
+    .alert-card-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 1rem;
+        font-size: 1.25rem;
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+    
+    .message-card .alert-card-icon {
+        background: rgba(59, 130, 246, 0.15);
+        color: #1d4ed8;
+    }
+    
+    .holiday-card .alert-card-icon {
+        background: rgba(217, 70, 239, 0.15);
+        color: #9333ea;
+    }
+    
+    .waiting-card .alert-card-icon {
+        background: rgba(245, 158, 11, 0.15);
+        color: #d97706;
+    }
+    
+    /* 콘텐츠 스타일 */
+    .alert-card-content {
+        position: relative;
+        z-index: 2;
+    }
+    
+    .alert-card-title {
+        font-weight: 700;
+        font-size: 1.125rem;
+        margin-bottom: 0.5rem;
+        letter-spacing: -0.025em;
+    }
+    
+    .alert-card-text {
+        font-size: 0.875rem;
+        margin-bottom: 1rem;
+        line-height: 1.5;
+        opacity: 0.8;
+    }
+    
+    .alert-card-datetime {
+        font-size: 0.875rem;
+        font-weight: 600;
+        margin-bottom: 1rem;
+        opacity: 0.9;
+    }
+    
+    .alert-card-notice {
+        font-size: 0.75rem;
+        margin-bottom: 0;
+        margin-top: 1rem;
+        opacity: 0.7;
+    }
+    
+    /* 메시지 카드 버튼 */
+    .alert-card-button {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.75rem 1.25rem;
+        background: rgba(255, 255, 255, 0.9);
+        color: #1e40af !important;
+        text-decoration: none;
+        border-radius: 10px;
+        font-weight: 600;
+        font-size: 0.875rem;
+        transition: all 0.2s ease;
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+    
+    .alert-card-button:hover {
+        background: rgba(255, 255, 255, 1);
+        transform: translateY(-1px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+    
+    .alert-card-button .badge {
+        background: #3b82f6 !important;
+        color: white !important;
+        padding: 0.25rem 0.75rem;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: 600;
+    }
+    
+    /* 대기환자 정보 */
+    .waiting-info {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin: 1rem 0;
+        padding: 1rem;
+        background: rgba(255, 255, 255, 0.6);
+        border-radius: 12px;
+        backdrop-filter: blur(10px);
+    }
+    
+    .waiting-text {
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: #92400e;
+    }
+    
+    .waiting-number {
+        font-size: 1.5rem;
+        font-weight: 800;
+        color: #d97706;
+        background: rgba(255, 255, 255, 0.9);
+        padding: 0.25rem 0.75rem;
+        border-radius: 8px;
+        min-width: 2.5rem;
+        text-align: center;
+    }
+    
+    .waiting-total {
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: #92400e;
+    }
+    
+    /* 반응형 조정 */
+    @media (max-width: 767px) {
+        .alert-card {
+            padding: 1.25rem;
+        }
+        
+        .alert-card-icon {
+            width: 40px;
+            height: 40px;
+            font-size: 1rem;
+        }
+        
+        .alert-card-title {
+            font-size: 1rem;
+        }
+        
+        .waiting-info {
+            padding: 0.75rem;
+        }
+        
+        .waiting-number {
+            font-size: 1.25rem;
+            padding: 0.2rem 0.6rem;
+        }
+    }
+</style>
+
+    <!-- Hero Section -->
+    <header class="hero-section" style="padding: 4rem 0 2rem;">
+        <div class="container px-4 text-center hero-content">
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <div class="icon-feature mx-auto mb-3">
+                        <i class="fas fa-hospital-alt fa-lg"></i>
+                    </div>
+                    <h1 class="fw-bolder mb-3" style="font-size: 2.5rem; font-family: 'Noto Sans KR', sans-serif;">푸른 마취통증의학과 의원</h1>
+                    <p class="lead mb-4 fs-5">근골격계 고유의 기능을 회복시켜<br>근본적인 치유를 추구하는 병원입니다</p>
+                    <div class="d-flex justify-content-center">
+                        <a class="btn-modern" href="{% url 'bookingapp:create' %}" style="max-width: 280px; padding: 0.8rem 1.5rem; display: inline-flex; align-items: center; justify-content: center; text-align: center;">
+                            <i class="fas fa-calendar-plus me-2"></i>
+                            온라인 예약하기
+                        </a>
+                    </div>
+                </div>
+            </div>
         </div>
     </header>
 
-    {% if notes %}
-{#        <div class="alert alert-light" role="alert">#}
-        <div style="text-align: center; text-decoration-line: underline; margin: 0.2rem 0"><a href="{% url 'noteapp:display_notes' %}" ><strong>내게 온 메시지: {{ notes_count }}개</strong></a></div>
-{#        </div>#}
-    {% endif %}
-
-    {% if holiday_messages %}
-        <div class="alert alert-danger" role="alert" style="margin: 0.4rem 0.4rem; padding-left: 0.2rem; padding-right: 0.2rem">
-            {% for holiday_message in holiday_messages %}
-                <div style="text-align: center; font-size: 1.0rem">{{ holiday_message.holiday_message }}</div>
-            {% endfor %}
-        </div>
-    {% endif %}
-
-
-    <div id='waiting_num_notice' class="alert alert-warning" role="alert" style="text-align: center; margin: 0.4rem 0.4rem">
-        <p class="modal-title" style="font-size:1.2rem; margin-bottom: 0.8rem">선착순 대기환자 안내</p>
-        <p>{{ waiting_date }} {{ waiting_time }} (현재)<br> 대기환자 : <span style="color: darkred; font-weight: bold">{{ waiting.waiting_num }}</span> / 4 명</p>
-        <p>꼭!!! 집계된 시간을 체크하세요.</p>
-{#        <p id="test123"></p>#}
-    </div>
-
-
-    <!-- About section-->
-    {#    <div id='waiting_inform' style="margin-left: 2rem; line-height: 1.96">#}
-    {#        {{ waiting_date }} {{ waiting_time }} (현재)<br> 선착순 대기환자 : <span style="color: darkred; font-weight: bold">{{ waiting.waiting_num }}</span> / 4 명#}
-    {#    </div>#}
-    <section id="about">
-        <div class="container px-4">
-            <div class="row gx-4 justify-content-center">
-                <div class="col-lg-8" style="line-height: 1.96">
-                    <h4 style=" margin-bottom: 1rem">[예약제에 대한 안내]</h4>
-                    <p class="lead" style="font-size: 1.1rem">저희 푸른통증의학과 의원은 진료대기시간을 최소화 하고자 예약제로 운영되고 있습니다. 직접 예약하실 수 있도록 홈페이지를 만들어 운영하고 있으니 많은 이용 바랍니다.</p>
-                    <P>[이용방법]</P>
-                    <div style="margin-bottom: 1rem; margin-left: 1rem">
-                        <a href="{% url 'articleapp:movie' %}">[온라인 예약 동영상 설명]</a>
+    <!-- Container for all content -->
+    <div class="container my-5">
+        <!-- 알림카드들을 위한 그리드 컨테이너 -->
+        <div class="alert-cards-container mb-5">
+            {% if notes %}
+                <div class="alert-card message-card">
+                    <div class="alert-card-icon">
+                        <i class="fas fa-envelope"></i>
                     </div>
-                    <ul>
-                        <li>오늘부터 2주간만 예약을 받습니다. [2주차]를 누르면 다음주의 예약도 가능합니다.</li>
-                        <li>원하는 날짜와 시간에 [에약가능-파란색]이 있으면 클릭하셔서 예약하세요.</li>
-                        <li style="color: darkred">예약신청 하시면 [예약요청-노란색]으로 바뀝니다. 병원에서 예약하시는 분과 겹칠 수 있으므로 확인 후 승인해 드립니다.</li>
-                        <li>근무시간 기준 2시간 이내 승인되며 (야간, 일요일, 공휴일 제외) [예약승인-붉은색]으로 바뀝니다.</li>
-                        <li>취소는 [나의 예약정보]에서 가능하며 변경은 먼저 취소 후 다시 예약하셔야 합니다.</li>
-                        <li>온라인으로는 1주(월~토)에 1회만 예약이 가능합니다 (2주차에도 1회 예약 가능). 더 많은 예약이 필요하시면 전화해 주세요.</li>
-                        <li style="color: darkred">[예약승인-붉은색]은 다른 환자분들이 이미 예약한 타임입니다. 예약하신 분이 취소하시면 [에약가능-파란색]으로 바뀌니 급히 진료가 필요한 분은 매일, 매시간 열람해 보실 것을 권장합니다.</li>
-                    </ul>
+                    <div class="alert-card-content">
+                        <h6 class="alert-card-title">메시지 도착</h6>
+                        <p class="alert-card-text">병원에서 보낸 새로운 메시지가 있습니다</p>
+                        <a href="{% url 'noteapp:display_notes' %}" class="alert-card-button">
+                            <span class="me-2">메시지 확인</span>
+                            <span class="badge">{{ notes_count }}개</span>
+                        </a>
+                    </div>
                 </div>
-            </div>
-        </div>
-    </section>
-    <!-- Services section-->
-    <section class="bg-light" id="services">
-        <div class="container px-4">
-            <div class="row gx-4 justify-content-center">
-                <div class="col-lg-8" style="line-height: 1.96">
-                    <h4>[당부 말씀]</h4>
-                    <p class="lead" style="font-size: 1.1rem">예약하시고 못 오시게 되면 저희 병원과 먼저 예약하지 못한 환자분들에게 피해를 주게 됩니다. 다른 분들이 이용하실 수 있도록 가능한 한 빨리 예약 취소해 주시면 감사하겠습니다.<br> 취소는 [나의 예약정보]에서 가능합니다.</p>
+            {% endif %}
+
+            {% if holiday_messages %}
+                <div class="alert-card holiday-card">
+                    <div class="alert-card-icon">
+                        <i class="fas fa-bullhorn"></i>
+                    </div>
+                    <div class="alert-card-content">
+                        <h6 class="alert-card-title">병원 공지사항</h6>
+                        {% for holiday_message in holiday_messages %}
+                            <p class="alert-card-text">{{ holiday_message.holiday_message }}</p>
+                        {% endfor %}
+                    </div>
                 </div>
-            </div>
-        </div>
-    </section>
-    <!-- Contact section-->
-    <section id="contact">
-        <div class="container px-4">
-            <div class="row gx-4 justify-content-center">
-                <div class="col-lg-8" style="line-height: 1.96">
-                    <h4>[다짐]</h4>
-                    <p class="lead">저희 병원의 모든 의료진은 환자분들을 위해 항상 최선을 다할 것을 다짐합니다.
-                        <li>환자들의 안전과 건강을 최우선으로 생각하겠습니다.
-                        <li>진료 과정에서 최선을 다해 환자분들의 통증을 완화시키고, 쾌적한 치료 경험을 제공하겠습니다.
-                        <li>환자분들의 건강 상태와 증상에 대한 이해를 돕기 위해, 친절하고 명확한 커뮤니케이션을 유지하겠습니다.
-                        <li>의료진 간의 협력과 지속적인 교육을 통해, 항상 최신의 치료 지식과 기술을 습득하며 진료에 임하겠습니다.
-                    <li>환자분들의 요구와 관심사를 항상 고려하며, 끊임없이 개선하고 발전시키겠습니다.
+            {% endif %}
+
+            <div id='waiting_num_notice' class="alert-card waiting-card">
+                <div class="alert-card-icon">
+                    <i class="fas fa-users"></i>
+                </div>
+                <div class="alert-card-content">
+                    <h6 class="alert-card-title">선착순 대기환자 안내</h6>
+                    <p class="alert-card-datetime">{{ waiting_date }} {{ waiting_time }} (현재)</p>
+                    <div class="waiting-info">
+                        <span class="waiting-text">대기환자</span>
+                        <span class="waiting-number">{{ waiting.waiting_num }}</span>
+                        <span class="waiting-total">/ 4 명</span>
+                    </div>
+                    <p class="alert-card-notice">
+                        <i class="fas fa-info-circle me-1"></i>꼭!!! 집계된 시간을 체크하세요.
                     </p>
                 </div>
             </div>
         </div>
-    </section>
+
+
+        <!-- About section -->
+        <section id="about" class="mb-4">
+            <div class="info-card" style="background: white; border-radius: 20px; padding: 2.5rem; box-shadow: 0 10px 25px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); border: 1px solid #f1f5f9; position: relative; overflow: hidden;">
+                <div class="card-decoration" style="position: absolute; top: -30px; right: -30px; width: 100px; height: 100px; background: linear-gradient(135deg, #bfdbfe, #93c5fd); border-radius: 50%; opacity: 0.1;"></div>
+                
+                <div class="text-center mb-4 position-relative">
+                    <div class="user-avatar mx-auto mb-3" style="width: 70px; height: 70px; background: linear-gradient(135deg, #bfdbfe, #93c5fd); border-radius: 16px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(59, 130, 246, 0.25);">
+                        <i class="fas fa-info-circle" style="color: #3b82f6; font-size: 2rem;"></i>
+                    </div>
+                    <h4 class="fw-bold mb-1" style="color: #1e293b;">예약제 안내</h4>
+                    <p class="text-muted mb-0" style="font-size: 0.9rem;">온라인 예약 시스템 이용 방법을 안내합니다</p>
+                </div>
+
+                <!-- Content Sections -->
+                <div class="content-sections">
+                    <div class="content-item mb-4" style="background: #f0f9ff; border-radius: 12px; padding: 1.5rem; border: 1px solid #e0f2fe;">
+                        <div class="d-flex align-items-start">
+                            <div class="content-icon me-3" style="width: 40px; height: 40px; background: linear-gradient(135deg, #dbeafe, #bfdbfe); border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+                                <i class="fas fa-play-circle" style="color: #3b82f6;"></i>
+                            </div>
+                            <div style="flex-grow: 1;">
+                                <h6 class="fw-bold mb-2" style="color: #1e40af; font-size: 0.95rem;">이용방법</h6>
+                                <p class="mb-3" style="font-size: 0.85rem; color: #475569; line-height: 1.6;">
+                                    진료대기시간을 최소화하고자 예약제로 운영되고 있습니다. 단계별 예약 방법을 확인해 보세요.
+                                </p>
+                                <a href="{% url 'articleapp:movie' %}" class="btn btn-outline-primary btn-sm" style="border-radius: 8px; font-size: 0.8rem; padding: 0.5rem 1rem;">
+                                    <i class="fas fa-video me-1"></i>온라인 예약 동영상 설명 보기
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="content-item mb-4" style="background: #f0fdf4; border-radius: 12px; padding: 1.5rem; border: 1px solid #dcfce7;">
+                        <div class="d-flex align-items-start">
+                            <div class="content-icon me-3" style="width: 40px; height: 40px; background: linear-gradient(135deg, #d1fae5, #a7f3d0); border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+                                <i class="fas fa-calendar-alt" style="color: #10b981;"></i>
+                            </div>
+                            <div>
+                                <h6 class="fw-bold mb-2" style="color: #047857; font-size: 0.95rem;">예약 기간 및 방법</h6>
+                                <ul class="mb-0" style="font-size: 0.85rem; color: #475569; line-height: 1.6; padding-left: 1.2rem;">
+                                    <li class="mb-1">오늘부터 2주간만 예약을 받습니다</li>
+                                    <li class="mb-1"><span class="badge pastel-available">예약가능</span>을 클릭하여 예약하세요</li>
+                                    <li>온라인으로는 1주(월~토)에 1회만 예약 가능</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="content-item mb-4" style="background: #fffbeb; border-radius: 12px; padding: 1.5rem; border: 1px solid #fed7aa;">
+                        <div class="d-flex align-items-start">
+                            <div class="content-icon me-3" style="width: 40px; height: 40px; background: linear-gradient(135deg, #fef3c7, #fde68a); border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+                                <i class="fas fa-hourglass-half" style="color: #f59e0b;"></i>
+                            </div>
+                            <div>
+                                <h6 class="fw-bold mb-2" style="color: #d97706; font-size: 0.95rem;">예약 승인 과정</h6>
+                                <ul class="mb-0" style="font-size: 0.85rem; color: #475569; line-height: 1.6; padding-left: 1.2rem;">
+                                    <li class="mb-1">예약신청 시 <span class="badge pastel-requested">예약요청</span> 상태로 변경</li>
+                                    <li class="mb-1">근무시간 기준 2시간 이내 승인 처리</li>
+                                    <li>승인 후 <span class="badge pastel-approved">예약승인</span>으로 변경</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="content-item mb-4" style="background: #f5f3ff; border-radius: 12px; padding: 1.5rem; border: 1px solid #e9d5ff;">
+                        <div class="d-flex align-items-start">
+                            <div class="content-icon me-3" style="width: 40px; height: 40px; background: linear-gradient(135deg, #ede9fe, #ddd6fe); border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+                                <i class="fas fa-edit" style="color: #8b5cf6;"></i>
+                            </div>
+                            <div>
+                                <h6 class="fw-bold mb-2" style="color: #7c3aed; font-size: 0.95rem;">예약 변경 및 취소</h6>
+                                <ul class="mb-0" style="font-size: 0.85rem; color: #475569; line-height: 1.6; padding-left: 1.2rem;">
+                                    <li class="mb-1">취소는 [나의 예약정보]에서 가능합니다</li>
+                                    <li class="mb-1">변경은 먼저 취소 후 다시 예약해야 합니다</li>
+                                    <li>다른 환자를 위해 빠른 취소 부탁드립니다</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="content-item mb-4" style="background: #ecfeff; border-radius: 12px; padding: 1.5rem; border: 1px solid #a5f3fc;">
+                        <div class="d-flex align-items-start">
+                            <div class="content-icon me-3" style="width: 40px; height: 40px; background: linear-gradient(135deg, #cffafe, #a5f3fc); border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+                                <i class="fas fa-lightbulb" style="color: #06b6d4;"></i>
+                            </div>
+                            <div>
+                                <h6 class="fw-bold mb-2" style="color: #0891b2; font-size: 0.95rem;">유용한 팁</h6>
+                                <p class="mb-0" style="font-size: 0.85rem; color: #475569; line-height: 1.6;">
+                                    <span class="badge pastel-approved">예약승인</span>은 다른 환자분들이 이미 예약한 타임입니다. 
+                                    취소가 발생하면 <span class="badge pastel-available">예약가능</span>으로 바뀌니 
+                                    급히 진료가 필요한 분은 자주 확인해 보시기 바랍니다.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Action Button -->
+                <div class="text-center mt-4">
+                    <a href="{% url 'bookingapp:create' %}" class="btn-action" style="background: white; color: #3b82f6; padding: 0.875rem 2.5rem; border-radius: 12px; border: 2px solid #3b82f6; font-weight: 700; box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15); transition: all 0.2s ease; display: inline-flex; align-items: center; font-size: 1rem; text-decoration: none;">
+                        <i class="fas fa-calendar-plus me-2"></i>지금 예약하기
+                    </a>
+                </div>
+            </div>
+        </section>
+        <!-- Services section -->
+        <section id="services" class="mb-4">
+            <div class="info-card" style="background: white; border-radius: 20px; padding: 2.5rem; box-shadow: 0 10px 25px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); border: 1px solid #f1f5f9; position: relative; overflow: hidden;">
+                <div class="card-decoration" style="position: absolute; top: -30px; right: -30px; width: 100px; height: 100px; background: linear-gradient(135deg, #fde68a, #fbbf24); border-radius: 50%; opacity: 0.1;"></div>
+                
+                <div class="text-center mb-4 position-relative">
+                    <div class="user-avatar mx-auto mb-3" style="width: 70px; height: 70px; background: linear-gradient(135deg, #fde68a, #fbbf24); border-radius: 16px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(245, 158, 11, 0.25);">
+                        <i class="fas fa-heart" style="color: #f59e0b; font-size: 2rem;"></i>
+                    </div>
+                    <h4 class="fw-bold mb-1" style="color: #1e293b;">당부 말씀</h4>
+                    <p class="text-muted mb-0" style="font-size: 0.9rem;">환자분들께 부탁드리는 중요한 안내입니다</p>
+                </div>
+
+                <!-- Content Sections -->
+                <div class="content-sections">
+                    <div class="content-item mb-4" style="background: #fffbeb; border-radius: 12px; padding: 1.5rem; border: 1px solid #fed7aa;">
+                        <div class="d-flex align-items-start">
+                            <div class="content-icon me-3" style="width: 40px; height: 40px; background: linear-gradient(135deg, #fef3c7, #fde68a); border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+                                <i class="fas fa-exclamation-triangle" style="color: #f59e0b;"></i>
+                            </div>
+                            <div>
+                                <h6 class="fw-bold mb-2" style="color: #d97706; font-size: 0.95rem;">예약 취소의 중요성</h6>
+                                <p class="mb-2" style="font-size: 0.85rem; color: #475569; line-height: 1.6;">
+                                    예약하시고 못 오시게 되면 저희 병원과 먼저 예약하지 못한 환자분들에게 피해를 주게 됩니다.
+                                </p>
+                                <p class="mb-2" style="font-size: 0.85rem; color: #475569; line-height: 1.6;">
+                                    다른 분들이 이용하실 수 있도록 가능한 한 빨리 예약 취소해 주시면 감사하겠습니다.
+                                </p>
+                                <p class="mb-0" style="font-size: 0.8rem; color: #92400e;">
+                                    <i class="fas fa-info-circle me-1"></i>취소는 [나의 예약정보]에서 가능합니다.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Contact section -->
+        <section id="contact" class="mb-4">
+            <div class="info-card" style="background: white; border-radius: 20px; padding: 2.5rem; box-shadow: 0 10px 25px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); border: 1px solid #f1f5f9; position: relative; overflow: hidden;">
+                <div class="card-decoration" style="position: absolute; top: -30px; right: -30px; width: 100px; height: 100px; background: linear-gradient(135deg, #a7f3d0, #6ee7b7); border-radius: 50%; opacity: 0.1;"></div>
+                
+                <div class="text-center mb-4 position-relative">
+                    <div class="user-avatar mx-auto mb-3" style="width: 70px; height: 70px; background: linear-gradient(135deg, #a7f3d0, #6ee7b7); border-radius: 16px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25);">
+                        <i class="fas fa-user-md" style="color: #10b981; font-size: 2rem;"></i>
+                    </div>
+                    <h4 class="fw-bold mb-1" style="color: #1e293b;">우리의 약속</h4>
+                    <p class="text-muted mb-0" style="font-size: 0.9rem;">환자 한 분 한 분의 소중한 건강을 위해 진심으로 최선을 다하겠습니다</p>
+                </div>
+
+                <!-- Content Sections -->
+                <div class="content-sections">
+                    <div class="content-item mb-4" style="background: #f0fdf4; border-radius: 12px; padding: 1.5rem; border: 1px solid #dcfce7;">
+                        <div class="d-flex align-items-start">
+                            <div class="content-icon me-3" style="width: 40px; height: 40px; background: linear-gradient(135deg, #d1fae5, #a7f3d0); border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+                                <i class="fas fa-shield-alt" style="color: #10b981;"></i>
+                            </div>
+                            <div>
+                                <h6 class="fw-bold mb-2" style="color: #047857; font-size: 0.95rem;">안전한 치료</h6>
+                                <p class="mb-0" style="font-size: 0.85rem; color: #475569; line-height: 1.6;">
+                                    환자의 안전을 최우선으로 하는 체계적이고 신뢰할 수 있는 진료를 제공합니다.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="content-item mb-4" style="background: #f0f9ff; border-radius: 12px; padding: 1.5rem; border: 1px solid #e0f2fe;">
+                        <div class="d-flex align-items-start">
+                            <div class="content-icon me-3" style="width: 40px; height: 40px; background: linear-gradient(135deg, #dbeafe, #bfdbfe); border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+                                <i class="fas fa-hand-holding-heart" style="color: #3b82f6;"></i>
+                            </div>
+                            <div>
+                                <h6 class="fw-bold mb-2" style="color: #1e40af; font-size: 0.95rem;">맞춤형 치료</h6>
+                                <p class="mb-0" style="font-size: 0.85rem; color: #475569; line-height: 1.6;">
+                                    개인별 증상과 상태를 정확히 파악하여 최적화된 치료 솔루션을 제공합니다.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="content-item mb-4" style="background: #ecfeff; border-radius: 12px; padding: 1.5rem; border: 1px solid #a5f3fc;">
+                        <div class="d-flex align-items-start">
+                            <div class="content-icon me-3" style="width: 40px; height: 40px; background: linear-gradient(135deg, #cffafe, #a5f3fc); border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+                                <i class="fas fa-comments" style="color: #06b6d4;"></i>
+                            </div>
+                            <div>
+                                <h6 class="fw-bold mb-2" style="color: #0891b2; font-size: 0.95rem;">진심 어린 소통</h6>
+                                <p class="mb-0" style="font-size: 0.85rem; color: #475569; line-height: 1.6;">
+                                    환자와의 충분한 소통을 통해 이해하기 쉬운 설명과 따뜻한 관심을 전해드립니다.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="content-item mb-4" style="background: #fffbeb; border-radius: 12px; padding: 1.5rem; border: 1px solid #fed7aa;">
+                        <div class="d-flex align-items-start">
+                            <div class="content-icon me-3" style="width: 40px; height: 40px; background: linear-gradient(135deg, #fef3c7, #fde68a); border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+                                <i class="fas fa-graduation-cap" style="color: #f59e0b;"></i>
+                            </div>
+                            <div>
+                                <h6 class="fw-bold mb-2" style="color: #d97706; font-size: 0.95rem;">전문성 향상</h6>
+                                <p class="mb-0" style="font-size: 0.85rem; color: #475569; line-height: 1.6;">
+                                    끊임없는 연구와 학습을 통해 최신 의료 기술과 치료법을 적용합니다.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="content-item mb-4" style="background: #fef2f2; border-radius: 12px; padding: 1.5rem; border: 1px solid #fecaca;">
+                        <div class="d-flex align-items-start">
+                            <div class="content-icon me-3" style="width: 40px; height: 40px; background: linear-gradient(135deg, #fee2e2, #fecaca); border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+                                <i class="fas fa-heart" style="color: #ef4444;"></i>
+                            </div>
+                            <div>
+                                <h6 class="fw-bold mb-2" style="color: #dc2626; font-size: 0.95rem;">환자 중심 서비스</h6>
+                                <p class="mb-0" style="font-size: 0.85rem; color: #475569; line-height: 1.6;">
+                                    환자의 편의와 만족을 위해 지속적으로 서비스 품질을 개선해 나갑니다.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Action Button -->
+                <div class="text-center mt-4">
+                    <a href="{% url 'bookingapp:create' %}" class="btn-action" style="background: white; color: #10b981; padding: 0.875rem 2.5rem; border-radius: 12px; border: 2px solid #10b981; font-weight: 700; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.15); transition: all 0.2s ease; display: inline-flex; align-items: center; font-size: 1rem; text-decoration: none;">
+                        <i class="fas fa-calendar-plus me-2"></i>진심 어린 진료 예약
+                    </a>
+                </div>
+            </div>
+        </section>
+    </div> <!-- container 닫기 -->
 
 
 {#    대기환자수 모달창 안내#}
@@ -109,47 +570,54 @@
     <div>
 {#        {% if notes %}#}
         {% if unread_notes_count > 0 %}
-            <div class="modal" tabindex="-1" role="dialog" id="notes-modal">
-                <div class="modal-dialog" role="document">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title">새 메시지</h5>
-                            <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close" onclick="modal_close()">
-                                <span aria-hidden="true">&times;</span>
+            <div class="modal fade" tabindex="-1" role="dialog" id="notes-modal">
+                <div class="modal-dialog modal-dialog-centered" role="document" style="max-width: 600px;">
+                    <div class="modal-content" style="border-radius: 16px; border: none; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);">
+                        <div class="modal-header" style="border-bottom: 1px solid #f1f5f9; border-radius: 16px 16px 0 0; background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%); padding: 1.5rem;">
+                            <div class="d-flex align-items-center">
+                                <div class="icon-feature me-3" style="width: 40px; height: 40px; background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);">
+                                    <i class="fas fa-envelope"></i>
+                                </div>
+                                <div>
+                                    <h5 class="modal-title mb-0" style="font-weight: 600; color: #1e293b;">새로운 메시지</h5>
+                                    <small class="text-muted">병원에서 보낸 메시지입니다</small>
+                                </div>
+                            </div>
+                            <button type="button" class="btn-close" style="background: none; border: none; font-size: 1.2rem; color: #64748b;" onclick="modal_close()" aria-label="Close">
+                                <i class="fas fa-times"></i>
                             </button>
                         </div>
-                        <div class="modal-body">
-                            <ul class="list-group">
+                        <div class="modal-body" style="padding: 1.5rem; max-height: 400px; overflow-y: auto;">
+                            <div class="notes-container">
                                 {% for note in notes reversed %}
-                                    <div class="note-element" style="margin: 0.2rem 0">
-                                        <li class="list-group-item {% if not note.is_read %}list-group-item-warning{% endif %}">
-                                            <p>{{ note.message }}</p>
-                                            <div style="display: flex; justify-content: space-between">
-                                                <div><small
-                                                        class="text-muted">-{{ note.sender.profile.real_name }}- {{ note.timestamp }}</small>
+                                    <div class="note-element mb-3" style="border-radius: 12px; border: 1px solid #e2e8f0; background: {% if not note.is_read %}linear-gradient(135deg, #fef3c7 0%, #fde68a 100%){% else %}#ffffff{% endif %}; padding: 1rem; transition: all 0.2s ease;">
+                                        <div class="note-content">
+                                            <p class="mb-2" style="color: #374151; line-height: 1.5; margin: 0;">{{ note.message }}</p>
+                                            <div class="d-flex justify-content-between align-items-center mt-3">
+                                                <div class="note-meta">
+                                                    <small class="text-muted d-block">
+                                                        <i class="fas fa-user-md me-1"></i>{{ note.sender.profile.real_name }}
+                                                    </small>
+                                                    <small class="text-muted">
+                                                        <i class="fas fa-clock me-1"></i>{{ note.timestamp }}
+                                                    </small>
                                                 </div>
-                                                <form method="POST" action="{% url 'noteapp:delete_notes' note.id %}"
-                                                      style="display: inline">
-                                                    {% csrf_token %}
-                                                    <div>
-                                                        <button type="submit"
-                                                                class="btn btn-outline-danger btn-sm rounded-pill float-right delete-note-button"
-                                                                data-note-id="{{ note.id }}">삭제
-                                                        </button>
-                                                    </div>
-                                                </form>
+                                                <button type="button" 
+                                                        class="btn btn-outline-danger btn-sm delete-note-button"
+                                                        data-note-id="{{ note.id }}"
+                                                        style="border-radius: 8px; padding: 0.25rem 0.75rem; font-size: 0.8rem;">
+                                                    <i class="fas fa-trash me-1"></i>삭제
+                                                </button>
                                             </div>
-                                        </li>
+                                        </div>
                                     </div>
                                 {% endfor %}
-                            </ul>
+                            </div>
                         </div>
-                        <div class="modal-footer">
-                            {#                        <form method="post" action="{% url 'noteapp:delete_all_notes' %}" style="display: inline">#}
-                            {#                            {% csrf_token %}#}
-                            {#                            <button type="submit" class="btn btn-danger rounded-pill">전체 삭제</button>#}
-                            {#                        </form>#}
-                            <button type="button" class="btn btn-secondary" data-dismiss="modal" onclick="modal_close()">닫기</button>
+                        <div class="modal-footer" style="border-top: 1px solid #f1f5f9; border-radius: 0 0 16px 16px; padding: 1.5rem; background: #f8fafc;">
+                            <button type="button" class="btn-modern" onclick="modal_close()" style="background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%); padding: 0.75rem 2rem;">
+                                <i class="fas fa-check me-2"></i>확인
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -272,6 +740,85 @@
         {#height: 100%;#}
             margin: 24rem 0;
         {#padding: 0;#}
+        }
+        
+        /* 일관된 디자인을 위한 추가 스타일 */
+        .btn-action:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(59, 130, 246, 0.4);
+            text-decoration: none;
+        }
+        
+        .btn-action:hover[style*="color: #3b82f6"] {
+            background: #3b82f6 !important;
+            color: white !important;
+            border-color: #3b82f6 !important;
+        }
+        
+        .btn-action:hover[style*="color: #10b981"] {
+            background: #10b981 !important;
+            color: white !important;
+            border-color: #10b981 !important;
+        }
+
+        .info-card:hover {
+            box-shadow: 0 12px 28px -3px rgba(0, 0, 0, 0.12), 0 6px 8px -2px rgba(0, 0, 0, 0.05);
+        }
+
+        .content-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            transition: all 0.2s ease;
+        }
+
+        /* 모바일 반응형 */
+        @media (max-width: 768px) {
+            .info-card {
+                padding: 1rem !important;
+                border-radius: 16px !important;
+            }
+
+            .user-avatar {
+                width: 60px !important;
+                height: 60px !important;
+            }
+
+            .user-avatar i {
+                font-size: 1.5rem !important;
+            }
+
+            .content-item {
+                padding: 1.25rem !important;
+            }
+
+            .content-icon {
+                width: 35px !important;
+                height: 35px !important;
+            }
+
+            .btn-action {
+                width: 100%;
+                justify-content: center;
+                padding: 0.75rem 2rem !important;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .info-card {
+                padding: 0.75rem !important;
+            }
+
+            .content-item {
+                padding: 1rem !important;
+            }
+
+            .content-item h6 {
+                font-size: 0.9rem !important;
+            }
+
+            .content-item p, .content-item li {
+                font-size: 0.8rem !important;
+            }
         }
 
     </style>

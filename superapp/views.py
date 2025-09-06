@@ -19,6 +19,18 @@ from pathlib import Path
 from django.contrib import messages
 
 
+def delete_approval_messages(user, booking_date, booking_time):
+    """예약 취소/변경 시 기존 승인 메시지를 삭제하는 공통 함수"""
+    if user and user.profile:
+        approval_message_pattern = f"{user.profile.real_name}님, {booking_date} {booking_time}의 예약이 승인되었습니다."
+        deleted_count = Note.objects.filter(
+            recipient_id=user.id,
+            message=approval_message_pattern
+        ).delete()[0]
+        return deleted_count
+    return 0
+
+
 env = environ.Env(
     # set casting, default value
     DEBUG=(bool, False)
@@ -152,6 +164,10 @@ def superbooking(request):
             elif booking_status == '예약가능':
                 booking = Booking.objects.filter(booking_date=booking_date, booking_time=booking_time)
                 if booking.exists():
+                    # 예약 취소 시 승인 메시지 삭제
+                    existing_booking = booking.first()
+                    if existing_booking and existing_booking.user:
+                        delete_approval_messages(existing_booking.user, booking_date, booking_time)
                     booking.delete()
                 Booking(booking_date=booking_date, booking_time=booking_time, booking_status=booking_status).save()
             elif booking_status == '예약불가':
@@ -271,6 +287,10 @@ def superbooking2(request):
             elif booking_status == '예약가능':
                 booking = Booking.objects.filter(booking_date=booking_date, booking_time=booking_time)
                 if booking.exists():
+                    # 예약 취소 시 승인 메시지 삭제
+                    existing_booking = booking.first()
+                    if existing_booking and existing_booking.user:
+                        delete_approval_messages(existing_booking.user, booking_date, booking_time)
                     booking.delete()
                 Booking(booking_date=booking_date, booking_time=booking_time, booking_status=booking_status).save()
             elif booking_status == '예약불가':
@@ -390,6 +410,10 @@ def superbooking2_1(request):
             elif booking_status == '예약가능':
                 booking = Booking.objects.filter(booking_date=booking_date, booking_time=booking_time)
                 if booking.exists():
+                    # 예약 취소 시 승인 메시지 삭제
+                    existing_booking = booking.first()
+                    if existing_booking and existing_booking.user:
+                        delete_approval_messages(existing_booking.user, booking_date, booking_time)
                     booking.delete()
                 Booking(booking_date=booking_date, booking_time=booking_time, booking_status=booking_status).save()
             elif booking_status == '예약불가':
@@ -509,6 +533,10 @@ def superbooking2_2(request):
             elif booking_status == '예약가능':
                 booking = Booking.objects.filter(booking_date=booking_date, booking_time=booking_time)
                 if booking.exists():
+                    # 예약 취소 시 승인 메시지 삭제
+                    existing_booking = booking.first()
+                    if existing_booking and existing_booking.user:
+                        delete_approval_messages(existing_booking.user, booking_date, booking_time)
                     booking.delete()
                 Booking(booking_date=booking_date, booking_time=booking_time, booking_status=booking_status).save()
             elif booking_status == '예약불가':

@@ -1,38 +1,243 @@
 {% extends 'base.html' %}
 
 {% block content %}
-
-    <div style="margin-top: 8rem;">
-        <h2 style="text-align: center;">
-            [통증의학에서 치료하는 질환]
-        </h2>
+<!-- Header Section -->
+<div class="hero-section" style="padding: 2rem 0; margin-top: 4rem;">
+    <div class="container hero-content text-center">
+        <div class="icon-feature mx-auto mb-3">
+            <i class="fas fa-notes-medical fa-lg"></i>
+        </div>
+        <h2 class="fw-bold mb-2" style="font-family: 'Noto Sans KR', sans-serif;">통증의학에서 치료하는 질환</h2>
+        <p class="lead mb-0">전문적인 진단과 치료로 다양한 통증 질환을 관리합니다</p>
     </div>
-    <div style="max-width: 680px; padding: 1rem; margin: 4rem auto; line-height: 1.96">
-        <h5>통증의학에서는 다양한 질환을 치료합니다. 주요한 질환들은 다음과 같습니다.</h5><br>
+</div>
 
-        <p><strong>근골격계 질환:</strong><br>
-            요통, 경추통, 어깨통(회전근개 증후군, 어깨 충돌 증후군), 관절통, 근막 통증 증후군, 힘줄염, 인대염, 건초염 등</p>
-        <p><strong>스포츠 손상 질환:</strong><br>
-            무릎 인대 부분 파열, 관절 염좌, 테니스 엘보우, 골프 엘보우, 발목 염좌, 근육 파열</p>
-        <p><strong>척추 질환:</strong><br>
-            추간판 탈출증(수핵 탈출증), 경추, 요추 디스크 질환, 척추관 협착증, 척추 측만증, 척추 분리증, 척추 전방 전위증, 면관절 증후군 등</p>
-        <p><strong>관절 질환;</strong><br>
-            퇴행성 관절염, 류마티스성 관절염, 슬개 대퇴 증후군, 관절 구축, 유착성 관절낭염(오십견), 부주상골 증후군, 턱 관절증</p>
-        <p><strong>신경통:</strong><br>
-            좌골 신경통, 대상포진 후 신경통, 후두 신경염, 안면 신경통, 삼차 신경통, 안면 신경 마비, 흉곽 출구 증후군, 늑간 신경통, 손목 터널 증후군, 발목 터널 증후군 등</p>
-        <p><strong>두통:</strong><br>
-            편두통, 긴장성 두통, 군발성 두통, 경추 기인성 두통 등</p>
-        <p><strong>자율신경계 이상:</strong><br>
-            불안, 우울, 스트레스 등에 의해 발생하는 통증</p>
-        <p><strong>만성 통증 증후군:</strong><br>
-            만성 허리통증, 만성 두통, 만성 피로 증후군 등의 질환</p>
-        <p><strong>복통:</strong><br>
-            소화기 질환, 생식기 질환 등에 의한 통증</p>
-        <p><strong>재활치료:</strong><br>
-            근력 강화, 유연성 개선, 균형 향상 등을 통해 기능 회복을 돕는 치료</p>
+<div class="container my-5" style="max-width: 700px; padding: 0 2rem;">
+    <div class="info-card" style="background: white; border-radius: 20px; padding: 2.5rem; box-shadow: 0 10px 25px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); border: 1px solid #f1f5f9; position: relative; overflow: hidden;">
+        <div class="card-decoration" style="position: absolute; top: -30px; right: -30px; width: 100px; height: 100px; background: linear-gradient(135deg, #fecaca, #f87171); border-radius: 50%; opacity: 0.1;"></div>
+        
+        <div class="text-center mb-4 position-relative">
+            <div class="user-avatar mx-auto mb-3" style="width: 70px; height: 70px; background: linear-gradient(135deg, #fecaca, #f87171); border-radius: 16px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(239, 68, 68, 0.25);">
+                <i class="fas fa-notes-medical" style="color: #ef4444; font-size: 2rem;"></i>
+            </div>
+            <h4 class="fw-bold mb-1" style="color: #1e293b;">치료 대상 질환</h4>
+            <p class="text-muted mb-0" style="font-size: 0.9rem;">다양한 통증 질환의 전문적인 치료를 제공합니다</p>
+        </div>
+
+        <!-- Content Sections -->
+        <div class="content-sections">
+            <div class="content-item mb-4" style="background: #f0fdf4; border-radius: 12px; padding: 1.5rem; border: 1px solid #dcfce7;">
+                <div class="d-flex align-items-start">
+                    <div class="content-icon me-3" style="width: 40px; height: 40px; background: linear-gradient(135deg, #d1fae5, #a7f3d0); border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+                        <i class="fas fa-bone" style="color: #10b981;"></i>
+                    </div>
+                    <div>
+                        <h6 class="fw-bold mb-2" style="color: #047857; font-size: 0.95rem;">근골격계 질환</h6>
+                        <p class="mb-0" style="font-size: 0.85rem; color: #475569; line-height: 1.6;">
+                            요통, 경추통, 어깨통, 관절통, 근막 통증 증후군, 힘줄염, 인대염 등
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="content-item mb-4" style="background: #f0f9ff; border-radius: 12px; padding: 1.5rem; border: 1px solid #e0f2fe;">
+                <div class="d-flex align-items-start">
+                    <div class="content-icon me-3" style="width: 40px; height: 40px; background: linear-gradient(135deg, #dbeafe, #bfdbfe); border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+                        <i class="fas fa-running" style="color: #3b82f6;"></i>
+                    </div>
+                    <div>
+                        <h6 class="fw-bold mb-2" style="color: #1e40af; font-size: 0.95rem;">스포츠 손상 질환</h6>
+                        <p class="mb-0" style="font-size: 0.85rem; color: #475569; line-height: 1.6;">
+                            무릎 인대 부분 파열, 관절 염좌, 테니스 엘보우, 골프 엘보우, 발목 염좌, 근육 파열
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="content-item mb-4" style="background: #fffbeb; border-radius: 12px; padding: 1.5rem; border: 1px solid #fed7aa;">
+                <div class="d-flex align-items-start">
+                    <div class="content-icon me-3" style="width: 40px; height: 40px; background: linear-gradient(135deg, #fef3c7, #fde68a); border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+                        <i class="fas fa-spine" style="color: #f59e0b;"></i>
+                    </div>
+                    <div>
+                        <h6 class="fw-bold mb-2" style="color: #d97706; font-size: 0.95rem;">척추 질환</h6>
+                        <p class="mb-0" style="font-size: 0.85rem; color: #475569; line-height: 1.6;">
+                            추간판 탈출증, 경추·요추 디스크 질환, 척추관 협착증, 면관절 증후군 등
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="content-item mb-4" style="background: #f5f3ff; border-radius: 12px; padding: 1.5rem; border: 1px solid #e9d5ff;">
+                <div class="d-flex align-items-start">
+                    <div class="content-icon me-3" style="width: 40px; height: 40px; background: linear-gradient(135deg, #ede9fe, #ddd6fe); border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+                        <i class="fas fa-joint" style="color: #8b5cf6;"></i>
+                    </div>
+                    <div>
+                        <h6 class="fw-bold mb-2" style="color: #7c3aed; font-size: 0.95rem;">관절 질환</h6>
+                        <p class="mb-0" style="font-size: 0.85rem; color: #475569; line-height: 1.6;">
+                            퇴행성 관절염, 류마티스성 관절염, 유착성 관절낭염(오십견), 턱 관절증 등
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="content-item mb-4" style="background: #fef2f2; border-radius: 12px; padding: 1.5rem; border: 1px solid #fecaca;">
+                <div class="d-flex align-items-start">
+                    <div class="content-icon me-3" style="width: 40px; height: 40px; background: linear-gradient(135deg, #fee2e2, #fecaca); border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+                        <i class="fas fa-bolt" style="color: #ef4444;"></i>
+                    </div>
+                    <div>
+                        <h6 class="fw-bold mb-2" style="color: #dc2626; font-size: 0.95rem;">신경통</h6>
+                        <p class="mb-0" style="font-size: 0.85rem; color: #475569; line-height: 1.6;">
+                            좌골 신경통, 대상포진 후 신경통, 삼차 신경통, 손목 터널 증후군 등
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="content-item mb-4" style="background: #ecfeff; border-radius: 12px; padding: 1.5rem; border: 1px solid #a5f3fc;">
+                <div class="d-flex align-items-start">
+                    <div class="content-icon me-3" style="width: 40px; height: 40px; background: linear-gradient(135deg, #cffafe, #a5f3fc); border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+                        <i class="fas fa-head-side-virus" style="color: #06b6d4;"></i>
+                    </div>
+                    <div>
+                        <h6 class="fw-bold mb-2" style="color: #0891b2; font-size: 0.95rem;">두통</h6>
+                        <p class="mb-0" style="font-size: 0.85rem; color: #475569; line-height: 1.6;">
+                            편두통, 긴장성 두통, 군발성 두통, 경추 기인성 두통 등
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="content-item mb-4" style="background: #fdf2f8; border-radius: 12px; padding: 1.5rem; border: 1px solid #fce7f3;">
+                <div class="d-flex align-items-start">
+                    <div class="content-icon me-3" style="width: 40px; height: 40px; background: linear-gradient(135deg, #fce7f3, #fbcfe8); border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+                        <i class="fas fa-brain" style="color: #e11d48;"></i>
+                    </div>
+                    <div>
+                        <h6 class="fw-bold mb-2" style="color: #be185d; font-size: 0.95rem;">자율신경계 이상</h6>
+                        <p class="mb-0" style="font-size: 0.85rem; color: #475569; line-height: 1.6;">
+                            불안, 우울, 스트레스 등에 의해 발생하는 통증
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="content-item mb-4" style="background: #eef2ff; border-radius: 12px; padding: 1.5rem; border: 1px solid #c7d2fe;">
+                <div class="d-flex align-items-start">
+                    <div class="content-icon me-3" style="width: 40px; height: 40px; background: linear-gradient(135deg, #e0e7ff, #c7d2fe); border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+                        <i class="fas fa-clock" style="color: #7c3aed;"></i>
+                    </div>
+                    <div>
+                        <h6 class="fw-bold mb-2" style="color: #6d28d9; font-size: 0.95rem;">만성 통증 증후군</h6>
+                        <p class="mb-0" style="font-size: 0.85rem; color: #475569; line-height: 1.6;">
+                            만성 허리통증, 만성 두통, 만성 피로 증후군 등
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Action Button -->
+        <div class="text-center mt-4">
+            <a href="{% url 'bookingapp:create' %}" class="btn-action" style="background: white; color: #ef4444; padding: 0.875rem 2.5rem; border-radius: 12px; border: 2px solid #ef4444; font-weight: 700; box-shadow: 0 4px 12px rgba(239, 68, 68, 0.15); transition: all 0.2s ease; display: inline-flex; align-items: center; font-size: 1rem; text-decoration: none;">
+                <i class="fas fa-calendar-plus me-2"></i>통증 질환 상담 예약
+            </a>
+        </div>
     </div>
+</div>
 
-    <style>
-    </style>
+<style>
+    .btn-action:hover {
+        background: #ef4444 !important;
+        color: white !important;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 16px rgba(239, 68, 68, 0.4);
+        border-color: #ef4444 !important;
+        text-decoration: none;
+    }
 
+    .info-card:hover {
+        box-shadow: 0 12px 28px -3px rgba(0, 0, 0, 0.12), 0 6px 8px -2px rgba(0, 0, 0, 0.05);
+    }
+
+    .content-item:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        transition: all 0.2s ease;
+    }
+
+    /* 모바일 반응형 */
+    @media (max-width: 768px) {
+        .container {
+            padding: 0 0.5rem !important;
+            max-width: 100% !important;
+        }
+
+        .hero-section {
+            padding: 1.5rem 0 !important;
+            margin-top: 3rem !important;
+        }
+
+        .hero-section h2 {
+            font-size: 1.5rem !important;
+        }
+
+        .hero-section .lead {
+            font-size: 1rem !important;
+        }
+
+        .info-card {
+            padding: 1rem !important;
+            border-radius: 16px !important;
+        }
+
+        .user-avatar {
+            width: 60px !important;
+            height: 60px !important;
+        }
+
+        .user-avatar i {
+            font-size: 1.5rem !important;
+        }
+
+        .content-item {
+            padding: 1.25rem !important;
+        }
+
+        .content-icon {
+            width: 35px !important;
+            height: 35px !important;
+        }
+
+        .btn-action {
+            width: 100%;
+            justify-content: center;
+            padding: 0.75rem 2rem !important;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .container {
+            padding: 0 0.25rem !important;
+        }
+
+        .info-card {
+            padding: 0.75rem !important;
+        }
+
+        .content-item {
+            padding: 1rem !important;
+        }
+
+        .content-item h6 {
+            font-size: 0.9rem !important;
+        }
+
+        .content-item p {
+            font-size: 0.8rem !important;
+        }
+    }
+</style>
 {% endblock %}

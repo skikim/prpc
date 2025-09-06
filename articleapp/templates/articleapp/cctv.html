@@ -1,38 +1,232 @@
 {% extends 'base.html' %}
+
 {% block content %}
-    <div style="margin-top: 8rem;">
-        <h2 style="text-align: center;">
-            [고정형 영상정보처리기기(CCTV) 운영 및 관리 방침]
-        </h2>
+<!-- Header Section -->
+<div class="hero-section" style="padding: 2rem 0; margin-top: 4rem;">
+    <div class="container hero-content text-center">
+        <div class="icon-feature mx-auto mb-3">
+            <i class="fas fa-video fa-lg"></i>
+        </div>
+        <h2 class="fw-bold mb-2" style="font-family: 'Noto Sans KR', sans-serif;">CCTV 운영 및 관리 방침</h2>
+        <p class="lead mb-0">고정형 영상정보처리기기의 설치와 운영에 관한 방침을 안내합니다</p>
     </div>
-    <div style="max-width: 680px; padding: 1rem; margin: 4rem auto; line-height: 1.96">
-        <h5>1.영상정보처리기기의 설치 근거 및 설치 목적</h5>
-        <p>본 의원은 「개인정보 보호법」 제25조 제1항에 따라 다음과 같은 목적으로 영상정보처리기기를 설치·운영합니다.</p>
-        <ul>- 환자 및 의료진의 안전 확보</ul>
-        <ul>- 시설안전 및 화재 예방</ul>
-        <ul>- 범죄 예방 및 수사</ul>
-        <ul>- 의료장비 및 시설물의 도난·도격 방지</ul><br>
-        <h5>2.설치 대수, 설치 위치 및 촬영범위</h5>
-        <ul>- 설치 대수: 5 대</ul>
-        <ul>- 설치 위치: 대기실, 복도 등</ul>
-        <ul>- 촬영범위: 해당 시설의 정보보호 및 안전을 위한 최소한의 범위</ul><br>
-        <h5>3.관리책임자 및 접근권한자</h5>
-        <p>영상정보를 보호하고 이와 관련한 불만을 처리하기 위하여 아래와 같이 개인영상정보 보호책임자를 두고 있습니다.</p>
-        <ul>- 관리책임자: 원장</ul>
-        <ul>- 연락처: 053-801-8575</ul>
-        <ul>- 접근권한자: 원장</ul><br>
-        <h5>4.영상정보의 촬영시간, 보관기간, 보관장소 및 처리방법</h5>
-        <ul>- 촬영시간: 24시간 촬영</ul>
-        <ul>- 보관기간: 촬영일로부터 30일</ul>
-        <ul>- 보관장소: 푸른마취통증의학과의원 내</ul>
-        <ul>- 처리방법: 보관기간 만료 시 자동 삭제</ul><br>
-        <h5>5.개인영상정보의 확인 방법 및 장소에 관한 사항</h5>
-        <p>영상정보 관리책임자에게 미리 연락하고 본 의원을 방문하시면 확인 가능합니다. 단, 귀하가 촬영된 개인영상정보 및 명백히 정보주체의 급박한 생명, 신체, 재산의 이익을 위하여 필요한 개인영상정보에 한정됩니다.</p><br>
-        <h5>6.정보주체의 영상정보 열람 등 요구에 대한 조치</h5>
-        <p>정보주체는 개인영상정보에 관하여 열람 또는 존재확인·삭제를 원하는 경우 언제든지 영상정보처리기기 운영자에게 요구하실 수 있습니다.</p><br>
-        <h5>7.영상정보의 안전성 확보조치</h5>
-        <p>본 의원에서 처리하는 영상정보는 암호화 조치 등을 통하여 안전하게 관리되고 있습니다. 또한 본 의원은 개인영상정보보호를 위한 관리적 대책으로서 개인정보에 대한 접근 권한을 차등부여하고 있습니다.</p><br>
+</div>
+
+<div class="container my-5" style="max-width: 700px; padding: 0 2rem;">
+    <div class="info-card" style="background: white; border-radius: 20px; padding: 2.5rem; box-shadow: 0 10px 25px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); border: 1px solid #f1f5f9; position: relative; overflow: hidden;">
+        <div class="card-decoration" style="position: absolute; top: -30px; right: -30px; width: 100px; height: 100px; background: linear-gradient(135deg, #bfdbfe, #93c5fd); border-radius: 50%; opacity: 0.1;"></div>
+        
+        <div class="text-center mb-4 position-relative">
+            <div class="user-avatar mx-auto mb-3" style="width: 70px; height: 70px; background: linear-gradient(135deg, #bfdbfe, #93c5fd); border-radius: 16px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(59, 130, 246, 0.25);">
+                <i class="fas fa-video" style="color: #3b82f6; font-size: 2rem;"></i>
+            </div>
+            <h4 class="fw-bold mb-1" style="color: #1e293b;">CCTV 운영 방침</h4>
+            <p class="text-muted mb-0" style="font-size: 0.9rem;">환자 안전과 시설 보안을 위한 영상정보 처리방침</p>
+        </div>
+
+        <!-- Content Sections -->
+        <div class="content-sections">
+            <div class="content-item mb-4" style="background: #f0f9ff; border-radius: 12px; padding: 1.5rem; border: 1px solid #e0f2fe;">
+                <div class="d-flex align-items-start">
+                    <div class="content-icon me-3" style="width: 40px; height: 40px; background: linear-gradient(135deg, #dbeafe, #bfdbfe); border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+                        <i class="fas fa-bullseye" style="color: #3b82f6;"></i>
+                    </div>
+                    <div>
+                        <h6 class="fw-bold mb-2" style="color: #1e40af; font-size: 0.95rem;">설치 근거 및 목적</h6>
+                        <p class="mb-0" style="font-size: 0.85rem; color: #475569; line-height: 1.6;">
+                            개인정보보호법 제25조에 따라 환자·의료진 안전 확보, 시설 보안, 범죄 예방, 장비 도난·파괴 방지 목적으로 설치·운영합니다.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="content-item mb-4" style="background: #f0fdf4; border-radius: 12px; padding: 1.5rem; border: 1px solid #dcfce7;">
+                <div class="d-flex align-items-start">
+                    <div class="content-icon me-3" style="width: 40px; height: 40px; background: linear-gradient(135deg, #d1fae5, #a7f3d0); border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+                        <i class="fas fa-map-marked-alt" style="color: #10b981;"></i>
+                    </div>
+                    <div>
+                        <h6 class="fw-bold mb-2" style="color: #047857; font-size: 0.95rem;">설치 현황</h6>
+                        <p class="mb-0" style="font-size: 0.85rem; color: #475569; line-height: 1.6;">
+                            <strong>설치대수:</strong> 5대 <strong>설치위치:</strong> 대기실, 복도 등<br>
+                            <strong>촬영범위:</strong> 시설 보안 최소 범위
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="content-item mb-4" style="background: #fffbeb; border-radius: 12px; padding: 1.5rem; border: 1px solid #fed7aa;">
+                <div class="d-flex align-items-start">
+                    <div class="content-icon me-3" style="width: 40px; height: 40px; background: linear-gradient(135deg, #fef3c7, #fde68a); border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+                        <i class="fas fa-user-tie" style="color: #f59e0b;"></i>
+                    </div>
+                    <div>
+                        <h6 class="fw-bold mb-2" style="color: #d97706; font-size: 0.95rem;">관리책임자</h6>
+                        <p class="mb-0" style="font-size: 0.85rem; color: #475569; line-height: 1.6;">
+                            <strong>관리책임자:</strong> 원장 <strong>연락처:</strong> 053-801-8575<br>
+                            <strong>접근권한자:</strong> 원장
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="content-item mb-4" style="background: #f5f3ff; border-radius: 12px; padding: 1.5rem; border: 1px solid #e9d5ff;">
+                <div class="d-flex align-items-start">
+                    <div class="content-icon me-3" style="width: 40px; height: 40px; background: linear-gradient(135deg, #ede9fe, #ddd6fe); border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+                        <i class="fas fa-database" style="color: #8b5cf6;"></i>
+                    </div>
+                    <div>
+                        <h6 class="fw-bold mb-2" style="color: #7c3aed; font-size: 0.95rem;">보관 및 처리</h6>
+                        <p class="mb-0" style="font-size: 0.85rem; color: #475569; line-height: 1.6;">
+                            <strong>촬영시간:</strong> 24시간 <strong>보관기간:</strong> 촬영일로부터 30일<br>
+                            <strong>보관장소:</strong> 의원 내 <strong>처리방법:</strong> 보관기간 만료 시 자동 삭제
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="content-item mb-4" style="background: #fef2f2; border-radius: 12px; padding: 1.5rem; border: 1px solid #fecaca;">
+                <div class="d-flex align-items-start">
+                    <div class="content-icon me-3" style="width: 40px; height: 40px; background: linear-gradient(135deg, #fee2e2, #fecaca); border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+                        <i class="fas fa-search" style="color: #ef4444;"></i>
+                    </div>
+                    <div>
+                        <h6 class="fw-bold mb-2" style="color: #dc2626; font-size: 0.95rem;">열람 및 확인</h6>
+                        <p class="mb-0" style="font-size: 0.85rem; color: #475569; line-height: 1.6;">
+                            영상정보 관리책임자에게 미리 연락 후 본 의원 방문하여 확인 가능합니다. (촬영된 개인영상정보에 한정)
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="content-item mb-4" style="background: #ecfeff; border-radius: 12px; padding: 1.5rem; border: 1px solid #a5f3fc;">
+                <div class="d-flex align-items-start">
+                    <div class="content-icon me-3" style="width: 40px; height: 40px; background: linear-gradient(135deg, #cffafe, #a5f3fc); border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+                        <i class="fas fa-user-check" style="color: #06b6d4;"></i>
+                    </div>
+                    <div>
+                        <h6 class="fw-bold mb-2" style="color: #0891b2; font-size: 0.95rem;">정보주체 권리</h6>
+                        <p class="mb-0" style="font-size: 0.85rem; color: #475569; line-height: 1.6;">
+                            언제든지 영상정보처리기기 운영자에게 개인영상정보의 열람, 존재확인, 삭제를 요구하실 수 있습니다.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="content-item mb-4" style="background: #f6ffed; border-radius: 12px; padding: 1.5rem; border: 1px solid #d9f7be;">
+                <div class="d-flex align-items-start">
+                    <div class="content-icon me-3" style="width: 40px; height: 40px; background: linear-gradient(135deg, #f6ffed, #d9f7be); border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+                        <i class="fas fa-lock" style="color: #389e0d;"></i>
+                    </div>
+                    <div>
+                        <h6 class="fw-bold mb-2" style="color: #389e0d; font-size: 0.95rem;">안전성 확보조치</h6>
+                        <p class="mb-0" style="font-size: 0.85rem; color: #475569; line-height: 1.6;">
+                            영상정보는 암호화 조치를 통해 안전하게 관리되며, 접근 권한을 차등 부여하여 개인영상정보를 보호합니다.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Action Button -->
+        <div class="text-center mt-4">
+            <a href="{% url 'bookingapp:create' %}" class="btn-action" style="background: white; color: #3b82f6; padding: 0.875rem 2.5rem; border-radius: 12px; border: 2px solid #3b82f6; font-weight: 700; box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15); transition: all 0.2s ease; display: inline-flex; align-items: center; font-size: 1rem; text-decoration: none;">
+                <i class="fas fa-calendar-plus me-2"></i>안전한 진료 예약
+            </a>
+        </div>
     </div>
-    <style>
-    </style>
+</div>
+
+<style>
+    .btn-action:hover {
+        background: #3b82f6 !important;
+        color: white !important;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 16px rgba(59, 130, 246, 0.4);
+        border-color: #3b82f6 !important;
+        text-decoration: none;
+    }
+
+    .info-card:hover {
+        box-shadow: 0 12px 28px -3px rgba(0, 0, 0, 0.12), 0 6px 8px -2px rgba(0, 0, 0, 0.05);
+    }
+
+    .content-item:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        transition: all 0.2s ease;
+    }
+
+    /* 모바일 반응형 */
+    @media (max-width: 768px) {
+        .container {
+            padding: 0 0.5rem !important;
+            max-width: 100% !important;
+        }
+
+        .hero-section {
+            padding: 1.5rem 0 !important;
+            margin-top: 3rem !important;
+        }
+
+        .hero-section h2 {
+            font-size: 1.5rem !important;
+        }
+
+        .hero-section .lead {
+            font-size: 1rem !important;
+        }
+
+        .info-card {
+            padding: 1rem !important;
+            border-radius: 16px !important;
+        }
+
+        .user-avatar {
+            width: 60px !important;
+            height: 60px !important;
+        }
+
+        .user-avatar i {
+            font-size: 1.5rem !important;
+        }
+
+        .content-item {
+            padding: 1.25rem !important;
+        }
+
+        .content-icon {
+            width: 35px !important;
+            height: 35px !important;
+        }
+
+        .btn-action {
+            width: 100%;
+            justify-content: center;
+            padding: 0.75rem 2rem !important;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .container {
+            padding: 0 0.25rem !important;
+        }
+
+        .info-card {
+            padding: 0.75rem !important;
+        }
+
+        .content-item {
+            padding: 1rem !important;
+        }
+
+        .content-item h6 {
+            font-size: 0.9rem !important;
+        }
+
+        .content-item p {
+            font-size: 0.8rem !important;
+        }
+    }
+</style>
 {% endblock %}

@@ -1,0 +1,382 @@
+{% extends 'base.html' %}
+{% load bootstrap5 %}
+
+{% block content %}
+<style>
+    /* 파스텔 색상 정의 */
+    .pastel-blue { background-color: #E3F2FD !important; color: #1976D2 !important; }
+    .pastel-green { background-color: #E8F5E8 !important; color: #388E3C !important; }
+    .pastel-cyan { background-color: #E0F7FA !important; color: #00838F !important; }
+    .pastel-orange { background-color: #FFF3E0 !important; color: #F57C00 !important; }
+    .pastel-red { background-color: #FFEBEE !important; color: #D32F2F !important; }
+    .pastel-gray { background-color: #F5F5F5 !important; color: #616161 !important; }
+    
+    /* 상태 배지 파스텔 스타일 */
+    .badge.pastel-available { background-color: #E3F2FD !important; color: #1976D2 !important; }
+    .badge.pastel-requested { background-color: #FFF9C4 !important; color: #F57F17 !important; }
+    .badge.pastel-approved { background-color: #FFCDD2 !important; color: #D32F2F !important; }
+    .badge.pastel-cancelled { background-color: #E0E0E0 !important; color: #424242 !important; }
+    
+    /* 액션 타입 배지 파스텔 스타일 */
+    .badge.pastel-create { background-color: #E3F2FD !important; color: #1976D2 !important; }
+    .badge.pastel-approve { background-color: #E8F5E8 !important; color: #388E3C !important; }
+    .badge.pastel-delete { background-color: #E0E0E0 !important; color: #424242 !important; }
+    .badge.pastel-update { background-color: #FFF3E0 !important; color: #F57C00 !important; }
+    .badge.pastel-other { background-color: #F5F5F5 !important; color: #616161 !important; }
+    .card { border: none; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+    .table-dark { background-color: #37474F !important; }
+    
+    /* 테이블 헤더 파스텔 스타일 */
+    .table-header-pastel { 
+        background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%) !important;
+        color: #374151 !important;
+        border-bottom: 2px solid #cbd5e1;
+    }
+    .table-header-pastel th {
+        color: #374151 !important;
+        font-weight: 600;
+        border-bottom: 2px solid #cbd5e1;
+    }
+    
+    /* 카드 헤더 스타일 */
+    .card-header {
+        background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+        border-bottom: 1px solid #e2e8f0;
+        color: #374151;
+    }
+    
+    /* 모바일에서 테이블 단순화 및 버튼 개선 */
+    @media (max-width: 768px) {
+        .mobile-hide {
+            display: none !important;
+        }
+        
+        .log-table {
+            font-size: 0.8rem;
+        }
+        
+        .log-table th,
+        .log-table td {
+            padding: 0.4rem 0.3rem;
+        }
+        
+        .log-table .badge {
+            font-size: 0.65rem;
+            padding: 0.2rem 0.4rem;
+        }
+        
+        .mobile-btn-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            width: 100%;
+        }
+        
+        .mobile-btn-group .btn {
+            width: 100%;
+            margin: 0;
+        }
+        
+        .mobile-header {
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+        
+        .mobile-header h2 {
+            font-size: 1.3rem;
+            margin-bottom: 1rem;
+        }
+    }
+    
+    /* 로그 테이블 컴팩트 스타일 */
+    .log-table {
+        font-size: 0.85rem;
+    }
+    .log-table th {
+        padding: 0.5rem 0.75rem;
+        font-size: 0.8rem;
+        font-weight: 600;
+        vertical-align: middle;
+    }
+    .log-table td {
+        padding: 0.5rem 0.75rem;
+        vertical-align: middle;
+        line-height: 1.3;
+    }
+    .log-table .badge {
+        font-size: 0.7rem;
+        padding: 0.25rem 0.5rem;
+    }
+    .log-table small {
+        font-size: 0.75rem;
+    }
+</style>
+<div class="container-fluid" style="margin-top: 8rem;">
+    <div class="row">
+        <div class="col-12">
+            <!-- 데스크탑 헤더 -->
+            <div class="d-none d-md-flex justify-content-between align-items-center mb-4">
+                <div></div>
+                <h2 class="text-center mb-0">
+                    <i class="fas fa-user"></i> 
+                    {% if target_user.profile %}
+                        {{ target_user.profile.real_name }}
+                    {% else %}
+                        {{ target_user.username }}
+                    {% endif %}
+                    님의 활동 로그
+                </h2>
+                <div>
+                    <a href="{% url 'logapp:log_list' %}" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left"></i> 로그 목록
+                    </a>
+                    <a href="{% url 'logapp:log_search' %}" class="btn btn-primary">
+                        <i class="fas fa-search"></i> 검색
+                    </a>
+                </div>
+            </div>
+            
+            <!-- 모바일 헤더 -->
+            <div class="d-md-none mobile-header">
+                <h2>
+                    <i class="fas fa-user"></i> 
+                    {% if target_user.profile %}
+                        {{ target_user.profile.real_name }}
+                    {% else %}
+                        {{ target_user.username }}
+                    {% endif %}
+                    님의 활동 로그
+                </h2>
+                <div class="mobile-btn-group">
+                    <a href="{% url 'logapp:log_list' %}" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left"></i> 로그 목록
+                    </a>
+                    <a href="{% url 'logapp:log_search' %}" class="btn btn-primary">
+                        <i class="fas fa-search"></i> 검색
+                    </a>
+                </div>
+            </div>
+            
+            <!-- 사용자 정보 -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5><i class="fas fa-id-card"></i> 사용자 정보</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-2">
+                            <strong>사용자 ID:</strong> {{ target_user.id }}
+                        </div>
+                        <div class="col-md-2">
+                            <strong>사용자명:</strong> {{ target_user.username }}
+                        </div>
+                        <div class="col-md-3">
+                            <strong>실명:</strong> 
+                            {% if target_user.profile %}
+                                {{ target_user.profile.real_name }}
+                            {% else %}
+                                <span class="text-muted">미등록</span>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-2">
+                            <strong>가입일:</strong> {{ target_user.date_joined|date:"Y-m-d" }}
+                        </div>
+                        <div class="col-md-3">
+                            <strong>권한:</strong> 
+                            {% if target_user.is_superuser %}
+                                <span class="badge pastel-red">수퍼유저</span>
+                            {% elif target_user.is_staff %}
+                                <span class="badge pastel-orange">스태프</span>
+                            {% else %}
+                                <span class="badge pastel-blue">일반 사용자</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 통계 정보 -->
+            <div class="row mb-4">
+                <div class="col-md-2">
+                    <div class="card pastel-blue">
+                        <div class="card-body text-center">
+                            <h4>{{ stats.total_logs }}</h4>
+                            <p class="card-text">전체 활동</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="card pastel-green">
+                        <div class="card-body text-center">
+                            <h4>{{ stats.as_user_count }}</h4>
+                            <p class="card-text">예약자로서</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="card pastel-cyan">
+                        <div class="card-body text-center">
+                            <h4>{{ stats.as_modifier_count }}</h4>
+                            <p class="card-text">변경자로서</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="card pastel-orange">
+                        <div class="card-body text-center">
+                            <h4>{{ stats.create_count }}</h4>
+                            <p class="card-text">예약 생성</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="card pastel-gray">
+                        <div class="card-body text-center">
+                            <h4>{{ stats.approve_count }}</h4>
+                            <p class="card-text">예약 승인</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 로그 목록 -->
+            <div class="card">
+                <div class="card-header">
+                    <h5><i class="fas fa-list"></i> 활동 로그 ({{ logs.paginator.count }}건)</h5>
+                </div>
+                <div class="card-body">
+                    {% if logs %}
+                        <div class="table-responsive">
+                            <table class="table table-striped table-hover log-table">
+                                <thead class="table-header-pastel">
+                                    <tr>
+                                        <th>시간</th>
+                                        <th>액션</th>
+                                        <th>예약 날짜/시간</th>
+                                        <th>변경자</th>
+                                        <th>상태 변경</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for log in logs %}
+                                        <tr>
+                                            <td>
+                                                <small>{{ log.created_at|date:"m-d H:i" }}</small>
+                                            </td>
+                                            <td>
+                                                {% if log.action_type == 'DELETE' and log.previous_status == '예약승인' and log.new_status == '예약가능' %}
+                                                    <span class="badge pastel-cancelled">예약취소</span>
+                                                {% elif log.action_type == 'DELETE' and log.previous_status == '예약요청' and log.new_status == '예약가능' %}
+                                                    <span class="badge pastel-cancelled">예약취소</span>
+                                                {% elif log.action_type == 'CREATE' %}
+                                                    {% if log.new_status == '예약요청' %}
+                                                        <span class="badge pastel-requested">예약요청</span>
+                                                    {% elif log.new_status == '예약승인' %}
+                                                        <span class="badge pastel-approved">예약승인</span>
+                                                    {% else %}
+                                                        <span class="badge pastel-create">{{ log.get_action_display_korean }}</span>
+                                                    {% endif %}
+                                                {% elif log.action_type == 'APPROVE' %}
+                                                    <span class="badge pastel-approved">예약승인</span>
+                                                {% elif log.action_type == 'DELETE' %}
+                                                    <span class="badge pastel-cancelled">예약취소</span>
+                                                {% elif log.action_type == 'UPDATE' %}
+                                                    <span class="badge pastel-update">{{ log.get_action_display_korean }}</span>
+                                                {% else %}
+                                                    <span class="badge pastel-other">{{ log.get_action_display_korean }}</span>
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                <a href="{% url 'logapp:booking_log_detail' log.booking_date|date:'Y-m-d' log.booking_time %}" 
+                                                   class="text-decoration-none">
+                                                    <strong>{{ log.booking_date|date:"Y-m-d" }}</strong><br>
+                                                    <small class="text-muted">{{ log.booking_time }}</small>
+                                                </a>
+                                            </td>
+                                            <td>
+                                                {% if log.modified_by %}
+                                                    {% if log.modified_by == target_user %}
+                                                        <span class="text-muted">본인</span>
+                                                    {% else %}
+                                                        {{ log.get_modifier_display }}
+                                                    {% endif %}
+                                                {% else %}
+                                                    <span class="text-muted">시스템</span>
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                {% if log.previous_status %}
+                                                    {% if log.previous_status == '예약가능' %}
+                                                        <span class="badge pastel-available">{{ log.previous_status }}</span>
+                                                    {% elif log.previous_status == '예약요청' %}
+                                                        <span class="badge pastel-requested">{{ log.previous_status }}</span>
+                                                    {% elif log.previous_status == '예약승인' %}
+                                                        <span class="badge pastel-approved">{{ log.previous_status }}</span>
+                                                    {% elif log.previous_status == '예약취소' %}
+                                                        <span class="badge pastel-cancelled">{{ log.previous_status }}</span>
+                                                    {% else %}
+                                                        <span class="badge pastel-cancelled">{{ log.previous_status }}</span>
+                                                    {% endif %}
+                                                    <span class="mx-2" style="color: #333; font-weight: bold;">→</span>
+                                                {% endif %}
+                                                {% if log.new_status == '예약가능' %}
+                                                    <span class="badge pastel-available">{{ log.new_status }}</span>
+                                                {% elif log.new_status == '예약요청' %}
+                                                    <span class="badge pastel-requested">{{ log.new_status }}</span>
+                                                {% elif log.new_status == '예약승인' %}
+                                                    <span class="badge pastel-approved">{{ log.new_status }}</span>
+                                                {% elif log.new_status == '예약취소' %}
+                                                    <span class="badge pastel-cancelled">{{ log.new_status }}</span>
+                                                {% else %}
+                                                    <span class="badge pastel-cancelled">{{ log.new_status }}</span>
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                        <!-- 페이지네이션 -->
+                        {% if logs.has_other_pages %}
+                            <nav aria-label="사용자 로그 페이지네이션">
+                                <ul class="pagination justify-content-center">
+                                    {% if logs.has_previous %}
+                                        <li class="page-item">
+                                            <a class="page-link" href="?page=1">&laquo; 처음</a>
+                                        </li>
+                                        <li class="page-item">
+                                            <a class="page-link" href="?page={{ logs.previous_page_number }}">이전</a>
+                                        </li>
+                                    {% endif %}
+                                    
+                                    <li class="page-item active">
+                                        <span class="page-link">
+                                            {{ logs.number }} / {{ logs.paginator.num_pages }}
+                                        </span>
+                                    </li>
+                                    
+                                    {% if logs.has_next %}
+                                        <li class="page-item">
+                                            <a class="page-link" href="?page={{ logs.next_page_number }}">다음</a>
+                                        </li>
+                                        <li class="page-item">
+                                            <a class="page-link" href="?page={{ logs.paginator.num_pages }}">마지막 &raquo;</a>
+                                        </li>
+                                    {% endif %}
+                                </ul>
+                            </nav>
+                        {% endif %}
+                        
+                    {% else %}
+                        <div class="text-center py-5">
+                            <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
+                            <p class="text-muted">이 사용자의 활동 로그가 없습니다.</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

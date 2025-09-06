@@ -1,34 +1,514 @@
 {% extends 'base.html' %}
 
 {% block content %}
+<style>
+/* 파스텔 컬러 팔레트 */
+:root {
+    --pastel-blue: #e3f2fd;
+    --pastel-green: #e8f5e8;
+    --pastel-pink: #fce4ec;
+    --pastel-purple: #f3e5f5;
+    --pastel-orange: #fff3e0;
+    --pastel-teal: #e0f2f1;
+    --soft-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    --hover-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+}
 
-    <div style="margin-top: 8rem">
-        <h2 style="text-align: center;">
-            [오시는 길]
-        </h2>
+/* 병원 정보 카드 스타일 */
+.hospital-info-card {
+    background: linear-gradient(135deg, var(--pastel-blue), var(--pastel-teal));
+    border-radius: 20px;
+    padding: 2rem;
+    box-shadow: var(--soft-shadow);
+    border: 1px solid rgba(255, 255, 255, 0.8);
+    transition: all 0.3s ease;
+    margin-bottom: 2rem;
+}
+
+.hospital-info-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--hover-shadow);
+}
+
+.info-item {
+    background: rgba(255, 255, 255, 0.7);
+    padding: 1rem 1.5rem;
+    border-radius: 15px;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    transition: all 0.2s ease;
+}
+
+.info-item:hover {
+    background: rgba(255, 255, 255, 0.9);
+    transform: translateX(5px);
+}
+
+.info-icon {
+    width: 45px;
+    height: 45px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 1rem;
+    font-size: 1.2rem;
+}
+
+.address-icon {
+    background: linear-gradient(135deg, #ff9a9e, #fecfef);
+    color: white;
+}
+
+.phone-icon {
+    background: linear-gradient(135deg, #a8edea, #fed6e3);
+    color: #2c5aa0;
+}
+
+.fax-icon {
+    background: linear-gradient(135deg, #d299c2, #fef9d7);
+    color: #6a4c93;
+}
+
+/* 지도 카드 스타일 */
+.map-card {
+    background: linear-gradient(135deg, var(--pastel-pink), var(--pastel-purple));
+    border-radius: 20px;
+    padding: 2rem;
+    box-shadow: var(--soft-shadow);
+    border: 1px solid rgba(255, 255, 255, 0.8);
+}
+
+.map-wrapper {
+    background: rgba(255, 255, 255, 0.8);
+    border-radius: 16px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    border: 1px solid rgba(255, 255, 255, 0.9);
+}
+
+/* 액션 버튼 스타일 */
+.action-btn {
+    padding: 0.75rem 2rem;
+    border-radius: 50px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    border: 2px solid;
+    font-size: 0.95rem;
+}
+
+.btn-call {
+    background: linear-gradient(135deg, var(--pastel-green), #c8e6c8);
+    color: #2e7d32;
+    border-color: #a5d6a7;
+}
+
+.btn-call:hover {
+    background: linear-gradient(135deg, #c8e6c8, #a5d6a7);
+    color: #1b5e20;
+    transform: translateY(-2px);
+    box-shadow: var(--hover-shadow);
+    text-decoration: none;
+}
+
+.btn-directions {
+    background: linear-gradient(135deg, var(--pastel-orange), #ffcc80);
+    color: #e65100;
+    border-color: #ffab40;
+}
+
+.btn-directions:hover {
+    background: linear-gradient(135deg, #ffcc80, #ffab40);
+    color: #bf360c;
+    transform: translateY(-2px);
+    box-shadow: var(--hover-shadow);
+    text-decoration: none;
+}
+
+.btn-booking {
+    background: linear-gradient(135deg, var(--pastel-purple), #d1c4e9);
+    color: #4527a0;
+    border-color: #b39ddb;
+    padding: 1rem 2.5rem;
+    font-size: 1.1rem;
+}
+
+.btn-booking:hover {
+    background: linear-gradient(135deg, #d1c4e9, #b39ddb);
+    color: #311b92;
+    transform: translateY(-2px);
+    box-shadow: var(--hover-shadow);
+    text-decoration: none;
+}
+
+/* 지도 플레이스홀더 스타일 (모든 기기 공통) */
+.map-placeholder {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(245, 245, 245, 0.8));
+    border-radius: 16px;
+    padding: 3rem 2rem;
+    text-align: center;
+    border: 2px dashed #e1bee7;
+    min-height: 280px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.map-placeholder .btn {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    border: none;
+    border-radius: 25px;
+    padding: 1rem 2rem;
+    color: white;
+    font-weight: 600;
+    box-shadow: var(--soft-shadow);
+    transition: all 0.3s ease;
+    text-decoration: none;
+}
+
+.map-placeholder .btn:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--hover-shadow);
+    color: white;
+    text-decoration: none;
+}
+</style>
+
+<!-- Header Section -->
+<div class="hero-section" style="padding: 2rem 0; margin-top: 4rem;">
+    <div class="container hero-content text-center">
+        <div class="icon-feature mx-auto mb-3">
+            <i class="fas fa-map-marker-alt fa-lg"></i>
+        </div>
+        <h2 class="fw-bold mb-2" style="font-family: 'Noto Sans KR', sans-serif;">오시는 길</h2>
+        <p class="lead mb-0">푸른 마취통증의학과의원 위치 안내</p>
     </div>
-    <div>
-                <!--
-            * 카카오맵 - 약도서비스
-            * 한 페이지 내에 약도를 2개 이상 넣을 경우에는
-            * 약도의 수 만큼 소스를 새로 생성, 삽입해야 합니다.
-        -->
-        <!-- 1. 약도 노드 -->
-        <div style="margin: 4rem auto; max-width: 96%;" id="daumRoughmapContainer1675949716292" class="root_daum_roughmap root_daum_roughmap_landing"></div>
+</div>
 
-        <!-- 2. 설치 스크립트 -->
-        <script charset="UTF-8" class="daum_roughmap_loader_script" src="https://ssl.daumcdn.net/dmaps/map_js_init/roughmapLoader.js"></script>
-
-        <!-- 3. 실행 스크립트 -->
-        <script charset="UTF-8">
-            new daum.roughmap.Lander({
-                "timestamp" : "1675949716292",
-                "key" : "2dp9i",
-                "mapWidth" : "640",
-                "mapHeight" : "360"
-            }).render();
-        </script>
+<div class="container my-5" style="max-width: 900px; padding: 0 1.5rem;">
+    <!-- 병원 정보 카드 -->
+    <div class="hospital-info-card">
+        <div class="text-center mb-4">
+            <div class="icon-feature mx-auto mb-3" style="background: linear-gradient(135deg, #ff9a9e, #fecfef); width: 60px; height: 60px;">
+                <i class="fas fa-hospital-alt"></i>
+            </div>
+            <h3 class="fw-bold mb-2" style="color: #2c5aa0;">병원 정보</h3>
+            <p class="text-muted mb-0">정확한 위치와 연락처를 확인하세요</p>
+        </div>
+        
+        <div class="row">
+            <div class="col-md-8 mb-3">
+                <div class="info-item">
+                    <div class="info-icon address-icon">
+                        <i class="fas fa-map-marker-alt"></i>
+                    </div>
+                    <div>
+                        <div class="fw-semibold" style="color: #2c5aa0; margin-bottom: 0.25rem;">주소</div>
+                        <div style="color: #555;">경상북도 경산시 대학로 63<br><small>(킴스메디빌 6층)</small></div>
+                    </div>
+                </div>
+                
+                <div class="info-item">
+                    <div class="info-icon phone-icon">
+                        <i class="fas fa-phone"></i>
+                    </div>
+                    <div>
+                        <div class="fw-semibold" style="color: #2c5aa0; margin-bottom: 0.25rem;">전화번호</div>
+                        <div style="color: #555;">053-801-8575</div>
+                    </div>
+                </div>
+                
+                <div class="info-item mb-0">
+                    <div class="info-icon fax-icon">
+                        <i class="fas fa-fax"></i>
+                    </div>
+                    <div>
+                        <div class="fw-semibold" style="color: #2c5aa0; margin-bottom: 0.25rem;">팩스번호</div>
+                        <div style="color: #555;">053-801-8576</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4 d-flex flex-column justify-content-center">
+                <div class="text-center">
+                    <a href="tel:053-801-8575" class="action-btn btn-call mb-3">
+                        <i class="fas fa-phone me-2"></i>전화하기
+                    </a>
+                    <a href="https://map.naver.com/v5/search/푸른%20마취통증의학과의원" target="_blank" class="action-btn btn-directions">
+                        <i class="fas fa-route me-2"></i>길찾기
+                    </a>
+                </div>
+            </div>
+        </div>
     </div>
 
+    <!-- 지도 카드 -->
+    <div class="map-card">
+        <div class="text-center mb-4">
+            <div class="icon-feature mx-auto mb-3" style="background: linear-gradient(135deg, #d299c2, #fef9d7); width: 60px; height: 60px;">
+                <i class="fas fa-location-dot"></i>
+            </div>
+            <h3 class="fw-bold mb-2" style="color: #6a4c93;">병원 위치</h3>
+            <p class="text-muted mb-0">정확한 위치를 지도에서 확인하세요</p>
+        </div>
+        
+        <!-- 지도 컨테이너 -->
+        <div class="map-wrapper">
+            <!-- 모든 기기에서 공통으로 사용할 플레이스홀더 -->
+            <div class="map-placeholder">
+                <div class="map-placeholder-content">
+                    <i class="fas fa-map-marker-alt fa-3x mb-3" style="color: #6a4c93;"></i>
+                    <h5 class="fw-bold mb-3" style="color: #2c5aa0;">푸른 마취통증의학과의원</h5>
+                    <p class="text-muted mb-4">경상북도 경산시 대학로 63<br><small>(킴스메디빌 6층)</small></p>
+                    <a href="https://map.naver.com/v5/search/푸른%20마취통증의학과의원" target="_blank" class="btn">
+                        <i class="fas fa-map me-2"></i>네이버 지도에서 보기
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 예약 버튼 -->
+        <div class="text-center">
+            <a href="{% url 'bookingapp:create' %}" class="action-btn btn-booking">
+                <i class="fas fa-calendar-plus me-2"></i>온라인 예약하기
+            </a>
+        </div>
+    </div>
+</div>
 
+<!-- 모바일 반응형 및 추가 스타일 -->
+<style>
+/* 태블릿 및 중간 크기 화면 */
+@media (max-width: 992px) {
+    .hero-section {
+        padding: 1.5rem 0;
+        margin-top: 3rem;
+    }
+    
+    .container {
+        max-width: 100%;
+        padding: 0 1.5rem;
+    }
+    
+    .hospital-info-card, .map-card {
+        margin-bottom: 1.8rem;
+    }
+}
+
+/* 모바일 화면 */
+@media (max-width: 768px) {
+    .hero-section {
+        padding: 1.2rem 0;
+        margin-top: 2.5rem;
+    }
+    
+    .hero-section h2 {
+        font-size: 1.8rem;
+    }
+    
+    .hero-section .lead {
+        font-size: 1rem;
+    }
+    
+    .container {
+        padding: 0 1rem;
+    }
+    
+    .hospital-info-card {
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        border-radius: 16px;
+    }
+    
+    .map-card {
+        padding: 1.5rem;
+        border-radius: 16px;
+    }
+    
+    .info-item {
+        padding: 1rem;
+        margin-bottom: 0.8rem;
+        border-radius: 12px;
+    }
+    
+    .info-icon {
+        width: 40px;
+        height: 40px;
+        margin-right: 0.8rem;
+        font-size: 1rem;
+    }
+    
+    .action-btn {
+        padding: 0.7rem 1.5rem;
+        font-size: 0.9rem;
+        width: 100%;
+        margin-bottom: 0.75rem;
+        justify-content: center;
+        border-radius: 40px;
+    }
+    
+    .btn-booking {
+        padding: 0.9rem 2rem;
+        font-size: 1.05rem;
+        border-radius: 40px;
+    }
+    
+    .map-wrapper {
+        padding: 1rem;
+        margin-bottom: 1rem;
+        border-radius: 12px;
+    }
+    
+    .map-placeholder {
+        padding: 2rem 1.5rem;
+        min-height: 250px;
+        border-radius: 12px;
+    }
+    
+    .map-placeholder .btn {
+        padding: 0.8rem 1.6rem;
+        font-size: 0.95rem;
+        border-radius: 20px;
+    }
+    
+    .map-placeholder h5 {
+        font-size: 1.15rem;
+    }
+    
+    .map-placeholder p {
+        font-size: 0.9rem;
+    }
+}
+
+/* 작은 모바일 화면 */
+@media (max-width: 576px) {
+    .hero-section {
+        padding: 1rem 0;
+        margin-top: 2rem;
+    }
+    
+    .hero-section h2 {
+        font-size: 1.6rem;
+    }
+    
+    .hero-section .icon-feature {
+        width: 50px;
+        height: 50px;
+    }
+    
+    .hospital-info-card, .map-card {
+        padding: 1.2rem;
+        border-radius: 14px;
+        margin-bottom: 1.2rem;
+    }
+    
+    .hospital-info-card h3, .map-card h3 {
+        font-size: 1.4rem;
+        margin-bottom: 0.75rem;
+    }
+    
+    .hospital-info-card .icon-feature, .map-card .icon-feature {
+        width: 50px;
+        height: 50px;
+        margin-bottom: 0.75rem;
+    }
+    
+    .info-item {
+        padding: 0.9rem;
+        margin-bottom: 0.7rem;
+        border-radius: 10px;
+    }
+    
+    .info-icon {
+        width: 35px;
+        height: 35px;
+        margin-right: 0.7rem;
+        font-size: 0.9rem;
+    }
+    
+    .action-btn {
+        padding: 0.65rem 1.3rem;
+        font-size: 0.85rem;
+        border-radius: 35px;
+        margin-bottom: 0.6rem;
+    }
+    
+    .btn-booking {
+        padding: 0.8rem 1.8rem;
+        font-size: 1rem;
+    }
+    
+    .map-wrapper {
+        padding: 0.8rem;
+        margin-bottom: 0.8rem;
+        border-radius: 10px;
+    }
+    
+    .map-placeholder {
+        padding: 1.5rem 1.2rem;
+        min-height: 220px;
+        border-radius: 10px;
+    }
+    
+    .map-placeholder .btn {
+        padding: 0.7rem 1.4rem;
+        font-size: 0.85rem;
+        border-radius: 18px;
+    }
+    
+    .map-placeholder h5 {
+        font-size: 1.1rem;
+        margin-bottom: 0.75rem;
+    }
+    
+    .map-placeholder p {
+        font-size: 0.85rem;
+        margin-bottom: 1rem;
+    }
+    
+    .map-placeholder i {
+        font-size: 2.5rem !important;
+        margin-bottom: 0.75rem !important;
+    }
+}
+
+/* 매우 작은 화면 추가 최적화 */
+@media (max-width: 400px) {
+    .container {
+        padding: 0 0.75rem;
+    }
+    
+    .hospital-info-card, .map-card {
+        padding: 1rem;
+    }
+    
+    .info-item {
+        padding: 0.8rem;
+    }
+    
+    .action-btn {
+        padding: 0.6rem 1.1rem;
+        font-size: 0.8rem;
+    }
+    
+    .map-placeholder {
+        padding: 1.2rem 1rem;
+        min-height: 200px;
+    }
+}
+
+/* 호버 효과 비활성화 (터치 기기) */
+@media (hover: none) {
+    .hospital-info-card:hover,
+    .info-item:hover,
+    .action-btn:hover {
+        transform: none;
+        box-shadow: var(--soft-shadow);
+    }
+}
+</style>
 {% endblock %}

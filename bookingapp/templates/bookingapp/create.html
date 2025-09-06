@@ -2,9 +2,86 @@
 {% load bootstrap5 %}
 
 {% block content %}
+<style>
+/* 새로운 주차 탭 스타일 */
+.week-tabs {
+    display: flex;
+    justify-content: center;
+    gap: 0;
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 4px;
+    max-width: 300px;
+    margin: 0 auto;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.week-tab {
+    flex: 1;
+    padding: 0.75rem 1rem;
+    text-align: center;
+    text-decoration: none;
+    color: #6b7280;
+    background: transparent;
+    border: none;
+    border-radius: 6px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.week-tab:hover {
+    color: #374151;
+    background: rgba(59, 130, 246, 0.1);
+    text-decoration: none;
+}
+
+.week-tab.active {
+    background: #3b82f6;
+    color: white !important;
+    box-shadow: 0 2px 4px rgba(59, 130, 246, 0.3);
+}
+
+.week-tab.active:hover {
+    background: #2563eb;
+    color: white !important;
+}
+
+.week-tab i {
+    font-size: 0.9rem;
+}
+
+/* 모바일 반응형 */
+@media (max-width: 768px) {
+    .week-tabs {
+        max-width: 280px;
+    }
+    
+    .week-tab {
+        padding: 0.6rem 0.8rem;
+        font-size: 0.9rem;
+        gap: 0.3rem;
+    }
+    
+    .week-tab i {
+        font-size: 0.8rem;
+    }
+}
+</style>
     <div>
-        <div style="margin-top: 8rem; margin-bottom: 2rem; text-align: center">
-            <h2>[진료 예약 1주차]</h2>
+        <!-- Header Section -->
+        <div class="hero-section" style="padding: 2rem 0; margin-top: 4rem; margin-bottom: 3rem;">
+            <div class="container hero-content text-center">
+                <div class="icon-feature mx-auto mb-3">
+                    <i class="fas fa-calendar-plus fa-lg"></i>
+                </div>
+                <h2 class="fw-bold mb-2" style="font-family: 'Noto Sans KR', sans-serif;">진료 예약 1주차</h2>
+                <p class="lead mb-0">원하는 날짜와 시간을 선택하여 예약하세요</p>
+            </div>
         </div>
 
         <form action="{% url 'bookingapp:create' %}" method="post">
@@ -42,6 +119,190 @@
 
         </form>
 
+        <!-- 예약 취소 확인 모달 -->
+        <div class="modal fade" id="cancelConfirmationModal" tabindex="-1" aria-labelledby="cancelConfirmationModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" style="max-width: 500px;">
+                <div class="modal-content" style="border-radius: 14px; border: 1px solid #fee2e2; box-shadow: 0 6px 16px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);">
+                    
+                    <!-- 경고 장식 -->
+                    <div class="position-relative overflow-hidden">
+                        <div class="warning-decoration position-absolute" style="top: -35px; right: -35px; width: 70px; height: 70px; background: linear-gradient(135deg, #ef4444, #dc2626); border-radius: 50%; opacity: 0.05;"></div>
+                        
+                        <!-- 모달 헤더 -->
+                        <div class="modal-header border-0 text-center" style="padding: 1.75rem 1.5rem 1rem 1.5rem;">
+                            <div class="w-100">
+                                <div class="warning-icon mx-auto mb-2" style="width: 52px; height: 52px; background: linear-gradient(135deg, #fee2e2, #fecaca); border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 3px 8px rgba(239, 68, 68, 0.25);">
+                                    <i class="fas fa-exclamation-triangle" style="color: #ef4444; font-size: 1.3rem;"></i>
+                                </div>
+                                <h5 class="modal-title fw-bold mb-0" style="color: #1e293b; font-size: 1.15rem;">예약 취소 확인</h5>
+                            </div>
+                        </div>
+                        
+                        <!-- 모달 본문 -->
+                        <div class="modal-body text-center" style="padding: 0 1.5rem 1.5rem 1.5rem;">
+                            <!-- 취소 예약 정보 -->
+                            <div class="booking-details mb-3">
+                                <div class="booking-info-compact mx-auto mb-3" style="background: #f8fafc; border-radius: 10px; padding: 1rem; max-width: 300px; border: 1px solid #f1f5f9;">
+                                    <div class="booking-datetime text-center">
+                                        <div class="d-flex align-items-center justify-content-center gap-4">
+                                            <div class="d-flex align-items-center">
+                                                <i class="fas fa-calendar me-2" style="color: #3b82f6; font-size: 0.9rem;"></i>
+                                                <span id="cancel_booking_date" class="fw-bold" style="color: #1e293b; font-size: 1rem;"></span>
+                                            </div>
+                                            <div class="d-flex align-items-center">
+                                                <i class="fas fa-clock me-2" style="color: #f59e0b; font-size: 0.9rem;"></i>
+                                                <span id="cancel_booking_time" class="fw-bold" style="color: #1e293b; font-size: 1rem;"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <p class="text-muted mb-3" style="font-size: 0.9rem; line-height: 1.4;">위 예약을 취소하시겠습니까?<br><small class="text-danger" style="font-size: 0.8rem;">취소 후 복구할 수 없습니다.</small></p>
+                            </div>
+                        </div>
+                        
+                        <!-- 모달 푸터 -->
+                        <div class="modal-footer border-0 justify-content-center" style="padding: 0 1.5rem 1.75rem 1.5rem;">
+                            <form id="cancelConfirmForm" method="post" class="d-inline">
+                                {% csrf_token %}
+                                <input type="hidden" name="redirect_to" value="create">
+                                <div class="action-buttons d-flex gap-3 justify-content-center">
+                                    <button type="button" class="btn-cancel-action" data-bs-dismiss="modal" style="background: #f1f5f9; color: #64748b; padding: 0.7rem 1.4rem; border-radius: 10px; text-decoration: none; font-weight: 600; transition: all 0.2s ease; display: inline-flex; align-items: center; border: 2px solid #e2e8f0; font-size: 0.85rem; cursor: pointer;">
+                                        <i class="fas fa-arrow-left me-2" style="font-size: 0.75rem;"></i>돌아가기
+                                    </button>
+                                    
+                                    <button type="submit" class="btn-confirm-cancel" style="background: linear-gradient(135deg, #ef4444, #dc2626); color: white; padding: 0.7rem 1.4rem; border-radius: 10px; border: none; font-weight: 600; box-shadow: 0 3px 8px rgba(239, 68, 68, 0.25); transition: all 0.2s ease; display: inline-flex; align-items: center; cursor: pointer; font-size: 0.85rem;">
+                                        <i class="fas fa-times me-2" style="font-size: 0.75rem;"></i>예약 취소
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 취소 확인 모달 스타일 -->
+        <style>
+        /* 호버 효과 */
+        .btn-cancel-action:hover {
+            background: #e2e8f0 !important;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(100, 116, 139, 0.2);
+            color: #475569 !important;
+        }
+
+        .btn-confirm-cancel:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(239, 68, 68, 0.4);
+        }
+
+        /* 모바일 반응형 */
+        @media (max-width: 768px) {
+            #cancelConfirmationModal .modal-dialog {
+                max-width: calc(100vw - 2rem) !important;
+                margin: 1rem !important;
+            }
+            
+            #cancelConfirmationModal .modal-content {
+                border-radius: 12px !important;
+            }
+            
+            #cancelConfirmationModal .modal-header {
+                padding: 1.25rem 1rem 0.75rem 1rem !important;
+            }
+            
+            #cancelConfirmationModal .modal-body {
+                padding: 0 1rem 1rem 1rem !important;
+            }
+            
+            #cancelConfirmationModal .modal-footer {
+                padding: 0 1rem 1.25rem 1rem !important;
+            }
+            
+            #cancelConfirmationModal .warning-icon {
+                width: 45px !important;
+                height: 45px !important;
+                margin-bottom: 0.75rem !important;
+            }
+            
+            #cancelConfirmationModal .warning-icon i {
+                font-size: 1.1rem !important;
+            }
+            
+            #cancelConfirmationModal .modal-title {
+                font-size: 1.05rem !important;
+            }
+            
+            #cancelConfirmationModal .booking-info-compact {
+                padding: 0.8rem !important;
+                max-width: 100% !important;
+                margin-bottom: 1rem !important;
+            }
+            
+            #cancelConfirmationModal .booking-details p {
+                font-size: 0.85rem !important;
+                margin-bottom: 1.25rem !important;
+                line-height: 1.3 !important;
+            }
+            
+            #cancelConfirmationModal .action-buttons {
+                gap: 1rem !important;
+            }
+            
+            #cancelConfirmationModal .btn-cancel-action,
+            #cancelConfirmationModal .btn-confirm-cancel {
+                padding: 0.6rem 1.2rem !important;
+                font-size: 0.8rem !important;
+            }
+        }
+
+        @media (max-width: 576px) {
+            #cancelConfirmationModal .warning-decoration {
+                display: none !important;
+            }
+            
+            #cancelConfirmationModal .modal-dialog {
+                margin: 0.5rem !important;
+                max-width: calc(100vw - 1rem) !important;
+            }
+            
+            #cancelConfirmationModal .modal-header,
+            #cancelConfirmationModal .modal-body,
+            #cancelConfirmationModal .modal-footer {
+                padding-left: 0.75rem !important;
+                padding-right: 0.75rem !important;
+            }
+            
+            #cancelConfirmationModal .action-buttons {
+                flex-direction: column !important;
+                gap: 0.75rem !important;
+            }
+            
+            #cancelConfirmationModal .btn-cancel-action,
+            #cancelConfirmationModal .btn-confirm-cancel {
+                width: 100% !important;
+                justify-content: center !important;
+                padding: 0.55rem 1rem !important;
+                font-size: 0.75rem !important;
+            }
+            
+            #cancelConfirmationModal .booking-info-compact {
+                padding: 0.7rem !important;
+                margin-bottom: 0.75rem !important;
+            }
+            
+            #cancelConfirmationModal .booking-details p {
+                font-size: 0.8rem !important;
+                margin-bottom: 1rem !important;
+            }
+            
+            #cancelConfirmationModal .booking-details p small {
+                font-size: 0.7rem !important;
+            }
+        }
+        </style>
+
         {#        <div class="alert alert-success position-absolute" role="alert" style="display: none;">#}
         {#            <span style="font-weight: bold"></span>#}
         {#        </div>#}
@@ -56,8 +317,17 @@
         {#            4. 예약취소는 상단의 '나의 예약정보'에서 가능하며, 변경은 먼저 취소 후 새로 예약하셔야 합니다.#}
         {#        </div>#}
     </div>
-    <div style="text-align: center; margin-bottom: 2rem">
-        <a href="{% url 'bookingapp:create2' %}"><button type="button" class="btn btn-outline-primary btn-sm">2주차 ></button></a>
+    <div class="week-navigation" style="text-align: center; margin-bottom: 2rem;">
+        <div class="week-tabs">
+            <div class="week-tab active">
+                <i class="fas fa-calendar-week"></i>
+                1주차
+            </div>
+            <a href="{% url 'bookingapp:create2' %}" class="week-tab">
+                <i class="fas fa-calendar-plus"></i>
+                2주차
+            </a>
+        </div>
     </div>
 
     <div>
@@ -1270,9 +1540,44 @@
                 {#console.log(selected_time)#}
             }
             else if (document.getElementById(clicked_id).innerHTML == '{{ request.user.profile.real_name }}'){
-                window.location.href = "{% url 'bookingapp:detail' pk=user.pk %}"
+                // 본인의 예약 시간을 클릭한 경우 취소 확인 모달 표시
+                showCancelModal(selected_date, selected_time, clicked_id);
             }
 
+        }
+
+        // 사용자 예약 데이터를 JavaScript 객체로 생성
+        const userBookings = [
+            {% for booking in user.booking.all %}
+            {
+                id: {{ booking.pk }},
+                date: '{{ booking.booking_date|date:"Y-m-d" }}',
+                time: '{{ booking.booking_time }}'
+            }{% if not forloop.last %},{% endif %}
+            {% endfor %}
+        ];
+
+        // 취소 모달을 표시하는 함수
+        function showCancelModal(selectedDate, selectedTime, clickedId) {
+            // 해당 날짜/시간에 맞는 예약 ID 찾기
+            const matchingBooking = userBookings.find(booking => 
+                booking.date === selectedDate && booking.time === selectedTime
+            );
+            
+            if (matchingBooking) {
+                // 모달에 예약 정보 설정
+                document.getElementById('cancel_booking_date').innerHTML = selectedDate;
+                document.getElementById('cancel_booking_time').innerHTML = selectedTime;
+                
+                // 취소 확인 버튼에 해당 예약 ID 설정
+                const confirmForm = document.getElementById('cancelConfirmForm');
+                confirmForm.action = `/bookings/delete${matchingBooking.id}/`;
+                
+                // 모달 표시
+                $('#cancelConfirmationModal').modal('show');
+            } else {
+                alert('예약 정보를 찾을 수 없습니다. 페이지를 새로고침 해주세요.');
+            }
         }
 
 

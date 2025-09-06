@@ -7,6 +7,12 @@
     <link rel="icon" type="image/x-icon" href = "{% static 'favicon.ico' %}" />
         <!-- Core theme CSS (includes Bootstrap)-->
     <link href = "{% static 'styles.css' %}" rel="stylesheet" />
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 {#    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">#}
 
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js" integrity="sha384-oBqDVmMz9ATKxIep9tiCxS/Z9fNfEXiDAYTujMAeBAsjFuCZSmKbSSUnQlmh/jp3" crossorigin="anonymous"></script>
@@ -40,6 +46,872 @@
             url("{% static 'fonts/NanumSquareR.otf' %}") format("opentype");
         }
         a { text-decoration:none }
+        
+        /* Modern Custom Styles */
+        :root {
+            --primary-blue: #2563eb;
+            --primary-blue-dark: #1d4ed8;
+            --primary-blue-light: #3b82f6;
+            --accent-teal: #14b8a6;
+            --gradient-primary: linear-gradient(135deg, #2563eb 0%, #14b8a6 100%);
+            --gradient-secondary: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            --shadow-soft: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --shadow-medium: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            --border-radius: 12px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        body {
+            font-family: 'Noto Sans KR', 'NanumSquareR', -apple-system, BlinkMacSystemFont, sans-serif !important;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            line-height: 1.7;
+            color: #1f2937 !important;
+        }
+        
+        /* Force text color for all elements */
+        * {
+            color: inherit;
+        }
+        
+        /* Specific text color overrides */
+        p, span, div, h1, h2, h3, h4, h5, h6, li, td, th, label, input, textarea, select {
+            color: #1f2937 !important;
+        }
+        
+        /* Exception for elements that should remain white */
+        .hero-section, .hero-section *, .footer-modern, .footer-modern * {
+            color: white !important;
+        }
+        
+        /* Exception for links */
+        a:not(.navbar-brand):not(.nav-link):not(.btn):not(.dropdown-item):not(.footer-links a) {
+            color: var(--primary-blue) !important;
+        }
+        
+        /* Button text colors */
+        .btn-primary, .btn-success, .btn-danger, .btn-warning, .btn-info {
+            color: white !important;
+            -webkit-text-fill-color: white !important;
+        }
+        
+        .btn-modern {
+            color: var(--primary-blue) !important;
+            -webkit-text-fill-color: var(--primary-blue) !important;
+        }
+        
+        .btn-modern i {
+            color: var(--primary-blue) !important;
+            -webkit-text-fill-color: var(--primary-blue) !important;
+        }
+        
+        .btn-outline-primary {
+            color: var(--primary-blue) !important;
+            -webkit-text-fill-color: var(--primary-blue) !important;
+            border-color: var(--primary-blue) !important;
+        }
+        
+        .btn-outline-primary:hover {
+            color: white !important;
+            -webkit-text-fill-color: white !important;
+            background-color: var(--primary-blue) !important;
+        }
+        
+        .btn-outline-primary i {
+            color: var(--primary-blue) !important;
+            -webkit-text-fill-color: var(--primary-blue) !important;
+        }
+        
+        /* Navbar specific */
+        .navbar-modern .nav-link {
+            color: var(--primary-blue) !important;
+        }
+        
+        .hero-section {
+            background: var(--gradient-primary);
+            color: white;
+            border-radius: 0 0 2rem 2rem;
+            box-shadow: var(--shadow-soft);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .hero-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg width="40" height="40" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg"><g fill="rgba(255,255,255,0.1)" fill-rule="evenodd"><circle cx="20" cy="20" r="1"/></g></svg>') repeat;
+            pointer-events: none;
+        }
+        
+        .hero-content {
+            position: relative;
+            z-index: 2;
+        }
+        
+        .btn-modern {
+            background: white !important;
+            color: var(--primary-blue) !important;
+            -webkit-text-fill-color: var(--primary-blue) !important;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: var(--border-radius);
+            font-weight: 600;
+            font-size: 1.1rem;
+            box-shadow: var(--shadow-soft);
+            transition: var(--transition);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .btn-modern:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-medium);
+            color: var(--primary-blue-dark) !important;
+        }
+        
+        .card-modern {
+            background: white;
+            border: none;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-soft);
+            padding: 2rem;
+            transition: var(--transition);
+            margin-bottom: 2rem;
+        }
+        
+        .card-modern:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-medium);
+        }
+        
+        .alert-modern {
+            border: none;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-soft);
+            border-left: 4px solid var(--accent-teal);
+            background: white;
+        }
+        
+        .badge-modern {
+            background: var(--gradient-primary);
+            color: white;
+            border-radius: 50px;
+            padding: 0.5rem 1rem;
+            font-weight: 500;
+            box-shadow: var(--shadow-soft);
+        }
+        
+        .section-title {
+            font-weight: 700;
+            color: var(--primary-blue);
+            margin-bottom: 1.5rem;
+            position: relative;
+        }
+        
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -0.5rem;
+            left: 0;
+            width: 3rem;
+            height: 3px;
+            background: var(--accent-teal);
+            border-radius: 2px;
+        }
+        
+        .icon-feature {
+            width: 3rem;
+            height: 3rem;
+            background: var(--gradient-primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            margin-bottom: 1rem;
+        }
+        
+        .navbar-modern .navbar-brand {
+            font-weight: 700;
+            font-size: 1.3rem;
+            color: var(--primary-blue) !important;
+        }
+        
+        .navbar-modern {
+            background: rgba(255, 255, 255, 0.95) !important;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        .navbar-modern .navbar-nav .nav-link {
+            color: var(--primary-blue) !important;
+            font-weight: 500;
+            transition: var(--transition);
+        }
+        
+        .navbar-modern .navbar-nav .nav-link:hover {
+            color: var(--accent-teal) !important;
+        }
+        
+        /* Dropdown Menu Modern Styles */
+        .dropdown-menu-modern {
+            border: none;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            padding: 0.5rem 0;
+            margin-top: 0.5rem;
+            background: white;
+            backdrop-filter: blur(10px);
+        }
+        
+        .dropdown-menu-modern .dropdown-item {
+            padding: 0.75rem 1.5rem;
+            border-radius: 0;
+            transition: all 0.2s ease;
+            color: #374151;
+            font-weight: 500;
+        }
+        
+        .dropdown-menu-modern .dropdown-item:hover {
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+            color: var(--primary-blue);
+            transform: translateX(4px);
+        }
+        
+        .dropdown-menu-modern .dropdown-item:active {
+            background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+        }
+        
+        .dropdown-menu-modern .dropdown-divider {
+            margin: 0.5rem 1rem;
+            border-top: 1px solid #e5e7eb;
+        }
+        
+        /* Logout Link Styling */
+        .nav-link-logout {
+            color: #dc2626 !important;
+            transition: all 0.2s ease;
+        }
+        
+        .nav-link-logout:hover {
+            color: #b91c1c !important;
+            background-color: rgba(220, 38, 38, 0.1) !important;
+            border-radius: 6px;
+        }
+        
+        /* Navbar toggler (hamburger menu) styling */
+        .navbar-modern .navbar-toggler {
+            border: 2px solid var(--primary-blue) !important;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+        }
+        
+        .navbar-modern .navbar-toggler:focus {
+            box-shadow: 0 0 0 0.2rem rgba(59, 130, 246, 0.25) !important;
+        }
+        
+        .navbar-modern .navbar-toggler-icon {
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='%232563eb' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e") !important;
+            width: 1.5rem;
+            height: 1.5rem;
+        }
+
+        /* Mobile specific color fixes */
+        @media (max-width: 768px) {
+            /* Force dark text on mobile */
+            body, body * {
+                color: #1f2937 !important;
+                -webkit-text-fill-color: #1f2937 !important;
+            }
+            
+            /* Exceptions for white text areas */
+            .hero-section, .hero-section *, 
+            .footer-modern, .footer-modern *,
+            .btn, .btn * {
+                color: white !important;
+                -webkit-text-fill-color: white !important;
+            }
+            
+            /* Navigation brand and links - make them visible */
+            .navbar-modern .navbar-brand {
+                color: var(--primary-blue) !important;
+                -webkit-text-fill-color: var(--primary-blue) !important;
+                font-weight: 700 !important;
+            }
+            
+            .navbar-modern .nav-link,
+            .navbar-modern .dropdown-toggle {
+                color: var(--primary-blue) !important;
+                -webkit-text-fill-color: var(--primary-blue) !important;
+                font-weight: 500 !important;
+            }
+            
+            /* Regular links - blue color */
+            a:not(.btn):not(.footer-links a) {
+                color: var(--primary-blue) !important;
+                -webkit-text-fill-color: var(--primary-blue) !important;
+            }
+            
+            /* Badge text colors */
+            .badge {
+                color: white !important;
+                -webkit-text-fill-color: white !important;
+            }
+            
+            .badge.pastel-available {
+                color: #1976D2 !important;
+                -webkit-text-fill-color: #1976D2 !important;
+            }
+            
+            .badge.pastel-requested {
+                color: #F57F17 !important;
+                -webkit-text-fill-color: #F57F17 !important;
+            }
+            
+            .badge.pastel-approved {
+                color: #D32F2F !important;
+                -webkit-text-fill-color: #D32F2F !important;
+            }
+            
+            .badge.pastel-cancelled {
+                color: #424242 !important;
+                -webkit-text-fill-color: #424242 !important;
+            }
+            
+            .hero-section h1, .hero-section h2 {
+                font-size: 1.75rem !important;
+                color: white !important;
+                -webkit-text-fill-color: white !important;
+            }
+            
+            .hero-section .lead {
+                font-size: 1rem !important;
+                color: white !important;
+                -webkit-text-fill-color: white !important;
+            }
+            
+            .btn-modern {
+                width: auto !important;
+                max-width: 240px !important;
+                padding: 0.7rem 1.2rem !important;
+                margin: 0 auto !important;
+                text-align: center !important;
+                color: var(--primary-blue) !important;
+                -webkit-text-fill-color: var(--primary-blue) !important;
+                display: inline-block !important;
+                font-size: 1rem !important;
+            }
+            
+            .btn-modern i {
+                color: var(--primary-blue) !important;
+                -webkit-text-fill-color: var(--primary-blue) !important;
+            }
+            
+            .btn-modern {
+                color: var(--primary-blue) !important;
+                -webkit-text-fill-color: var(--primary-blue) !important;
+            }
+            
+            .btn-modern * {
+                color: var(--primary-blue) !important;
+                -webkit-text-fill-color: var(--primary-blue) !important;
+            }
+            
+            /* 로그인/회원가입 버튼 텍스트 강제 표시 */
+            button.btn-modern,
+            a.btn-modern {
+                color: var(--primary-blue) !important;
+                -webkit-text-fill-color: var(--primary-blue) !important;
+                background: white !important;
+            }
+            
+            button.btn-modern *,
+            a.btn-modern * {
+                color: var(--primary-blue) !important;
+                -webkit-text-fill-color: var(--primary-blue) !important;
+            }
+            
+            .btn-outline-primary {
+                color: var(--primary-blue) !important;
+                -webkit-text-fill-color: var(--primary-blue) !important;
+                border-color: var(--primary-blue) !important;
+                background-color: transparent !important;
+            }
+            
+            .btn-outline-primary i {
+                color: var(--primary-blue) !important;
+                -webkit-text-fill-color: var(--primary-blue) !important;
+            }
+            
+            /* 진료시간 테이블 모바일 최적화 */
+            .table-responsive table {
+                font-size: 0.9rem !important;
+            }
+            
+            .table thead th {
+                font-size: 0.85rem !important;
+                padding: 0.7rem 0.3rem !important;
+            }
+            
+            .table tbody td {
+                padding: 1rem 0.3rem !important;
+                font-size: 0.85rem !important;
+            }
+            
+            .table .badge {
+                font-size: 0.75rem !important;
+                padding: 0.3rem 0.6rem !important;
+            }
+            
+            .table .d-flex {
+                flex-direction: column !important;
+                align-items: center !important;
+                text-align: center !important;
+            }
+            
+            .table .d-flex i {
+                margin: 0 0 0.2rem 0 !important;
+            }
+            
+            /* 카드 내 아이콘 배치 개선 */
+            .alert-modern .d-flex {
+                flex-direction: row !important;
+                align-items: flex-start !important;
+            }
+            
+            .alert-modern .d-flex i {
+                margin: 0.2rem 0.8rem 0 0 !important;
+                flex-shrink: 0;
+            }
+            
+            .alert-modern h6 {
+                font-size: 1rem !important;
+                margin-bottom: 0.5rem !important;
+            }
+            
+            .alert-modern p {
+                font-size: 0.9rem !important;
+                line-height: 1.4 !important;
+            }
+            
+            /* 모바일에서 긴 텍스트 줄바꿈 처리 */
+            body {
+                word-wrap: break-word !important;
+                word-break: break-word !important;
+                overflow-x: hidden !important;
+            }
+            
+            .container, .card-modern, .alert-modern {
+                overflow-x: hidden !important;
+            }
+            
+            /* 예약 정보 페이지 모바일 최적화 */
+            .alert-modern .d-flex {
+                display: block !important;
+            }
+            
+            .alert-modern .flex-grow-1 .d-flex {
+                display: block !important;
+            }
+            
+            .alert-modern .flex-grow-1 .d-flex > div:first-child {
+                text-align: left !important;
+                margin-bottom: 1.5rem !important;
+            }
+            
+            .alert-modern .flex-grow-1 .d-flex > div:first-child h6 {
+                margin-bottom: 0.8rem !important;
+                font-size: 1.1rem !important;
+            }
+            
+            .alert-modern .flex-grow-1 .d-flex > div:last-child {
+                text-align: right !important;
+                margin-bottom: 0 !important;
+            }
+            
+            .alert-modern .btn-outline-danger {
+                float: right !important;
+                clear: both !important;
+            }
+            
+            /* 예약 취소 버튼 스타일 개선 */
+            .btn-outline-danger {
+                color: #dc3545 !important;
+                -webkit-text-fill-color: #dc3545 !important;
+                border-color: #dc3545 !important;
+                background-color: white !important;
+            }
+            
+            .btn-outline-danger i {
+                color: #dc3545 !important;
+                -webkit-text-fill-color: #dc3545 !important;
+            }
+            
+            .btn-outline-danger:hover {
+                color: white !important;
+                -webkit-text-fill-color: white !important;
+                background-color: #dc3545 !important;
+            }
+            
+            .btn-outline-danger:hover i {
+                color: white !important;
+                -webkit-text-fill-color: white !important;
+            }
+            
+            /* 회원정보 수정 버튼 가시성 개선 */
+            .btn-outline-secondary {
+                color: #6c757d !important;
+                -webkit-text-fill-color: #6c757d !important;
+                border-color: #6c757d !important;
+                background-color: white !important;
+            }
+            
+            .btn-outline-secondary i {
+                color: #6c757d !important;
+                -webkit-text-fill-color: #6c757d !important;
+            }
+            
+            .btn-outline-secondary:hover {
+                color: white !important;
+                -webkit-text-fill-color: white !important;
+                background-color: #6c757d !important;
+            }
+            
+            .btn-outline-secondary:hover i {
+                color: white !important;
+                -webkit-text-fill-color: white !important;
+            }
+            
+            /* 예약하기 페이지 헤더 크기 통일 - 기존 값 강제 적용 */
+            .navbar-modern {
+                background: rgba(255, 255, 255, 0.95) !important;
+                backdrop-filter: blur(10px) !important;
+                box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1) !important;
+            }
+            
+            .navbar-modern .navbar-brand {
+                font-weight: 700 !important;
+                font-size: 1.3rem !important;
+                color: var(--primary-blue) !important;
+            }
+            
+            .navbar-modern .navbar-nav .nav-link {
+                color: var(--primary-blue) !important;
+                font-weight: 500 !important;
+                transition: var(--transition) !important;
+            }
+            
+            .navbar-modern .navbar-toggler {
+                border: 2px solid var(--primary-blue) !important;
+                padding: 0.25rem 0.5rem !important;
+                border-radius: 4px !important;
+            }
+            
+            .navbar-modern .navbar-toggler-icon {
+                background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='%232563eb' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e") !important;
+                width: 1.5rem !important;
+                height: 1.5rem !important;
+            }
+            
+            .hero-section .d-flex {
+                width: 100% !important;
+                text-align: center !important;
+            }
+            
+            .hero-section .d-flex.justify-content-center {
+                display: block !important;
+                text-align: center !important;
+            }
+            
+            .card-modern {
+                padding: 1.5rem;
+                margin-bottom: 1.5rem;
+            }
+            
+            .icon-feature {
+                width: 2.5rem;
+                height: 2.5rem;
+                margin-bottom: 0.75rem;
+            }
+            
+            .section-title {
+                font-size: 1.25rem;
+                color: #1f2937 !important;
+                -webkit-text-fill-color: #1f2937 !important;
+            }
+            
+            .btn-modern {
+                padding: 0.75rem 1.5rem;
+                font-size: 1rem;
+                width: 100%;
+                margin-bottom: 0.5rem;
+                color: white !important;
+                -webkit-text-fill-color: white !important;
+            }
+            
+            .container {
+                padding-left: 1rem;
+                padding-right: 1rem;
+            }
+            
+            /* 헤더 오버랩 방지 */
+            .hero-section {
+                margin-top: 2rem !important;
+            }
+            
+            /* 예약 정보 페이지 모바일 최적화 */
+            .alert-modern .d-flex.flex-md-row {
+                flex-direction: column !important;
+                text-align: center;
+            }
+            
+            .alert-modern .btn {
+                width: 100%;
+                margin-top: 1rem;
+            }
+            
+            .alert-modern {
+                padding: 1rem !important;
+                margin-bottom: 2rem !important;
+            }
+            
+            /* 내페이지 빠른 메뉴 모바일 최적화 */
+            .col-md-4 .p-3, .col-md-4 .p-4 {
+                padding: 1rem !important;
+                margin-bottom: 1rem;
+            }
+            
+            /* 진료시간 테이블 모바일 최적화 */
+            .table td, .table th {
+                padding: 0.75rem 0.5rem;
+                font-size: 0.9rem;
+            }
+            
+            .table .badge {
+                font-size: 0.75rem;
+                padding: 0.25rem 0.5rem;
+            }
+            
+            /* 컨테이너 패딩 조정 */
+            .container {
+                padding-left: 1rem !important;
+                padding-right: 1rem !important;
+            }
+            
+            /* 카드 내부 패딩 조정 */
+            .card-modern {
+                padding: 1rem !important;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .hero-section {
+                border-radius: 0;
+            }
+            
+            .hero-section h1 {
+                font-size: 1.75rem !important;
+            }
+            
+            .hero-section .lead {
+                font-size: 0.9rem !important;
+            }
+            
+            .card-modern {
+                padding: 1rem;
+            }
+            
+            .d-flex.align-items-start {
+                flex-direction: column;
+            }
+            
+            .d-flex.align-items-start .me-3 {
+                margin-right: 0 !important;
+                margin-bottom: 0.5rem;
+            }
+        }
+        
+        /* Week Navigation Buttons */
+        .week-navigation {
+            margin: 2rem 0;
+        }
+        
+        .week-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+        }
+        
+        .week-button {
+            background: white;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 1rem;
+            width: 120px;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+        
+        .week-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px -3px rgba(0, 0, 0, 0.1);
+            border-color: var(--primary-blue);
+        }
+        
+        .week-button.active {
+            background: linear-gradient(135deg, var(--primary-blue) 0%, #1d4ed8 100%);
+            border-color: var(--primary-blue);
+            color: white !important;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px -3px rgba(59, 130, 246, 0.3);
+        }
+        
+        .week-button i {
+            font-size: 1.2rem;
+            margin-bottom: 0.3rem;
+            display: block;
+            color: var(--primary-blue);
+        }
+        
+        .week-button.active i {
+            color: white !important;
+        }
+        
+        .week-button span {
+            font-size: 0.95rem;
+            font-weight: 600;
+            display: block;
+            margin-bottom: 0.2rem;
+            color: #374151;
+        }
+        
+        .week-button.active span {
+            color: white !important;
+        }
+        
+        .week-button small {
+            font-size: 0.7rem;
+            color: #6b7280;
+            font-weight: 400;
+        }
+        
+        .week-button.active small {
+            color: rgba(255, 255, 255, 0.8) !important;
+        }
+        
+        .week-button-link {
+            text-decoration: none;
+            color: inherit;
+        }
+        
+        .week-button-link:hover {
+            text-decoration: none;
+            color: inherit;
+        }
+        
+        @media (max-width: 768px) {
+            .week-buttons {
+                gap: 1rem;
+            }
+            
+            .week-button {
+                width: 100px;
+                padding: 0.8rem;
+            }
+            
+            .week-button i {
+                font-size: 1rem;
+            }
+            
+            .week-button span {
+                font-size: 0.85rem;
+            }
+            
+            .week-button small {
+                font-size: 0.65rem;
+            }
+            
+            /* 모바일에서 활성 버튼 색상 강제 적용 */
+            .week-button.active {
+                color: white !important;
+            }
+            
+            .week-button.active i {
+                color: white !important;
+            }
+            
+            .week-button.active span {
+                color: white !important;
+            }
+            
+            .week-button.active small {
+                color: rgba(255, 255, 255, 0.8) !important;
+            }
+            
+            /* 더 강력한 선택자로 모바일 파란색 버튼 텍스트 색상 강제 */
+            a.week-button.active {
+                color: white !important;
+            }
+            
+            a.week-button.active * {
+                color: white !important;
+            }
+            
+            .week-buttons a.week-button.active {
+                color: white !important;
+            }
+            
+            .week-buttons a.week-button.active i,
+            .week-buttons a.week-button.active span,
+            .week-buttons a.week-button.active small {
+                color: white !important;
+            }
+            
+            /* div 형태의 활성 버튼도 처리 */
+            .week-buttons div.week-button.active {
+                color: white !important;
+            }
+            
+            .week-buttons div.week-button.active i {
+                color: white !important;
+            }
+            
+            .week-buttons div.week-button.active span {
+                color: white !important;
+            }
+            
+            .week-buttons div.week-button.active small {
+                color: rgba(255, 255, 255, 0.8) !important;
+            }
+            
+            /* 최우선 선택자 */
+            div[class*="week-button"][class*="active"] i,
+            div[class*="week-button"][class*="active"] span,
+            div[class*="week-button"][class*="active"] small {
+                color: white !important;
+            }
+        }
+        
+        /* Dark mode support */
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --bs-body-bg: #1a1a1a;
+                --bs-body-color: #ffffff;
+            }
+            
+            .card-modern {
+                background: rgba(255, 255, 255, 0.05);
+                backdrop-filter: blur(10px);
+                border: 1px solid rgba(255, 255, 255, 0.1);
+            }
+        }
     </style>
 
 </head>

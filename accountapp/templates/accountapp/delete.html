@@ -2,13 +2,191 @@
 {% load bootstrap5 %}
 
 {% block content %}
-    <div style="text-align: center; max-width: 600px; margin: 8rem auto">
-    <div class="mb-4">
-        <h4>[회원 탈퇴]</h4>
+<!-- Header Section -->
+<div class="hero-section" style="padding: 2rem 0; margin-top: 4rem;">
+    <div class="container hero-content text-center">
+        <div class="icon-feature mx-auto mb-3">
+            <i class="fas fa-user-times fa-lg"></i>
+        </div>
+        <h2 class="fw-bold mb-2" style="font-family: 'Noto Sans KR', sans-serif;">회원 탈퇴</h2>
+        <p class="lead mb-0">계정을 영구히 삭제하시겠습니까?</p>
     </div>
-        <form action="{% url 'accountapp:delete' pk=user.pk %}" method="post">
-            {%  csrf_token %}
-            <input type="submit" value="확인" class="btn btn-danger rounded-pill col-3 mt-3">
+</div>
+
+<div class="container my-5" style="max-width: 600px; padding: 0 2rem;">
+    <div class="account-delete-card" style="background: white; border-radius: 16px; padding: 2rem; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); border: 1px solid #f1f5f9; position: relative; overflow: hidden;">
+        <div class="card-decoration" style="position: absolute; top: -20px; right: -20px; width: 80px; height: 80px; background: linear-gradient(135deg, #fecaca, #fca5a5); border-radius: 50%; opacity: 0.1;"></div>
+        
+        <div class="text-center mb-4 position-relative">
+            <div class="user-avatar mx-auto mb-3" style="width: 70px; height: 70px; background: linear-gradient(135deg, #fee2e2, #fecaca); border-radius: 16px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(239, 68, 68, 0.25);">
+                <i class="fas fa-exclamation-triangle" style="color: #ef4444; font-size: 2rem;"></i>
+            </div>
+            <h4 class="fw-bold mb-1" style="color: #1e293b;">회원 탈퇴 확인</h4>
+            <p class="text-muted mb-0" style="font-size: 0.9rem;">이 작업은 되돌릴 수 없습니다</p>
+        </div>
+
+        <div class="warning-section mb-4" style="background: #fef2f2; border-radius: 12px; padding: 1.5rem; border: 1px solid #fecaca;">
+            <div class="warning-header mb-3">
+                <div class="d-flex align-items-center justify-content-center mb-2">
+                    <i class="fas fa-info-circle me-2" style="color: #dc2626; font-size: 1.1rem;"></i>
+                    <h6 class="fw-bold mb-0" style="color: #dc2626;">탈퇴 시 삭제되는 정보</h6>
+                </div>
+            </div>
+            <div class="warning-list">
+                <div class="warning-item d-flex align-items-start mb-2">
+                    <i class="fas fa-dot-circle me-2 mt-1" style="color: #ef4444; font-size: 0.7rem;"></i>
+                    <span style="color: #7f1d1d; font-size: 0.9rem;">개인정보 및 프로필 정보</span>
+                </div>
+                <div class="warning-item d-flex align-items-start mb-2">
+                    <i class="fas fa-dot-circle me-2 mt-1" style="color: #ef4444; font-size: 0.7rem;"></i>
+                    <span style="color: #7f1d1d; font-size: 0.9rem;">예약 내역</span>
+                </div>
+                <div class="warning-item d-flex align-items-start mb-2">
+                    <i class="fas fa-dot-circle me-2 mt-1" style="color: #ef4444; font-size: 0.7rem;"></i>
+                    <span style="color: #7f1d1d; font-size: 0.9rem;">메시지 및 알림 설정</span>
+                </div>
+                <div class="warning-item d-flex align-items-start">
+                    <i class="fas fa-dot-circle me-2 mt-1" style="color: #ef4444; font-size: 0.7rem;"></i>
+                    <span style="color: #7f1d1d; font-size: 0.9rem;">모든 계정 관련 데이터</span>
+                </div>
+            </div>
+        </div>
+
+        <form action="{% url 'accountapp:delete' pk=user.pk %}" method="post" class="account-delete-form">
+            {% csrf_token %}
+            
+            <div class="form-actions mt-5 text-center">
+                <a href="{% url 'accountapp:detail' pk=user.pk %}" class="btn-cancel me-3" style="background: #f1f5f9; color: #64748b; padding: 0.75rem 1.5rem; border-radius: 12px; text-decoration: none; font-weight: 600; transition: all 0.2s ease; display: inline-flex; align-items: center; border: 2px solid #e2e8f0;">
+                    <i class="fas fa-arrow-left me-2"></i>취소
+                </a>
+                <button type="submit" class="btn-delete" style="background: linear-gradient(135deg, #ef4444, #dc2626); color: white; padding: 0.75rem 2rem; border-radius: 12px; border: none; font-weight: 600; box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3); transition: all 0.2s ease; display: inline-flex; align-items: center;">
+                    <i class="fas fa-user-times me-2"></i>회원 탈퇴
+                </button>
+            </div>
         </form>
     </div>
+</div>
+
+<style>
+/* 버튼 호버 효과 */
+.btn-cancel:hover {
+    background: #e2e8f0 !important;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(100, 116, 139, 0.2);
+    color: #475569 !important;
+    text-decoration: none;
+}
+
+.btn-delete:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(239, 68, 68, 0.4);
+}
+
+.account-delete-card:hover {
+    box-shadow: 0 6px 12px -1px rgba(0, 0, 0, 0.15), 0 4px 8px -1px rgba(0, 0, 0, 0.1);
+}
+
+.warning-section {
+    transition: all 0.2s ease;
+}
+
+.warning-section:hover {
+    background: #fef1f1 !important;
+    border-color: #fca5a5 !important;
+}
+
+/* 모바일 반응형 */
+@media (max-width: 768px) {
+    .container {
+        padding: 0 1rem !important;
+        max-width: 100% !important;
+    }
+    
+    .hero-section {
+        padding: 1.5rem 0 !important;
+        margin-top: 3rem !important;
+    }
+    
+    .hero-section h2 {
+        font-size: 1.5rem !important;
+    }
+    
+    .hero-section .lead {
+        font-size: 1rem !important;
+    }
+    
+    .account-delete-card {
+        padding: 1.5rem !important;
+        border-radius: 12px !important;
+    }
+    
+    .user-avatar {
+        width: 60px !important;
+        height: 60px !important;
+        margin-bottom: 1rem !important;
+    }
+    
+    .user-avatar i {
+        font-size: 1.5rem !important;
+    }
+    
+    .warning-section {
+        padding: 1.2rem !important;
+    }
+    
+    .warning-list {
+        margin-bottom: 0;
+    }
+    
+    .warning-item span {
+        font-size: 0.85rem !important;
+    }
+    
+    .btn-cancel,
+    .btn-delete {
+        width: 100%;
+        margin-bottom: 0.75rem;
+        justify-content: center;
+        padding: 0.7rem 1.5rem !important;
+    }
+    
+    .form-actions {
+        flex-direction: column !important;
+    }
+    
+    .form-actions .me-3 {
+        margin-right: 0 !important;
+    }
+}
+
+@media (max-width: 576px) {
+    .hero-section {
+        padding: 1rem 0 !important;
+        margin-top: 2.5rem !important;
+    }
+    
+    .account-delete-card {
+        padding: 1rem !important;
+    }
+    
+    .warning-section {
+        padding: 1rem !important;
+        margin-bottom: 1.5rem !important;
+    }
+    
+    .warning-header h6 {
+        font-size: 0.9rem !important;
+    }
+    
+    .warning-item span {
+        font-size: 0.8rem !important;
+    }
+    
+    .btn-cancel,
+    .btn-delete {
+        padding: 0.6rem 1.5rem !important;
+        font-size: 0.9rem;
+    }
+}
+</style>
 {% endblock %}

@@ -2,17 +2,426 @@
 {% load bootstrap5 %}
 
 {% block content %}
-    <div style="margin-top: 8rem;">
-        <div style="text-align: center;">
-            <h3>[회원가입]</h3>
+<!-- Header Section -->
+<div class="hero-section" style="padding: 2rem 0; margin-top: 4rem;">
+    <div class="container hero-content text-center">
+        <div class="icon-feature mx-auto mb-3">
+            <i class="fas fa-user-plus fa-lg"></i>
         </div>
-        <div style="max-width: 480px; padding: 2rem; margin: 4rem auto; line-height: 1.96; text-align: center;">
-            <form action="{% url 'accountapp:create' %}" method="post">
-                {%  csrf_token %}
-                {% bootstrap_form form %}
-                <input type="submit" value="회원가입" class="btn btn-primary rounded-pill col-6 mt-4">
-            </form>
+        <h2 class="fw-bold mb-2" style="font-family: 'Noto Sans KR', sans-serif;">회원가입</h2>
+        <p class="lead mb-0">새로운 계정을 생성하여 예약 서비스를 이용해 보세요</p>
+    </div>
+</div>
+
+<div class="container my-5" style="max-width: 600px; padding: 0 2rem;">
+    <div class="signup-card" style="background: white; border-radius: 20px; padding: 2.5rem; box-shadow: 0 10px 25px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); border: 1px solid #f1f5f9; position: relative; overflow: hidden;">
+        <div class="card-decoration" style="position: absolute; top: -30px; right: -30px; width: 100px; height: 100px; background: linear-gradient(135deg, #ddd6fe, #c4b5fd); border-radius: 50%; opacity: 0.1;"></div>
+        
+        <div class="text-center mb-4 position-relative">
+            <div class="user-avatar mx-auto mb-3" style="width: 70px; height: 70px; background: linear-gradient(135deg, #ddd6fe, #c4b5fd); border-radius: 16px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(139, 92, 246, 0.25);">
+                <i class="fas fa-user-plus" style="color: #8b5cf6; font-size: 2rem;"></i>
+            </div>
+            <h4 class="fw-bold mb-1" style="color: #1e293b;">계정 생성</h4>
+            <p class="text-muted mb-0" style="font-size: 0.9rem;">사용자 정보를 입력하여 새 계정을 만들어 주세요</p>
+        </div>
+        
+        <form action="{% url 'accountapp:create' %}" method="post" class="signup-form">
+            {%  csrf_token %}
+            
+            <div class="form-sections">
+                {% for field in form %}
+                    {% if field.name != 'terms_agreement' %}
+                        <div class="form-group mb-4" style="position: relative;">
+                            <div class="form-field-wrapper" style="background: #f8fafc; border-radius: 12px; padding: 1rem; border: 1px solid #e2e8f0; transition: all 0.2s ease;">
+                                <label for="{{ field.id_for_label }}" class="form-label fw-semibold mb-2" style="color: #374151; font-size: 0.9rem; display: flex; align-items: center;">
+                                    {% if field.name == 'username' %}
+                                        <i class="fas fa-user me-2" style="color: #8b5cf6; width: 16px;"></i>
+                                    {% elif field.name == 'email' %}
+                                        <i class="fas fa-envelope me-2" style="color: #06b6d4; width: 16px;"></i>
+                                    {% elif field.name == 'password1' %}
+                                        <i class="fas fa-lock me-2" style="color: #ef4444; width: 16px;"></i>
+                                    {% elif field.name == 'password2' %}
+                                        <i class="fas fa-shield-alt me-2" style="color: #f59e0b; width: 16px;"></i>
+                                    {% else %}
+                                        <i class="fas fa-info-circle me-2" style="color: #6b7280; width: 16px;"></i>
+                                    {% endif %}
+                                    {{ field.label }}
+                                    {% if field.field.required %}
+                                        <span class="text-danger ms-1">*</span>
+                                    {% endif %}
+                                </label>
+                                {{ field }}
+                                {% if field.help_text %}
+                                    <small class="form-text text-muted mt-1" style="font-size: 0.8rem;">{{ field.help_text }}</small>
+                                {% endif %}
+                                {% if field.errors %}
+                                    <div class="text-danger mt-1" style="font-size: 0.8rem;">
+                                        {% for error in field.errors %}
+                                            <div><i class="fas fa-exclamation-circle me-1"></i>{{ error }}</div>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+                
+                <!-- 이용약관 동의 체크박스 -->
+                <div class="form-group mb-4">
+                    <div class="terms-agreement-wrapper" style="background: #fefce8; border-radius: 12px; padding: 1.5rem; border: 2px solid #fef3c7; transition: all 0.2s ease;">
+                        <div class="text-center mb-3">
+                            <div class="terms-icon mx-auto mb-2" style="width: 45px; height: 45px; background: linear-gradient(135deg, #fef3c7, #fde68a); border-radius: 12px; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 8px rgba(245, 158, 11, 0.2);">
+                                <i class="fas fa-shield-check" style="color: #f59e0b; font-size: 1.2rem;"></i>
+                            </div>
+                            <h6 class="fw-bold mb-1" style="color: #92400e; font-size: 0.95rem;">필수 동의 항목</h6>
+                        </div>
+                        
+                        <div class="form-check d-flex align-items-center justify-content-center mb-3">
+                            {{ form.terms_agreement }}
+                            <label class="form-check-label ms-3 fw-semibold" for="{{ form.terms_agreement.id_for_label }}" style="color: #92400e; cursor: pointer; font-size: 0.9rem;">
+                                이용약관과 개인정보 수집에 동의합니다
+                            </label>
+                        </div>
+                        
+                        {% if form.terms_agreement.errors %}
+                            <div class="text-danger text-center mt-2" style="font-size: 0.8rem;">
+                                {% for error in form.terms_agreement.errors %}
+                                    <div><i class="fas fa-exclamation-circle me-1"></i>{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                        
+                        <div class="text-center">
+                            <small class="text-muted" style="font-size: 0.8rem; line-height: 1.4;">
+                                <i class="fas fa-info-circle me-1"></i>
+                                회원가입을 위해 반드시 동의해야 하는 항목입니다
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-actions mt-4 text-center">
+                <button type="submit" class="btn-submit" style="background: white; color: #8b5cf6; padding: 0.875rem 2.5rem; border-radius: 12px; border: 2px solid #8b5cf6; font-weight: 700; box-shadow: 0 4px 12px rgba(139, 92, 246, 0.15); transition: all 0.2s ease; display: inline-flex; align-items: center; font-size: 1rem; cursor: pointer;">
+                    <i class="fas fa-user-plus me-2"></i>회원가입 완료
+                </button>
+            </div>
+        </form>
+        
+        <!-- Login Link -->
+        <div class="text-center mt-4">
+            <div class="login-link-wrapper" style="background: #f1f5f9; border-radius: 12px; padding: 1.25rem; border: 1px solid #e2e8f0;">
+                <p class="mb-2" style="color: #475569; font-size: 0.9rem;">
+                    <i class="fas fa-user-check me-2"></i>이미 계정이 있으신가요?
+                </p>
+                <a href="{% url 'accountapp:login' %}" class="btn-login" style="background: white; color: #475569; padding: 0.5rem 1.5rem; border-radius: 8px; text-decoration: none; font-weight: 600; border: 1px solid #cbd5e1; transition: all 0.2s ease; display: inline-flex; align-items: center;">
+                    <i class="fas fa-sign-in-alt me-2"></i>로그인하기
+                </a>
+            </div>
         </div>
     </div>
+</div>
+
+<style>
+/* 폼 필드 스타일 */
+.signup-form .form-control {
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    padding: 0.75rem;
+    font-size: 0.9rem;
+    background: white;
+    transition: all 0.2s ease;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+.signup-form .form-control:focus {
+    border-color: #8b5cf6;
+    box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
+    background: white;
+}
+
+.form-field-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.signup-form .form-label {
+    justify-content: center;
+    margin-bottom: 0.75rem;
+}
+
+.signup-form .form-control {
+    text-align: center;
+}
+
+.signup-form .form-text {
+    text-align: center;
+    margin-top: 0.5rem;
+}
+
+.signup-form .text-danger {
+    text-align: center;
+    margin-top: 0.5rem;
+}
+
+.form-field-wrapper:hover {
+    background: #f1f5f9 !important;
+    border-color: #cbd5e1 !important;
+}
+
+/* 체크박스 스타일링 */
+.terms-agreement-wrapper:hover {
+    background: #fef9c3 !important;
+    border-color: #fed7aa !important;
+}
+
+.signup-form input[type="checkbox"] {
+    width: 1.2rem;
+    height: 1.2rem;
+    border: 2px solid #d1d5db;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+}
+
+.signup-form input[type="checkbox"]:checked {
+    background-color: #f59e0b;
+    border-color: #f59e0b;
+}
+
+.signup-form input[type="checkbox"]:focus {
+    box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.1);
+}
+
+/* 버튼 호버 효과 */
+.btn-submit:hover {
+    background: #8b5cf6 !important;
+    color: white !important;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(139, 92, 246, 0.4);
+    border-color: #8b5cf6 !important;
+}
+
+.btn-login:hover {
+    background: #f8fafc !important;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 6px rgba(71, 85, 105, 0.2);
+    color: #334155 !important;
+    text-decoration: none;
+}
+
+.signup-card:hover {
+    box-shadow: 0 12px 28px -3px rgba(0, 0, 0, 0.12), 0 6px 8px -2px rgba(0, 0, 0, 0.05);
+}
+
+/* 모바일 반응형 */
+@media (max-width: 768px) {
+    .container {
+        padding: 0 0.5rem !important;
+        max-width: 100% !important;
+        margin-left: auto !important;
+        margin-right: auto !important;
+    }
+    
+    .hero-section {
+        padding: 1.5rem 0 !important;
+        margin-top: 3rem !important;
+    }
+    
+    .hero-section h2 {
+        font-size: 1.5rem !important;
+    }
+    
+    .hero-section .lead {
+        font-size: 1rem !important;
+    }
+    
+    .signup-card {
+        padding: 1rem !important;
+        border-radius: 16px !important;
+        margin: 0 !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+    }
+    
+    .user-avatar {
+        width: 60px !important;
+        height: 60px !important;
+        margin-bottom: 1rem !important;
+    }
+    
+    .user-avatar i {
+        font-size: 1.5rem !important;
+    }
+    
+    .form-field-wrapper {
+        padding: 0.8rem !important;
+        margin: 0 0 1rem 0 !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+    }
+    
+    .terms-agreement-wrapper {
+        padding: 1rem !important;
+        margin: 0 0 1rem 0 !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+    }
+    
+    .terms-icon {
+        width: 35px !important;
+        height: 35px !important;
+        margin-bottom: 0.75rem !important;
+    }
+    
+    .terms-icon i {
+        font-size: 1rem !important;
+    }
+    
+    .terms-agreement-wrapper h6 {
+        font-size: 0.85rem !important;
+        margin-bottom: 0.75rem !important;
+    }
+    
+    .terms-agreement-wrapper .form-check-label {
+        font-size: 0.85rem !important;
+        margin-left: 0.5rem !important;
+    }
+    
+    .signup-form .form-control {
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+        padding: 0.6rem !important;
+    }
+    
+    .btn-submit {
+        width: 100%;
+        justify-content: center;
+        padding: 0.75rem 2rem !important;
+    }
+    
+    .login-link-wrapper {
+        padding: 1rem !important;
+        margin: 0 !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+    }
+    
+    /* 768px 이하에서도 help text 최적화 */
+    .signup-form .form-text {
+        font-size: 0.75rem !important;
+        line-height: 1.3 !important;
+        word-break: keep-all !important;
+        display: block !important;
+        max-width: 100% !important;
+    }
+}
+
+@media (max-width: 576px) {
+    .container {
+        padding: 0 0.25rem !important;
+        max-width: 100vw !important;
+        margin: 0 !important;
+    }
+    
+    .hero-section {
+        padding: 1rem 0 !important;
+        margin-top: 2.5rem !important;
+    }
+    
+    .signup-card {
+        padding: 0.75rem !important;
+        margin: 0 !important;
+        width: 100% !important;
+        max-width: 100% !important;
+    }
+    
+    .form-field-wrapper {
+        padding: 0.6rem !important;
+        margin: 0 0 0.75rem 0 !important;
+        width: 100% !important;
+        max-width: calc(100vw - 1rem) !important;
+        box-sizing: border-box !important;
+        overflow: hidden !important;
+    }
+    
+    .terms-agreement-wrapper {
+        padding: 0.8rem !important;
+        margin: 0 0 0.75rem 0 !important;
+        width: 100% !important;
+        max-width: calc(100vw - 1rem) !important;
+        box-sizing: border-box !important;
+        overflow: hidden !important;
+    }
+    
+    .terms-icon {
+        width: 30px !important;
+        height: 30px !important;
+        margin-bottom: 0.5rem !important;
+    }
+    
+    .terms-icon i {
+        font-size: 0.9rem !important;
+    }
+    
+    .terms-agreement-wrapper h6 {
+        font-size: 0.8rem !important;
+        margin-bottom: 0.5rem !important;
+    }
+    
+    .terms-agreement-wrapper .form-check-label {
+        font-size: 0.8rem !important;
+        margin-left: 0.5rem !important;
+        line-height: 1.3 !important;
+    }
+    
+    .terms-agreement-wrapper small {
+        font-size: 0.7rem !important;
+        line-height: 1.3 !important;
+    }
+    
+    .form-label {
+        font-size: 0.8rem !important;
+    }
+    
+    /* 비밀번호 확인 help text 모바일 최적화 */
+    .signup-form .form-text {
+        font-size: 0.7rem !important;
+        line-height: 1.3 !important;
+        word-break: keep-all !important;
+        display: block !important;
+        max-width: 100% !important;
+    }
+    
+    .signup-form .form-control {
+        font-size: 0.8rem !important;
+        padding: 0.5rem !important;
+        width: 100% !important;
+        max-width: calc(100% - 0.5rem) !important;
+        box-sizing: border-box !important;
+        border: 1px solid #d1d5db !important;
+    }
+    
+    .btn-submit {
+        padding: 0.7rem 2rem !important;
+        font-size: 0.9rem !important;
+    }
+    
+    .login-link-wrapper {
+        padding: 0.8rem !important;
+        margin: 0 !important;
+        width: 100% !important;
+        max-width: calc(100vw - 1rem) !important;
+        box-sizing: border-box !important;
+    }
+}
+</style>
 
 {% endblock %}

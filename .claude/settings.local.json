@@ -1,0 +1,17 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python manage.py startapp:*)",
+      "Bash(python manage.py:*)",
+      "Bash(sqlite3:*)",
+      "Read(/var/folders/xn/8jhq40k51hd9x43qx1nn1b200000gn/T/TemporaryItems/NSIRD_screencaptureui_b5XkJL/**)",
+      "Read(/var/folders/xn/8jhq40k51hd9x43qx1nn1b200000gn/T/TemporaryItems/NSIRD_screencaptureui_KerUdD/**)",
+      "Read(/var/folders/xn/8jhq40k51hd9x43qx1nn1b200000gn/T/TemporaryItems/NSIRD_screencaptureui_ELv4Ga/**)",
+      "Bash(python:*)",
+      "Bash(timeout:*)",
+      "Read(/var/folders/xn/8jhq40k51hd9x43qx1nn1b200000gn/T/TemporaryItems/NSIRD_screencaptureui_luv94L/**)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

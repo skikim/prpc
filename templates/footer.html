@@ -1,18 +1,353 @@
-<div style="text-align: center; font-size: 0.6rem; margin-top: 4rem">
-    <footer class="py-3 bg-dark">
-        <div class="container px-4">
-            <p class="m-0 text-center text-white">
-                주소 : 경상북도 경산시 대학로 63(킴스메디빌 6층), Tel. 053-801-8575, Fax. 053-801-8576<br>
-                since 2010.10.11 푸른마취통증의학과의원. ALL RIGHTS RESERVED. Copyright &copy; Your Website 2022<br>
-
-                {% if user.is_superuser %}
-                    <div style="margin-top: 1rem;">  <span style="font-weight: bold;">관리자 기능:</span><br> <a href="/admin" style="color: white">관리자 페이지</a> |
-                        <a href="{% url 'superapp:supercreate' %}" style="color: white">슈퍼 예약</a> |
-                        <a href="{% url 'articleapp:waiting_update' pk=1 %}" style="color: white">대기환자수 입력</a> |
-                        <a href="{% url 'articleapp:holiday_create' %}" style="color: white">휴일 생성</a>
+<!-- Footer-->
+<footer class="footer-modern">
+    <div class="container">
+        <div class="row">
+            <!-- Hospital Info -->
+            <div class="col-lg-6 col-md-6 mb-4">
+                <div class="footer-section">
+                    <h5 class="footer-title">
+                        <i class="fas fa-hospital-alt me-2"></i>푸른 마취통증의학과의원
+                    </h5>
+                    <div class="footer-contact">
+                        <div class="contact-item mb-2">
+                            <i class="fas fa-map-marker-alt text-primary me-2"></i>
+                            <span>경상북도 경산시 대학로 63 (킴스메디빌 6층)</span>
+                        </div>
+                        <div class="contact-item mb-2">
+                            <i class="fas fa-phone text-primary me-2"></i>
+                            <span>Tel. 053-801-8575</span>
+                        </div>
+                        <div class="contact-item">
+                            <i class="fas fa-fax text-primary me-2"></i>
+                            <span>Fax. 053-801-8576</span>
+                        </div>
                     </div>
-                {% endif %}
-            </p>
+                </div>
+            </div>
+            
+            
+            <!-- Admin Functions Only -->
+            {% if user.is_superuser %}
+                <div class="col-lg-6 col-md-12 mb-4">
+                    <div class="footer-section">
+                        <div class="footer-admin">
+                            <h6 class="footer-subtitle text-warning">
+                                <i class="fas fa-crown me-2"></i>관리자 기능
+                            </h6>
+                            <div class="admin-links-grid">
+                                <a href="/admin" class="admin-link-item">
+                                    <i class="fas fa-cog me-2"></i>관리자 페이지
+                                </a>
+                                <a href="{% url 'superapp:supercreate' %}" class="admin-link-item">
+                                    <i class="fas fa-calendar-plus me-2"></i>슈퍼 예약
+                                </a>
+                                <a href="{% url 'articleapp:waiting_update' pk=1 %}" class="admin-link-item">
+                                    <i class="fas fa-users me-2"></i>대기환자수 입력
+                                </a>
+                                <a href="{% url 'articleapp:holiday_create' %}" class="admin-link-item">
+                                    <i class="fas fa-calendar-times me-2"></i>휴일 생성
+                                </a>
+                                <a href="{% url 'noteapp:send_notes' %}" class="admin-link-item">
+                                    <i class="fas fa-envelope me-2"></i>메시지 입력
+                                </a>
+                                <a href="{% url 'logapp:log_list' %}" class="admin-link-item">
+                                    <i class="fas fa-file-alt me-2"></i>로그 조회
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
         </div>
-    </footer>
-</div>
+        
+        <!-- Bottom Bar -->
+        <div class="footer-bottom">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <p class="copyright-text mb-0">
+                        <i class="fas fa-copyright me-1"></i>
+                        since 2010.10.11 푸른 마취통증의학과의원. All rights reserved.
+                    </p>
+                </div>
+                <div class="col-md-4 text-md-end">
+                    <div class="footer-powered">
+                        <small class="text-muted">
+                            <i class="fas fa-code me-1"></i>Powered by Django
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<style>
+    .footer-modern {
+        background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
+        color: white;
+        padding: 1.5rem 0 0.75rem;
+        margin-top: 2rem;
+        position: relative;
+    }
+    
+    .footer-modern::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: var(--gradient-primary);
+    }
+    
+    .footer-section {
+        height: 100%;
+    }
+    
+    .footer-title {
+        color: white;
+        font-weight: 700;
+        margin-bottom: 0.75rem;
+        font-size: 1rem;
+    }
+    
+    .footer-subtitle {
+        color: var(--accent-teal);
+        font-weight: 600;
+        margin-bottom: 1rem;
+        text-transform: uppercase;
+        font-size: 0.9rem;
+        letter-spacing: 0.5px;
+    }
+    
+    .footer-text {
+        color: #d1d5db;
+        line-height: 1.6;
+        font-size: 0.95rem;
+    }
+    
+    .footer-contact .contact-item {
+        color: #e5e7eb;
+        font-size: 0.8rem;
+    }
+    
+    .footer-links {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+    
+    .footer-links li {
+        margin-bottom: 0.5rem;
+    }
+    
+    .footer-links a {
+        color: #d1d5db;
+        text-decoration: none;
+        font-size: 0.9rem;
+        transition: all 0.2s ease;
+        display: block;
+        padding: 0.25rem 0;
+    }
+    
+    .footer-links a:hover {
+        color: var(--accent-teal);
+        transform: translateX(4px);
+    }
+    
+    .footer-links span {
+        color: #d1d5db;
+        font-size: 0.9rem;
+        display: block;
+        padding: 0.25rem 0;
+        cursor: default;
+    }
+    
+    .admin-links-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: 1fr 1fr 1fr;
+        gap: 0.5rem;
+    }
+    
+    .admin-link-item {
+        color: #fbbf24;
+        text-decoration: none;
+        font-size: 0.7rem;
+        padding: 0.4rem 0.6rem;
+        border: 1px solid rgba(251, 191, 36, 0.3);
+        border-radius: 6px;
+        background: rgba(251, 191, 36, 0.05);
+        transition: all 0.2s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        line-height: 1.2;
+    }
+    
+    .admin-link-item:hover {
+        color: #f59e0b;
+        border-color: #f59e0b;
+        background: rgba(251, 191, 36, 0.15);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(251, 191, 36, 0.2);
+    }
+    
+    .admin-links a {
+        color: #fbbf24;
+        border-left: 2px solid transparent;
+        padding-left: 0.5rem;
+        transition: all 0.2s ease;
+    }
+    
+    .admin-links a:hover {
+        color: #f59e0b;
+        border-left-color: #f59e0b;
+        background: rgba(251, 191, 36, 0.1);
+        border-radius: 4px;
+    }
+    
+    .footer-notice {
+        display: flex;
+        align-items: center;
+        padding: 1rem;
+        background: rgba(16, 185, 129, 0.1);
+        border-radius: 8px;
+        border-left: 3px solid var(--accent-teal);
+    }
+    
+    .notice-icon {
+        margin-right: 0.75rem;
+        font-size: 1.2rem;
+    }
+    
+    .notice-text {
+        color: #e5e7eb;
+        line-height: 1.4;
+    }
+    
+    .footer-bottom {
+        margin-top: 1rem;
+        padding-top: 1rem;
+        border-top: 1px solid #374151;
+    }
+    
+    .copyright-text {
+        color: #9ca3af;
+        font-size: 0.8rem;
+    }
+    
+    .footer-powered {
+        color: #6b7280;
+    }
+    
+    @media (max-width: 768px) {
+        .footer-modern {
+            padding: 1rem 0 0.5rem;
+            margin-top: 1.5rem;
+        }
+        
+        .footer-title {
+            font-size: 0.95rem;
+            text-align: center;
+            margin-bottom: 0.75rem;
+        }
+        
+        .footer-text {
+            text-align: center;
+            font-size: 0.85rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .footer-contact {
+            text-align: center;
+        }
+        
+        .footer-contact .contact-item {
+            font-size: 0.75rem;
+            margin-bottom: 0.6rem;
+            justify-content: center;
+            display: flex;
+            align-items: center;
+        }
+        
+        .footer-contact .contact-item i {
+            margin-right: 0.5rem;
+        }
+        
+        .footer-admin {
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid #374151;
+        }
+        
+        .admin-links-grid {
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: 1fr 1fr 1fr;
+            gap: 0.4rem;
+        }
+        
+        .admin-link-item {
+            font-size: 0.65rem;
+            padding: 0.5rem 0.4rem;
+            text-align: center;
+            line-height: 1.1;
+        }
+        
+        .admin-links {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.5rem;
+        }
+        
+        .admin-links li {
+            margin-bottom: 0.3rem;
+        }
+        
+        .admin-links a {
+            font-size: 0.8rem;
+            padding: 0.4rem;
+            text-align: center;
+            border-radius: 4px;
+            display: block;
+        }
+        
+        .footer-bottom {
+            text-align: center;
+            margin-top: 1rem;
+        }
+        
+        .footer-bottom .row {
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .footer-bottom .col-md-8,
+        .footer-bottom .col-md-4 {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 60px;
+            padding: 1rem 0;
+        }
+        
+        .copyright-text {
+            font-size: 0.7rem;
+            line-height: 1.4;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0;
+            height: 100%;
+        }
+        
+        .footer-powered {
+            font-size: 0.65rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+        }
+    }
+</style>

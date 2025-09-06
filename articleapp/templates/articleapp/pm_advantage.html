@@ -1,31 +1,215 @@
 {% extends 'base.html' %}
 
 {% block content %}
-
-    <div style="margin-top: 8rem;">
-        <h2 style="text-align: center;">
-            [통증의학 치료의 장점]
-        </h2>
+<!-- Header Section -->
+<div class="hero-section" style="padding: 2rem 0; margin-top: 4rem;">
+    <div class="container hero-content text-center">
+        <div class="icon-feature mx-auto mb-3">
+            <i class="fas fa-star fa-lg"></i>
+        </div>
+        <h2 class="fw-bold mb-2" style="font-family: 'Noto Sans KR', sans-serif;">통증의학 치료의 장점</h2>
+        <p class="lead mb-0">다양하고 체계적인 치료 접근법으로 최적의 결과를 제공합니다</p>
     </div>
-    <div style="max-width: 680px; padding: 1rem; margin: 4rem auto; line-height: 1.96">
-        <p>통증의학과에서 제공하는 치료에는 다양한 종류가 있습니다. 이러한 치료 방법들은 다음과 같은 장점들이 있습니다.</p><br>
+</div>
 
-        <p><strong>다학제적 접근:</strong><br> 통증의학과에서는 통증의 원인과 증상을 종합적으로 분석하여, 다학제적인 접근을 통해 치료를 제공합니다.<br> 이는 단일 분야의 전문의가 담당하는 치료 방법과는 다르게, 다양한 분야의 전문지식을 통합하여 보다 체계적이고 효과적인 치료를 가능케 합니다.</p>
+<div class="container my-5" style="max-width: 700px; padding: 0 2rem;">
+    <div class="info-card" style="background: white; border-radius: 20px; padding: 2.5rem; box-shadow: 0 10px 25px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); border: 1px solid #f1f5f9; position: relative; overflow: hidden;">
+        <div class="card-decoration" style="position: absolute; top: -30px; right: -30px; width: 100px; height: 100px; background: linear-gradient(135deg, #bfdbfe, #93c5fd); border-radius: 50%; opacity: 0.1;"></div>
+        
+        <div class="text-center mb-4 position-relative">
+            <div class="user-avatar mx-auto mb-3" style="width: 70px; height: 70px; background: linear-gradient(135deg, #bfdbfe, #93c5fd); border-radius: 16px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(59, 130, 246, 0.25);">
+                <i class="fas fa-star" style="color: #3b82f6; font-size: 2rem;"></i>
+            </div>
+            <h4 class="fw-bold mb-1" style="color: #1e293b;">치료의 우수성</h4>
+            <p class="text-muted mb-0" style="font-size: 0.9rem;">체계적이고 효과적인 치료 방법을 제공합니다</p>
+        </div>
 
-        <p><strong>비약물 치료:</strong><br> 통증의학과에서는 약물치료 외에도 다양한 비약물 치료를 제공합니다.<br> 이러한 치료는 약물치료로 인한 부작용의 발생 가능성이 적고, 장기간 치료가 필요한 경우에도 안정적인 치료 효과를 보장할 수 있습니다.</p>
+        <!-- Content Sections -->
+        <div class="content-sections">
+            <div class="content-item mb-4" style="background: #f0fdf4; border-radius: 12px; padding: 1.5rem; border: 1px solid #dcfce7;">
+                <div class="d-flex align-items-start">
+                    <div class="content-icon me-3" style="width: 40px; height: 40px; background: linear-gradient(135deg, #d1fae5, #a7f3d0); border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+                        <i class="fas fa-users" style="color: #10b981;"></i>
+                    </div>
+                    <div>
+                        <h6 class="fw-bold mb-2" style="color: #047857; font-size: 0.95rem;">다학제적 접근</h6>
+                        <p class="mb-0" style="font-size: 0.85rem; color: #475569; line-height: 1.6;">
+                            통증의 원인과 증상을 종합적으로 분석하여 다양한 분야의 전문지식을 통합한 체계적이고 효과적인 치료를 제공합니다.
+                        </p>
+                    </div>
+                </div>
+            </div>
 
-        <p><strong>치료의 다양성:</strong><br> 통증의학과에서는 신경이완주사치료, 근막통증유발점 주사치료, 전기치료, 물리치료, 약물치료, 인대-힘줄 증식치료, 관절강내 연골보호주사요법, IMS(근육내 신경자극 요법) 등 다양한 치료 방법을 제공합니다.<br> 이러한 다양한 치료 방법은 통증의 원인과 증상에 따라 맞춤형 치료를 제공할 수 있어, 보다 정확하고 효과적인 치료가 가능합니다.</p>
+            <div class="content-item mb-4" style="background: #f0f9ff; border-radius: 12px; padding: 1.5rem; border: 1px solid #e0f2fe;">
+                <div class="d-flex align-items-start">
+                    <div class="content-icon me-3" style="width: 40px; height: 40px; background: linear-gradient(135deg, #dbeafe, #bfdbfe); border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+                        <i class="fas fa-leaf" style="color: #3b82f6;"></i>
+                    </div>
+                    <div>
+                        <h6 class="fw-bold mb-2" style="color: #1e40af; font-size: 0.95rem;">비약물 치료</h6>
+                        <p class="mb-0" style="font-size: 0.85rem; color: #475569; line-height: 1.6;">
+                            약물치료 외에도 다양한 비약물 치료를 제공하여 부작용을 최소화하고 장기간 안정적인 치료 효과를 보장합니다.
+                        </p>
+                    </div>
+                </div>
+            </div>
 
-        <p><strong>예방 및 교육:</strong><br> 통증의학과에서는 환자에게 통증 예방에 대한 교육을 제공하며, 환자의 일상생활에서 통증이 발생할 가능성을 최소화할 수 있는 방법을 안내합니다.<br> 이러한 예방과 교육은 통증의 발생을 미리 예방할 수 있어, 보다 효과적인 치료를 가능케 합니다.</p>
+            <div class="content-item mb-4" style="background: #fffbeb; border-radius: 12px; padding: 1.5rem; border: 1px solid #fed7aa;">
+                <div class="d-flex align-items-start">
+                    <div class="content-icon me-3" style="width: 40px; height: 40px; background: linear-gradient(135deg, #fef3c7, #fde68a); border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+                        <i class="fas fa-cogs" style="color: #f59e0b;"></i>
+                    </div>
+                    <div>
+                        <h6 class="fw-bold mb-2" style="color: #d97706; font-size: 0.95rem;">치료의 다양성</h6>
+                        <p class="mb-0" style="font-size: 0.85rem; color: #475569; line-height: 1.6;">
+                            신경이완주사치료, 물리치료, IMS 등 다양한 치료 방법을 통해 통증의 원인과 증상에 따른 맞춤형 치료를 제공합니다.
+                        </p>
+                    </div>
+                </div>
+            </div>
 
-        <p><strong>개인 맞춤형 치료:</strong><br> 통증의학과에서는 개인 맞춤형 치료를 제공합니다.<br> 즉, 각각의 환자의 특성과 상황에 따라 맞춤형 치료 계획을 수립하고, 이를 토대로 치료를 진행합니다.<br> 이러한 개인 맞춤형 치료는 환자의 통증 증상에 대해 보다 정확하고 효과적인 치료를 제공할 수 있습니다.</p><br>
+            <div class="content-item mb-4" style="background: #fef2f2; border-radius: 12px; padding: 1.5rem; border: 1px solid #fecaca;">
+                <div class="d-flex align-items-start">
+                    <div class="content-icon me-3" style="width: 40px; height: 40px; background: linear-gradient(135deg, #fee2e2, #fecaca); border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+                        <i class="fas fa-user-cog" style="color: #ef4444;"></i>
+                    </div>
+                    <div>
+                        <h6 class="fw-bold mb-2" style="color: #dc2626; font-size: 0.95rem;">개인 맞춤형 치료</h6>
+                        <p class="mb-0" style="font-size: 0.85rem; color: #475569; line-height: 1.6;">
+                            각 환자의 특성과 상황에 따라 맞춤형 치료 계획을 수립하여 보다 정확하고 효과적인 치료를 제공합니다.
+                        </p>
+                    </div>
+                </div>
+            </div>
 
-        <p>통증의학과에서는 종종 약물치료만으로는 치료하기 어려운 만성적인 통증에 대해, 다양한 치료 방법을 적용하여 최적의 치료 효과를 도출합니다.<br> 이를 통해 환자의 통증 증상을 완화시키고, 일상생활을 보다 원활하게 수행할 수 있도록 도와줍니다.</p><br>
+            <div class="content-item mb-4" style="background: #f5f3ff; border-radius: 12px; padding: 1.5rem; border: 1px solid #e9d5ff;">
+                <div class="d-flex align-items-start">
+                    <div class="content-icon me-3" style="width: 40px; height: 40px; background: linear-gradient(135deg, #ede9fe, #ddd6fe); border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+                        <i class="fas fa-graduation-cap" style="color: #8b5cf6;"></i>
+                    </div>
+                    <div>
+                        <h6 class="fw-bold mb-2" style="color: #7c3aed; font-size: 0.95rem;">예방 및 교육</h6>
+                        <p class="mb-0" style="font-size: 0.85rem; color: #475569; line-height: 1.6;">
+                            통증 예방에 대한 교육을 제공하여 일상생활에서 통증 발생 가능성을 최소화하는 방법을 안내합니다.
+                        </p>
+                    </div>
+                </div>
+            </div>
 
-        <p>마지막으로, 통증의학과에서는 치료뿐만 아니라, 환자의 신체적, 정신적, 사회적 요인을 종합적으로 고려하여 치료를 제공합니다.<br> 이는 통증의 원인이 신체적인 이유뿐만 아니라, 정신적인 요인에 의해 발생하는 경우가 많기 때문입니다.<br> 이러한 종합적인 치료 방법은 환자의 삶의 질을 향상시키고, 보다 긍정적인 결과를 얻을 수 있도록 도와줍니다.</p>
+            <div class="content-item mb-4" style="background: #ecfeff; border-radius: 12px; padding: 1.5rem; border: 1px solid #a5f3fc;">
+                <div class="d-flex align-items-start">
+                    <div class="content-icon me-3" style="width: 40px; height: 40px; background: linear-gradient(135deg, #cffafe, #a5f3fc); border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+                        <i class="fas fa-heart" style="color: #06b6d4;"></i>
+                    </div>
+                    <div>
+                        <h6 class="fw-bold mb-2" style="color: #0891b2; font-size: 0.95rem;">종합적 치료</h6>
+                        <p class="mb-0" style="font-size: 0.85rem; color: #475569; line-height: 1.6;">
+                            환자의 신체적, 정신적, 사회적 요인을 종합적으로 고려하여 삶의 질 향상을 목표로 하는 치료를 제공합니다.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Action Button -->
+        <div class="text-center mt-4">
+            <a href="{% url 'bookingapp:create' %}" class="btn-action" style="background: white; color: #3b82f6; padding: 0.875rem 2.5rem; border-radius: 12px; border: 2px solid #3b82f6; font-weight: 700; box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15); transition: all 0.2s ease; display: inline-flex; align-items: center; font-size: 1rem; text-decoration: none;">
+                <i class="fas fa-calendar-plus me-2"></i>전문 치료 예약하기
+            </a>
+        </div>
     </div>
+</div>
 
-    <style>
-    </style>
+<style>
+    .btn-action:hover {
+        background: #3b82f6 !important;
+        color: white !important;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 16px rgba(59, 130, 246, 0.4);
+        border-color: #3b82f6 !important;
+        text-decoration: none;
+    }
 
+    .info-card:hover {
+        box-shadow: 0 12px 28px -3px rgba(0, 0, 0, 0.12), 0 6px 8px -2px rgba(0, 0, 0, 0.05);
+    }
+
+    .content-item:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        transition: all 0.2s ease;
+    }
+
+    /* 모바일 반응형 */
+    @media (max-width: 768px) {
+        .container {
+            padding: 0 0.5rem !important;
+            max-width: 100% !important;
+        }
+
+        .hero-section {
+            padding: 1.5rem 0 !important;
+            margin-top: 3rem !important;
+        }
+
+        .hero-section h2 {
+            font-size: 1.5rem !important;
+        }
+
+        .hero-section .lead {
+            font-size: 1rem !important;
+        }
+
+        .info-card {
+            padding: 1rem !important;
+            border-radius: 16px !important;
+        }
+
+        .user-avatar {
+            width: 60px !important;
+            height: 60px !important;
+        }
+
+        .user-avatar i {
+            font-size: 1.5rem !important;
+        }
+
+        .content-item {
+            padding: 1.25rem !important;
+        }
+
+        .content-icon {
+            width: 35px !important;
+            height: 35px !important;
+        }
+
+        .btn-action {
+            width: 100%;
+            justify-content: center;
+            padding: 0.75rem 2rem !important;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .container {
+            padding: 0 0.25rem !important;
+        }
+
+        .info-card {
+            padding: 0.75rem !important;
+        }
+
+        .content-item {
+            padding: 1rem !important;
+        }
+
+        .content-item h6 {
+            font-size: 0.9rem !important;
+        }
+
+        .content-item p {
+            font-size: 0.8rem !important;
+        }
+    }
+</style>
 {% endblock %}
