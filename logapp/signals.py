@@ -149,7 +149,8 @@ def booking_post_save(sender, instance, created, **kwargs):
             previous_status=previous_status,
             new_status=instance.booking_status,
             ip_address=ip_address,
-            notes=notes
+            notes=notes,
+            booking_rn=instance.booking_rn
         )
         
     except Exception as e:
@@ -195,7 +196,8 @@ def booking_post_delete(sender, instance, **kwargs):
             previous_status=instance.booking_status,
             new_status='삭제됨',
             ip_address=ip_address,
-            notes=f"예약 삭제: {instance.booking_status}에서 삭제"
+            notes=f"예약 삭제: {instance.booking_status}에서 삭제",
+            booking_rn=instance.booking_rn
         )
         
     except Exception as e:

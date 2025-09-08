@@ -50,6 +50,7 @@ class BookingLog(models.Model):
     # 추가 정보
     ip_address = models.GenericIPAddressField(null=True, blank=True, verbose_name='IP 주소')
     notes = models.TextField(blank=True, verbose_name='메모')
+    booking_rn = models.CharField(max_length=12, null=True, blank=True, verbose_name='직접예약자명')
     
     class Meta:
         ordering = ['-created_at']
@@ -75,6 +76,8 @@ class BookingLog(models.Model):
             if hasattr(self.user, 'profile') and self.user.profile.real_name:
                 return self.user.profile.real_name
             return self.user.username
+        elif self.booking_rn:
+            return self.booking_rn
         return "N/A"
     
     def get_action_display_korean(self):
