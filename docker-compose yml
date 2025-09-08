@@ -9,6 +9,7 @@ services:
      - static-volume:/data/static
      - media-volume:/data/media
      - /etc/nginx/ssl/prpc:/etc/nginx/ssl/prpc    # SSL 인증서 경로 추가
+     - /home/django_course/clean_duplicate_logs.py:/home/prpc/clean_duplicate_logs.py # 중복 로그 정리 스크립트 경로 추가
    ports:
      - 80:80
      - 443:443    # HTTPS 포트 추가
@@ -16,7 +17,7 @@ services:
      - prpc_container_gunicorn
 
  prpc_container_gunicorn:
-   image: prpc_image:8
+   image: prpc_image:12
    networks:
      - network
    volumes:
