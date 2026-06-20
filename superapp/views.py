@@ -22,7 +22,7 @@ from django.contrib import messages
 def delete_approval_messages(user, booking_date, booking_time):
     """예약 취소/변경 시 기존 승인 메시지를 삭제하는 공통 함수"""
     if user and user.profile:
-        approval_message_pattern = f"{user.profile.real_name}님, {booking_date} {booking_time}의 예약이 승인되었습니다."
+        approval_message_pattern = f"{user.profile.real_name}님, {booking_date} {booking_time}의 예약이 확정되었습니다."
         deleted_count = Note.objects.filter(
             recipient_id=user.id,
             message=approval_message_pattern
@@ -134,7 +134,7 @@ def superbooking(request):
                                       booking_status=booking_status,
                                       user=user, booking_rn=booking_rn).save()
                     recipient_id = user.id
-                    message = f"{user.profile.real_name}님, {booking_date} {booking_time}의 예약이 승인되었습니다."
+                    message = f"{user.profile.real_name}님, {booking_date} {booking_time}의 예약이 확정되었습니다."
                     recipient = User.objects.get(id=recipient_id)
                     sender = request.user
                     Note.objects.create(sender=sender, recipient=recipient, message=message)
@@ -149,7 +149,7 @@ def superbooking(request):
                     Booking(booking_date=booking_date, booking_time=booking_time, booking_status=booking_status,
                             user=user, booking_rn=booking_rn).save()
                     recipient_id = booking_user_id
-                    message = f"{user.profile.real_name}님, {booking_date} {booking_time}의 예약이 승인되었습니다."
+                    message = f"{user.profile.real_name}님, {booking_date} {booking_time}의 예약이 확정되었습니다."
                     recipient = User.objects.get(id=recipient_id)
                     sender = request.user
                     Note.objects.create(sender=sender, recipient=recipient, message=message)
@@ -257,7 +257,7 @@ def superbooking2(request):
                                       booking_status=booking_status,
                                       user=user, booking_rn=booking_rn).save()
                     recipient_id = user.id
-                    message = f"{user.profile.real_name}님, {booking_date} {booking_time}의 예약이 승인되었습니다."
+                    message = f"{user.profile.real_name}님, {booking_date} {booking_time}의 예약이 확정되었습니다."
                     recipient = User.objects.get(id=recipient_id)
                     sender = request.user
                     Note.objects.create(sender=sender, recipient=recipient, message=message)
@@ -272,7 +272,7 @@ def superbooking2(request):
                     Booking(booking_date=booking_date, booking_time=booking_time, booking_status=booking_status,
                             user=user, booking_rn=booking_rn).save()
                     recipient_id = booking_user_id
-                    message = f"{user.profile.real_name}님, {booking_date} {booking_time}의 예약이 승인되었습니다."
+                    message = f"{user.profile.real_name}님, {booking_date} {booking_time}의 예약이 확정되었습니다."
                     recipient = User.objects.get(id=recipient_id)
                     sender = request.user
                     Note.objects.create(sender=sender, recipient=recipient, message=message)
@@ -380,7 +380,7 @@ def superbooking2_1(request):
                                       booking_status=booking_status,
                                       user=user, booking_rn=booking_rn).save()
                     recipient_id = user.id
-                    message = f"{user.profile.real_name}님, {booking_date} {booking_time}의 예약이 승인되었습니다."
+                    message = f"{user.profile.real_name}님, {booking_date} {booking_time}의 예약이 확정되었습니다."
                     recipient = User.objects.get(id=recipient_id)
                     sender = request.user
                     Note.objects.create(sender=sender, recipient=recipient, message=message)
@@ -395,7 +395,7 @@ def superbooking2_1(request):
                     Booking(booking_date=booking_date, booking_time=booking_time, booking_status=booking_status,
                             user=user, booking_rn=booking_rn).save()
                     recipient_id = booking_user_id
-                    message = f"{user.profile.real_name}님, {booking_date} {booking_time}의 예약이 승인되었습니다."
+                    message = f"{user.profile.real_name}님, {booking_date} {booking_time}의 예약이 확정되었습니다."
                     recipient = User.objects.get(id=recipient_id)
                     sender = request.user
                     Note.objects.create(sender=sender, recipient=recipient, message=message)
@@ -503,7 +503,7 @@ def superbooking2_2(request):
                                       booking_status=booking_status,
                                       user=user, booking_rn=booking_rn).save()
                     recipient_id = user.id
-                    message = f"{user.profile.real_name}님, {booking_date} {booking_time}의 예약이 승인되었습니다."
+                    message = f"{user.profile.real_name}님, {booking_date} {booking_time}의 예약이 확정되었습니다."
                     recipient = User.objects.get(id=recipient_id)
                     sender = request.user
                     Note.objects.create(sender=sender, recipient=recipient, message=message)
@@ -518,7 +518,7 @@ def superbooking2_2(request):
                     Booking(booking_date=booking_date, booking_time=booking_time, booking_status=booking_status,
                             user=user, booking_rn=booking_rn).save()
                     recipient_id = booking_user_id
-                    message = f"{user.profile.real_name}님, {booking_date} {booking_time}의 예약이 승인되었습니다."
+                    message = f"{user.profile.real_name}님, {booking_date} {booking_time}의 예약이 확정되었습니다."
                     recipient = User.objects.get(id=recipient_id)
                     sender = request.user
                     Note.objects.create(sender=sender, recipient=recipient, message=message)
@@ -563,7 +563,7 @@ def superbooking3(request):
             date = request.POST.get('date')
             time = request.POST.get('time')
             if str(msg)=='ok':
-                msg_2 = f"{name}님, {date} {time}분의 예약이 승인되었습니다."
+                msg_2 = f"{name}님, {date} {time}분의 예약이 확정되었습니다."
                 aligo_sms_send(rec, msg_2)
             elif str(msg)=='cancel':
                 msg_2 = f"{name}님, {date} {time}분의 예약이 취소되었습니다."
@@ -587,7 +587,7 @@ def superbooking4(request):
             date = request.POST.get('date')
             time = request.POST.get('time')
             if str(msg)=='ok':
-                msg_2 = f"{name}님, {date} {time}분의 예약이 승인되었습니다."
+                msg_2 = f"{name}님, {date} {time}분의 예약이 확정되었습니다."
                 aligo_sms_send(rec, msg_2)
             elif str(msg)=='cancel':
                 msg_2 = f"{name}님, {date} {time}분의 예약이 취소되었습니다."

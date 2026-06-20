@@ -26,7 +26,7 @@ from superapp.utils import is_booking_blocked, send_discord_message_both
 def delete_approval_messages(user, booking_date, booking_time):
     """예약 취소/변경 시 기존 승인 메시지를 삭제하는 공통 함수"""
     if user and user.profile:
-        approval_message_pattern = f"{user.profile.real_name}님, {booking_date} {booking_time}의 예약이 승인되었습니다."
+        approval_message_pattern = f"{user.profile.real_name}님, {booking_date} {booking_time}의 예약이 확정되었습니다."
         deleted_count = Note.objects.filter(
             recipient_id=user.id,
             message=approval_message_pattern

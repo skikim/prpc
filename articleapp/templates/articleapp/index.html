@@ -233,6 +233,18 @@
             padding: 0.2rem 0.6rem;
         }
     }
+    
+    .booking-time-highlight {
+        font-size: 1.15rem;
+        font-weight: 800;
+        color: #1e3a8a;
+        background-color: #eff6ff;
+        padding: 2px 6px;
+        border-radius: 6px;
+        border: 1px solid #bfdbfe;
+        display: inline-block;
+        margin: 0 2px;
+    }
 </style>
 
     <!-- Hero Section -->
@@ -598,8 +610,8 @@
                                                     <small class="text-muted d-block">
                                                         <i class="fas fa-user-md me-1"></i>{{ note.sender.profile.real_name }}
                                                     </small>
-                                                    <small class="text-muted">
-                                                        <i class="fas fa-clock me-1"></i>{{ note.timestamp }}
+                                                    <small class="text-muted" style="font-size: 0.8rem; opacity: 0.8;">
+                                                        <i class="fas fa-clock me-1"></i>보낸 시간: {{ note.timestamp }}
                                                     </small>
                                                 </div>
                                                 <button type="button" 
@@ -624,6 +636,14 @@
             </div>
             <script>
                 $(function() {
+                    $('.note-content p').each(function() {
+                        var text = $(this).html();
+                        var regex = /(\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}(?:분)?)/g;
+                        if (regex.test(text)) {
+                            var newText = text.replace(regex, '<strong class="booking-time-highlight">$1</strong>');
+                            $(this).html(newText);
+                        }
+                    });
                     $('#notes-modal').modal('show');
                 });
 
