@@ -250,6 +250,9 @@ def booking_delete(request, pk):
     booking_status = '예약가능'
     request_real_name = booking.user.profile.real_name
     request_user_id = booking.user_id
+    if booking.is_past():
+        messages.error(request, '지난 예약은 취소할 수 없습니다.')
+        return redirect(reverse('bookingapp:detail', kwargs={'pk': booking.user.pk}))
     if request.method == 'POST':
         # 디버깅: 예약 취소 전 상태 로깅
         logger.info(f"예약 취소 시작 - 사용자: {request_real_name}(ID:{request_user_id}), 예약ID: {booking.pk}, 날짜/시간: {booking_date} {booking_time}, 상태: {booking.booking_status}")

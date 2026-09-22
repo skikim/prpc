@@ -1580,6 +1580,12 @@
 
         // 취소 모달을 표시하는 함수
         function showCancelModal(selectedDate, selectedTime, clickedId) {
+            var now = new Date();
+            var bookingAt = new Date(selectedDate + 'T' + selectedTime + ':00');
+            if (!isNaN(bookingAt.getTime()) && now >= bookingAt) {
+                alert('지난 예약은 취소할 수 없습니다.');
+                return;
+            }
             // 해당 날짜/시간에 맞는 예약 ID 찾기
             const matchingBooking = userBookings.find(booking => 
                 booking.date === selectedDate && booking.time === selectedTime

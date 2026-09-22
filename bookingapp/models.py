@@ -1,3 +1,5 @@
+import datetime
+
 from django.contrib.auth.models import User
 from django.db import models
 
@@ -18,4 +20,11 @@ class Booking(models.Model):
     booking_status = models.CharField(max_length=10, choices=BOOKING_STATUS)
     booked_on_datetime = models.DateTimeField(auto_now=True)
     booking_rn = models.CharField(max_length=12, null=True, blank=True)
+
+    def is_past(self):
+        try:
+            booking_clock = datetime.datetime.strptime(self.booking_time, '%H:%M').time()
+        except ValueError:
+            return False
+        return datetime.datetime.now() >= datetime.datetime.combine(self.booking_date, booking_clock)
 
