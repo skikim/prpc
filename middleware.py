@@ -32,6 +32,7 @@ class TabletKioskMiddleware:
                 or path.startswith('/supers/tablet3/')
                 or path.startswith('/supers/waiting_pt/')
                 or path.startswith('/static/')
+                or path.startswith('/accounts/logout/')
             ):
                 return redirect('superapp:tablet')
         return self.get_response(request)
