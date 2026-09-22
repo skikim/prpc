@@ -24,7 +24,7 @@ class WaitingPatient(models.Model):
 
 
 class Holiday(models.Model):
-    holiday_message = models.CharField(null=True, max_length=100)
+    holiday_message = models.TextField(null=True, blank=True)
 
 
 class WaitingOverride(models.Model):

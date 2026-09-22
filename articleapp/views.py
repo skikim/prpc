@@ -11,8 +11,19 @@ from articleapp.models import Waiting, Holiday
 from noteapp.models import Note
 import datetime
 from superapp.utils import send_discord_message
+import re
 
 # Create your views here.
+
+
+def sanitize_holiday_html(html):
+    if not html:
+        return html
+    html = re.sub(r'(?is)<script.*?>.*?</script>', '', html)
+    html = re.sub(r'(?is)<iframe.*?>.*?</iframe>', '', html)
+    html = re.sub(r'(?i)\son\w+\s*=', ' ', html)
+    html = re.sub(r'(?i)javascript:', '', html)
+    return html
 
 
 has_ownership = [
@@ -63,7 +74,7 @@ class WaitingUpdateView(UpdateView):
 def HolidayPageView(request):
     if request.user.is_superuser:
         if request.method == 'POST':
-            holiday_message = request.POST.get('holiday_message')
+            holiday_message = sanitize_holiday_html(request.POST.get('holiday_message'))
             Holiday.objects.create(holiday_message=holiday_message)
 
         holiday_messages = Holiday.objects.all()
@@ -79,6 +90,7 @@ class HolidayUpdateView(UpdateView):
 
     def form_valid(self, form):
         holiday_message = form.save(commit=False)
+        holiday_message.holiday_message = sanitize_holiday_html(holiday_message.holiday_message)
         holiday_message.save()
         return HttpResponseRedirect(reverse_lazy('articleapp:holiday_create'))
 

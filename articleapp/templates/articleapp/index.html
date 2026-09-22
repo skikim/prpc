@@ -102,6 +102,9 @@
         background: rgba(217, 70, 239, 0.15);
         color: #9333ea;
     }
+    .holiday-card .alert-card-text p {
+        margin: 0.25rem 0;
+    }
     
     .waiting-card .alert-card-icon {
         background: rgba(245, 158, 11, 0.15);
@@ -296,7 +299,7 @@
                     <div class="alert-card-content">
                         <h6 class="alert-card-title">병원 공지사항</h6>
                         {% for holiday_message in holiday_messages %}
-                            <p class="alert-card-text">{{ holiday_message.holiday_message }}</p>
+                            <div class="alert-card-text">{{ holiday_message.holiday_message|safe }}</div>
                         {% endfor %}
                     </div>
                 </div>
