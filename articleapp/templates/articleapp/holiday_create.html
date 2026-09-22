@@ -33,7 +33,7 @@
             <h4 style="margin-bottom: 2rem">[알림 내용]</h4>
                 {% for holiday_message in holiday_messages %}
                     <div style="margin: 2.4rem 0">
-                        <div style="margin: 0 2rem; text-align: left"> {{ holiday_message.holiday_message|safe }} </div>
+                        <div class="holiday-html" style="margin: 0 2rem; text-align: left"> {{ holiday_message.holiday_message|safe }} </div>
                         <div>
                             <form method="POST" action="{% url 'articleapp:holiday_message_delete' holiday_message.id %}">
                                 {% csrf_token %}

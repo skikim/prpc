@@ -84,6 +84,9 @@
         p, span, div, h1, h2, h3, h4, h5, h6, li, td, th, label, input, textarea, select {
             color: #1f2937 !important;
         }
+        .holiday-html, .holiday-html * {
+            color: inherit;
+        }
         
         /* Exception for elements that should remain white */
         .hero-section, .hero-section *, .footer-modern, .footer-modern * {
@@ -920,5 +923,20 @@
             }
         }
     </style>
-
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('.holiday-html [style]').forEach(function(el) {
+                if (el.style.color) {
+                    el.style.setProperty('color', el.style.color, 'important');
+                    el.style.setProperty('-webkit-text-fill-color', el.style.color, 'important');
+                }
+                if (el.style.backgroundColor) {
+                    el.style.setProperty('background-color', el.style.backgroundColor, 'important');
+                }
+                if (el.style.fontSize) {
+                    el.style.setProperty('font-size', el.style.fontSize, 'important');
+                }
+            });
+        });
+    </script>
 </head>

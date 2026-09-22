@@ -299,7 +299,7 @@
                     <div class="alert-card-content">
                         <h6 class="alert-card-title">병원 공지사항</h6>
                         {% for holiday_message in holiday_messages %}
-                            <div class="alert-card-text">{{ holiday_message.holiday_message|safe }}</div>
+                            <div class="alert-card-text holiday-html">{{ holiday_message.holiday_message|safe }}</div>
                         {% endfor %}
                     </div>
                 </div>
