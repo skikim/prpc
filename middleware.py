@@ -1,5 +1,6 @@
 from django.shortcuts import redirect
 from profileapp.models import Profile
+from profileapp.utils import is_tablet_user
 
 
 class CheckProfileMiddleware:
@@ -14,4 +15,23 @@ class CheckProfileMiddleware:
                     return redirect('profileapp:create')
             except Profile.DoesNotExist:
                 return redirect('profileapp:create')
+        return self.get_response(request)
+
+
+class TabletKioskMiddleware:
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def __call__(self, request):
+        user = getattr(request, 'user', None)
+        if user and is_tablet_user(user):
+            path = request.path
+            if not (
+                path.startswith('/supers/tablet/')
+                or path.startswith('/supers/tablet2/')
+                or path.startswith('/supers/tablet3/')
+                or path.startswith('/supers/waiting_pt/')
+                or path.startswith('/static/')
+            ):
+                return redirect('superapp:tablet')
         return self.get_response(request)

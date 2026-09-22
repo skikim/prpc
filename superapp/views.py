@@ -4,14 +4,26 @@ from dateutil.parser import parse
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.db.models import Q
-from django.http import HttpResponse, HttpResponseForbidden
+from django.http import HttpResponse, HttpResponseForbidden, JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse, reverse_lazy
 from django.utils.decorators import method_decorator
 from django.views.generic import DetailView, DeleteView
 
 from bookingapp.decorators import booking_ownership_required
-from bookingapp.models import Booking
+from bookingapp.models import Booking, BOOKING_TIME
+from profileapp.utils import is_tablet_user
+from superapp.utils import send_discord_message
+from articleapp.models import WaitingOverride, WaitingPatient
+from articleapp.waiting_utils import (
+    MAX_WAITING,
+    current_waiting_period,
+    period_label,
+    sync_waiting_count,
+    waiting_board,
+    waiting_count,
+    waiting_gate,
+)
 import requests
 from noteapp.models import Note
 import os, environ
@@ -724,4 +736,301 @@ def unblock_online_bookings(request):
 #         Booking(booking_date=booking_date, booking_time=booking_time, booking_status=booking_status).save()
 #         return redirect(reverse('bookingapp:detail', kwargs={'pk': booking.user.pk}))
 #     return render(request, 'bookingapp/delete.html', {'booking' : booking})
+
+
+TABLET_HIDDEN_TIMES = {'10:20', '11:05', '11:50', '15:20', '16:05', '16:50', '19:05', '19:50'}
+
+
+def tablet_time_kind(weekday, time_value):
+    if time_value in TABLET_HIDDEN_TIMES:
+        return None
+    if weekday == 6:
+        return None
+    if weekday == 5:
+        if '09:20' <= time_value <= '12:30':
+            return 'slot'
+        return None
+    if weekday == 2:
+        if '14:20' <= time_value <= '20:05':
+            return 'slot'
+        return None
+    if time_value == '13:00':
+        return 'lunch'
+    if '09:20' <= time_value <= '17:30':
+        return 'slot'
+    return None
+
+
+def _tablet_page(request, days, page_url_name):
+    if not is_tablet_user(request.user) and not request.user.is_superuser:
+        return redirect('articleapp:index')
+
+    target_date = datetime.date.today() + timedelta(days=days)
+    target_date_str = target_date.strftime('%Y-%m-%d')
+    weekday_names = ['월', '화', '수', '목', '금', '토', '일']
+
+    if request.method == 'POST':
+        booking_date = request.POST.get('date')
+        booking_time = request.POST.get('time')
+        if booking_date != target_date_str:
+            messages.error(request, '선택할 수 있는 날짜가 아닙니다.')
+        elif tablet_time_kind(target_date.weekday(), booking_time) != 'slot':
+            messages.error(request, '선택할 수 없는 시간입니다. 다른 시간을 선택해 주세요.')
+        elif Booking.objects.filter(booking_status='선택중').exists():
+            messages.error(request, '이미 선택된 시간이 있습니다. 직원이 처리한 뒤 다시 선택해 주세요.')
+        else:
+            slot = Booking.objects.filter(booking_date=booking_date, booking_time=booking_time).first()
+            if slot is None or slot.booking_status != '예약가능':
+                messages.error(request, '선택할 수 없는 시간입니다. 다른 시간을 선택해 주세요.')
+            else:
+                slot.delete()
+                Booking(booking_date=booking_date, booking_time=booking_time, booking_status='선택중').save()
+                request.session['tablet_selected'] = {'date': booking_date, 'time': booking_time}
+        return redirect(page_url_name)
+
+    time_rows = []
+    weekday = target_date.weekday()
+    for time_value, label in BOOKING_TIME:
+        kind = tablet_time_kind(weekday, time_value)
+        if kind is None:
+            continue
+        time_rows.append({
+            'time': time_value,
+            'label': '점심시간' if time_value == '13:00' else time_value,
+            'kind': kind,
+        })
+
+    inform_today = Booking.objects.filter(booking_date=target_date_str)
+    waiting_slot = Booking.objects.filter(booking_status='선택중').first()
+    context = {
+        'inform_today': inform_today,
+        'target_date': target_date_str,
+        'target_weekday': weekday_names[target_date.weekday()],
+        'time_rows': time_rows,
+        'has_selection': waiting_slot is not None,
+        'selected_date': waiting_slot.booking_date.strftime('%Y-%m-%d') if waiting_slot else '',
+        'selected_time': waiting_slot.booking_time if waiting_slot else '',
+        'tablet_page_url': reverse(page_url_name),
+        'tablet_days': days,
+    }
+    return render(request, 'superapp/tablet.html', context)
+
+
+@login_required
+def tablet_booking(request):
+    return _tablet_page(request, 14, 'superapp:tablet')
+
+
+@login_required
+def tablet_booking2(request):
+    return _tablet_page(request, 21, 'superapp:tablet2')
+
+
+@login_required
+def tablet_booking3(request):
+    return _tablet_page(request, 28, 'superapp:tablet3')
+
+
+@login_required
+def tablet_status(request):
+    if not is_tablet_user(request.user) and not request.user.is_superuser:
+        return JsonResponse({'state': 'forbidden'}, status=403)
+    booking_date = request.GET.get('date')
+    booking_time = request.GET.get('time')
+    if booking_date and booking_time:
+        slot = Booking.objects.filter(booking_date=booking_date, booking_time=booking_time).first()
+        if slot is None:
+            return JsonResponse({'state': 'cleared'})
+        if slot.booking_status == '선택중':
+            return JsonResponse({'state': 'waiting'})
+        if slot.booking_status == '예약승인':
+            return JsonResponse({'state': 'approved'})
+        return JsonResponse({'state': 'cleared'})
+    if Booking.objects.filter(booking_status='선택중').exists():
+        return JsonResponse({'state': 'waiting'})
+    return JsonResponse({'state': 'idle'})
+
+
+@login_required
+def tablet_slots(request):
+    if not is_tablet_user(request.user) and not request.user.is_superuser:
+        return JsonResponse({}, status=403)
+    try:
+        days = int(request.GET.get('days', 14))
+    except (TypeError, ValueError):
+        days = 14
+    if days not in (14, 21, 28):
+        days = 14
+    target_date = datetime.date.today() + timedelta(days=days)
+    bookings = Booking.objects.filter(booking_date=target_date)
+    return JsonResponse({
+        'date': target_date.strftime('%Y-%m-%d'),
+        'slots': {item.booking_time: item.booking_status for item in bookings},
+    })
+
+
+@login_required
+def tablet_pending(request):
+    if not request.user.is_superuser:
+        return JsonResponse({'slots': []}, status=403)
+    slots = Booking.objects.filter(booking_status='선택중').values('booking_date', 'booking_time')
+    return JsonResponse({
+        'slots': [
+            {'date': item['booking_date'].strftime('%Y-%m-%d'), 'time': item['booking_time']}
+            for item in slots
+        ]
+    })
+
+
+def _tablet_waiting_allowed(user):
+    return is_tablet_user(user) or user.is_superuser
+
+
+@login_required
+def waiting_pt(request):
+    if not _tablet_waiting_allowed(request.user):
+        return redirect('articleapp:index')
+
+    today = datetime.date.today()
+    gate = waiting_gate()
+    period = gate['period']
+    count = 0
+    if period:
+        count = sync_waiting_count(today, period)
+
+    if request.method == 'POST':
+        if not gate['can_input']:
+            messages.error(request, gate['message'].replace('\n', ' '))
+            return redirect('superapp:waiting_pt')
+        if count >= MAX_WAITING:
+            return redirect('superapp:waiting_pt')
+        real_name = (request.POST.get('real_name') or '').strip()
+        birth_date = (request.POST.get('birth_date') or '').strip()
+        if len(real_name) < 2:
+            messages.error(request, '이름을 입력해 주세요.')
+            return redirect('superapp:waiting_pt')
+        if len(birth_date) != 8 or not birth_date.isdigit():
+            messages.error(request, '생년월일 8자리를 입력해 주세요.')
+            return redirect('superapp:waiting_pt')
+        year = int(birth_date[:4])
+        if year < 1910 or year > datetime.date.today().year:
+            messages.error(request, '생년월일을 다시 확인해 주세요.')
+            return redirect('superapp:waiting_pt')
+        exists = WaitingPatient.objects.filter(
+            visit_date=today,
+            period=period,
+            real_name=real_name,
+            birth_date=birth_date,
+        ).exists()
+        if exists:
+            messages.error(request, '이미 접수되었습니다.')
+            return redirect('superapp:waiting_pt')
+        WaitingPatient.objects.create(
+            real_name=real_name,
+            birth_date=birth_date,
+            visit_date=today,
+            period=period,
+        )
+        count = sync_waiting_count(today, period)
+        send_discord_message(f"선착순 대기 환자수 : {count}명")
+        return redirect(reverse('superapp:waiting_pt') + '?done=' + str(count))
+
+    context = {
+        'period': period,
+        'period_label': period_label(period),
+        'count': count,
+        'max_waiting': MAX_WAITING,
+        'closed': bool(period and count >= MAX_WAITING),
+        'can_input': bool(gate['can_input'] and count < MAX_WAITING),
+        'gate_message': gate['message'],
+        'done': request.GET.get('done'),
+        'board': waiting_board(today, period) if period else [],
+    }
+    return render(request, 'superapp/waiting_pt.html', context)
+
+
+@login_required
+def waiting_pt_status(request):
+    if not _tablet_waiting_allowed(request.user):
+        return JsonResponse({}, status=403)
+    today = datetime.date.today()
+    gate = waiting_gate()
+    period = gate['period']
+    count = waiting_count(today, period) if period else 0
+    return JsonResponse({
+        'period': period or '',
+        'period_label': period_label(period),
+        'count': count,
+        'closed': bool(period and count >= MAX_WAITING),
+        'can_input': bool(gate['can_input'] and count < MAX_WAITING),
+        'message': gate['message'],
+        'board': waiting_board(today, period) if period else [],
+    })
+
+
+@login_required
+def waiting_list(request):
+    if not request.user.is_superuser:
+        return redirect('articleapp:index')
+    today = datetime.date.today()
+    tomorrow = today + timedelta(days=1)
+    if request.method == 'POST':
+        override_day = request.POST.get('override_day')
+        override_mode = request.POST.get('override_mode')
+        if override_day in ('today', 'tomorrow') and override_mode in ('open', 'closed', 'clear'):
+            target = today if override_day == 'today' else tomorrow
+            if override_mode == 'clear':
+                WaitingOverride.objects.filter(visit_date=target).delete()
+            else:
+                WaitingOverride.objects.update_or_create(
+                    visit_date=target,
+                    defaults={'mode': override_mode},
+                )
+            return redirect('superapp:waiting_list')
+        patient_id = request.POST.get('patient_id')
+        patient = WaitingPatient.objects.filter(pk=patient_id, visit_date=today).first()
+        if patient:
+            period = patient.period
+            patient.delete()
+            count = sync_waiting_count(today, period)
+            send_discord_message(f"선착순 대기 환자수 : {count}명")
+        return redirect('superapp:waiting_list')
+    patients = WaitingPatient.objects.filter(visit_date=today).order_by('created_at')
+    overrides = {
+        item.visit_date: item.mode
+        for item in WaitingOverride.objects.filter(visit_date__in=[today, tomorrow])
+    }
+    context = {
+        'today': today,
+        'tomorrow': tomorrow,
+        'am_patients': patients.filter(period='am'),
+        'pm_patients': patients.filter(period='pm'),
+        'period': current_waiting_period(),
+        'period_label': period_label(current_waiting_period()),
+        'today_override': overrides.get(today),
+        'tomorrow_override': overrides.get(tomorrow),
+    }
+    return render(request, 'superapp/waiting_list.html', context)
+
+
+def _waiting_list_payload(today):
+    patients = WaitingPatient.objects.filter(visit_date=today).order_by('created_at')
+    def rows(period):
+        return [
+            {
+                'id': item.id,
+                'name': item.real_name,
+                'birth': item.birth_date,
+                'time': item.created_at.strftime('%H:%M'),
+            }
+            for item in patients if item.period == period
+        ]
+    return {'am': rows('am'), 'pm': rows('pm')}
+
+
+@login_required
+def waiting_list_status(request):
+    if not request.user.is_superuser:
+        return JsonResponse({}, status=403)
+    return JsonResponse(_waiting_list_payload(datetime.date.today()))
 

@@ -1,0 +1,366 @@
+{% extends 'base.html' %}
+{% load bootstrap5 %}
+
+{% block content %}
+<style>
+    .footer-modern, .navbar-modern { display: none !important; }
+    html, body { height: 100%; overflow: hidden; background: #f8fafc; }
+    .wait-wrap {
+        width: 100%;
+        height: 100dvh;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        box-sizing: border-box;
+    }
+    .wait-top {
+        flex: 0 0 38%;
+        background: linear-gradient(160deg, #2563eb 0%, #0ea5a4 100%);
+        color: #fff;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 1.2rem 1rem 1rem;
+    }
+    .wait-top h1, .wait-top p, .wait-top span, .wait-count-label, .wait-count-num, .wait-count-max {
+        color: #fff !important;
+        -webkit-text-fill-color: #fff !important;
+    }
+    .wait-top h1 {
+        font-size: 1.7rem;
+        font-weight: 800;
+        margin: 0 0 0.4rem;
+    }
+    .wait-count { text-align: center; }
+    .wait-count-label {
+        display: block;
+        font-size: 1.15rem;
+        font-weight: 700;
+        opacity: 0.9;
+        margin-bottom: 0.1rem;
+    }
+    .wait-count-num {
+        font-size: 6.4rem;
+        font-weight: 800;
+        line-height: 0.9;
+    }
+    .wait-count-max {
+        font-size: 2rem;
+        font-weight: 700;
+        opacity: 0.8;
+        margin-left: 0.15rem;
+    }
+    .wait-warn {
+        flex: 0 0 auto;
+        text-align: center;
+        font-size: 1.2rem;
+        font-weight: 800;
+        color: #9a3412 !important;
+        -webkit-text-fill-color: #9a3412 !important;
+        background: #ffedd5;
+        margin: 0;
+        padding: 0.7rem 1rem;
+        line-height: 1.35;
+        border: none;
+    }
+    .wait-bottom {
+        flex: 1;
+        min-height: 0;
+        background: #fff;
+        padding: 1.1rem 1.8rem 1.3rem;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    .wait-label { font-size: 1.15rem; font-weight: 800; margin: 0.85rem 0 0.35rem; color: #334155; }
+    .wait-input {
+        width: 100%;
+        font-size: 2.05rem;
+        padding: 0.7rem 0.9rem;
+        text-align: center;
+        border: none;
+        border-radius: 14px;
+        height: 4.5rem;
+        box-sizing: border-box;
+        background: #f1f5f9;
+        color: #0f172a;
+    }
+    .wait-input:focus {
+        outline: none;
+        background: #eff6ff;
+        box-shadow: inset 0 0 0 2px #2563eb;
+    }
+    .wait-birth { letter-spacing: 0.18rem; font-size: 2.15rem; font-weight: 800; height: 4.5rem; }
+    .wait-birth::placeholder,
+    .wait-birth::-webkit-input-placeholder {
+        color: #94a3b8 !important;
+        -webkit-text-fill-color: #94a3b8 !important;
+        font-weight: 400;
+        opacity: 1;
+    }
+    #wait-form {
+        width: 86%;
+        max-width: 640px;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        min-height: 0;
+    }
+    .wait-submit {
+        width: 100%;
+        height: 3.7rem;
+        font-size: 1.4rem;
+        font-weight: 800;
+        border: none;
+        border-radius: 14px;
+        margin-top: 6.1rem;
+        background: #2563eb;
+        color: #fff !important;
+        -webkit-text-fill-color: #fff !important;
+    }
+    .wait-msg {
+        text-align: center;
+        font-size: 1.05rem;
+        padding: 0.4rem;
+        border-radius: 10px;
+        margin-bottom: 0.35rem;
+    }
+    .wait-closed {
+        text-align: center;
+        font-size: 2.4rem;
+        font-weight: 800;
+        padding: 4.5rem 0.5rem 1rem;
+        color: #1e3a8a !important;
+        -webkit-text-fill-color: #1e3a8a !important;
+        letter-spacing: -0.02em;
+    }
+    .wait-board {
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 0.45rem;
+        width: 86%;
+        max-width: 640px;
+        margin: 0 0 0.55rem;
+    }
+    .wait-board span {
+        background: #eff6ff;
+        color: #1d4ed8 !important;
+        -webkit-text-fill-color: #1d4ed8 !important;
+        font-size: 1.2rem;
+        font-weight: 800;
+        padding: 0.35rem 0.75rem;
+        border-radius: 999px;
+    }
+    .wait-board .empty {
+        background: #f8fafc;
+        color: #94a3b8 !important;
+        -webkit-text-fill-color: #94a3b8 !important;
+        font-weight: 700;
+    }
+    #wait-overlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        z-index: 2000;
+        background: rgba(22, 163, 74, 0.96);
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        padding: 2rem;
+    }
+    #wait-overlay.show { display: flex; }
+    #wait-overlay p {
+        color: #fff !important;
+        -webkit-text-fill-color: #fff !important;
+        font-size: 2.4rem;
+        font-weight: 800;
+        margin: 0;
+    }
+    #wait-confirm {
+        display: none;
+        position: fixed;
+        inset: 0;
+        z-index: 1900;
+        background: rgba(15, 23, 42, 0.55);
+        align-items: center;
+        justify-content: center;
+        padding: 1.2rem;
+    }
+    #wait-confirm.show { display: flex; }
+    .wait-confirm-box {
+        background: #fff;
+        border-radius: 1.2rem;
+        padding: 2rem 1.4rem;
+        width: 100%;
+        max-width: 520px;
+        text-align: center;
+    }
+    .wait-confirm-box h2 { font-size: 1.8rem; font-weight: 800; margin-bottom: 1rem; }
+    .wait-confirm-box p { font-size: 1.8rem; font-weight: 700; margin: 0.4rem 0; }
+    .wait-confirm-actions { display: flex; gap: 0.8rem; margin-top: 1.6rem; }
+    .wait-confirm-actions button {
+        flex: 1;
+        height: 4.2rem;
+        font-size: 1.4rem;
+        font-weight: 800;
+        border: none;
+        border-radius: 12px;
+    }
+    .wait-btn-no { background: #e5e7eb; }
+    .wait-btn-yes {
+        background: #2563eb;
+        color: #fff !important;
+        -webkit-text-fill-color: #fff !important;
+    }
+</style>
+<div id="wait-overlay"><p id="wait-overlay-text"></p></div>
+<div id="wait-confirm">
+    <div class="wait-confirm-box">
+        <h2>본인 정보가 맞습니까?</h2>
+        <p id="confirm-name"></p>
+        <p id="confirm-birth"></p>
+        <div class="wait-confirm-actions">
+            <button type="button" class="wait-btn-no" onclick="hideConfirm()">다시 입력</button>
+            <button type="button" class="wait-btn-yes" onclick="submitWait()">맞습니다</button>
+        </div>
+    </div>
+</div>
+<div class="wait-wrap">
+    <div class="wait-top">
+        <h1>선착순 대기 접수</h1>
+        {% if period %}
+        <div class="wait-count" id="wait-count">
+            <span class="wait-count-label">{{ period_label }} 대기</span>
+            <span class="wait-count-num">{{ count }}</span><span class="wait-count-max">/ {{ max_waiting }}</span>
+        </div>
+        {% endif %}
+    </div>
+    <p class="wait-warn">본인만 입력하세요. 대신 접수 · 여러 명 입력 불가</p>
+    <div class="wait-bottom">
+        {% if messages %}
+            {% for message in messages %}
+            <div class="wait-msg alert-danger">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+        {% if not can_input %}
+            {% if period and closed %}
+            <div class="wait-board" id="wait-board">
+                {% for item in board %}
+                <span>{{ item.n }}번 {{ item.name }}</span>
+                {% empty %}
+                <span class="empty">아직 대기자가 없습니다</span>
+                {% endfor %}
+            </div>
+            <div class="wait-closed">{{ period_label }} 선착순이 마감되었습니다.</div>
+            {% else %}
+            <div class="wait-closed">{{ gate_message|linebreaksbr }}</div>
+            {% endif %}
+        {% else %}
+            <div class="wait-board" id="wait-board">
+                {% for item in board %}
+                <span>{{ item.n }}번 {{ item.name }}</span>
+                {% empty %}
+                <span class="empty">아직 대기자가 없습니다</span>
+                {% endfor %}
+            </div>
+            {% if closed %}
+            <div class="wait-closed">{{ period_label }} 선착순이 마감되었습니다.</div>
+            {% else %}
+            <form method="post" action="{% url 'superapp:waiting_pt' %}" id="wait-form">
+                {% csrf_token %}
+                <div class="wait-label">이름</div>
+                <input class="wait-input" type="text" name="real_name" id="real_name" maxlength="16" autocomplete="off" inputmode="text">
+                <div class="wait-label">생년월일 8자리</div>
+                <input class="wait-input wait-birth" type="text" name="birth_date" id="birth_date" maxlength="8" inputmode="numeric" pattern="[0-9]*" placeholder="19620428" autocomplete="off">
+                <button type="button" class="wait-submit" onclick="showConfirm()">확인</button>
+            </form>
+            {% endif %}
+        {% endif %}
+    </div>
+</div>
+<script>
+    var birthEl = document.getElementById('birth_date');
+    if (birthEl) {
+        birthEl.addEventListener('input', function() {
+            this.value = this.value.replace(/\D/g, '').slice(0, 8);
+        });
+    }
+    function formatBirth(value) {
+        if (value.length !== 8) return value;
+        return value.slice(0, 4) + '년 ' + value.slice(4, 6) + '월 ' + value.slice(6, 8) + '일';
+    }
+    function showConfirm() {
+        var name = (document.getElementById('real_name').value || '').trim();
+        var birth = document.getElementById('birth_date').value || '';
+        if (name.length < 2) {
+            alert('이름을 입력해 주세요.');
+            return;
+        }
+        if (birth.length !== 8) {
+            alert('생년월일 8자리를 입력해 주세요.');
+            return;
+        }
+        document.getElementById('confirm-name').innerText = '이름 : ' + name;
+        document.getElementById('confirm-birth').innerText = '생년월일 : ' + formatBirth(birth);
+        document.getElementById('wait-confirm').classList.add('show');
+    }
+    function hideConfirm() {
+        document.getElementById('wait-confirm').classList.remove('show');
+    }
+    function submitWait() {
+        document.getElementById('wait-form').submit();
+    }
+    var done = new URLSearchParams(window.location.search).get('done');
+    if (done) {
+        document.getElementById('wait-overlay-text').innerText = '접수되었습니다.\n' + done + '번째입니다.';
+        document.getElementById('wait-overlay').classList.add('show');
+        setTimeout(function() {
+            location.href = "{% url 'superapp:waiting_pt' %}";
+        }, 2500);
+    }
+    var pageClosed = {{ closed|yesno:"true,false" }};
+    var pagePeriod = '{{ period|default:"" }}';
+    var pageCanInput = {{ can_input|yesno:"true,false" }};
+    function pollWaiting() {
+        if (done || document.getElementById('wait-overlay').classList.contains('show')) {
+            return;
+        }
+        if (document.hidden) {
+            setTimeout(pollWaiting, 5000);
+            return;
+        }
+        fetch("{% url 'superapp:waiting_pt_status' %}", {credentials: 'same-origin'})
+            .then(function(response) { return response.json(); })
+            .then(function(data) {
+                if ((data.period || '') !== pagePeriod || data.closed !== pageClosed || data.can_input !== pageCanInput) {
+                    location.href = "{% url 'superapp:waiting_pt' %}";
+                    return;
+                }
+                var countEl = document.getElementById('wait-count');
+                if (countEl && data.period) {
+                    var label = data.closed ? data.period_label : (data.period_label + ' 대기');
+                    countEl.innerHTML = '<span class="wait-count-label">' + label + '</span><span class="wait-count-num">' + data.count + '</span><span class="wait-count-max">/ {{ max_waiting }}</span>';
+                }
+                var boardEl = document.getElementById('wait-board');
+                if (boardEl) {
+                    var items = data.board || [];
+                    if (!items.length) {
+                        boardEl.innerHTML = '<span class="empty">아직 대기자가 없습니다</span>';
+                    } else {
+                        boardEl.innerHTML = items.map(function(item) {
+                            return '<span>' + item.n + '번 ' + item.name + '</span>';
+                        }).join('');
+                    }
+                }
+                setTimeout(pollWaiting, 5000);
+            })
+            .catch(function() { setTimeout(pollWaiting, 8000); });
+    }
+    if (!done) {
+        pollWaiting();
+    }
+</script>
+{% endblock %}

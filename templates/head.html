@@ -5,6 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" charset="UTF-8">
     <title>푸른마취통증의학과</title>
     <link rel="icon" type="image/x-icon" href = "{% static 'favicon.ico' %}" />
+    {% if request.path == '/supers/waiting_pt/' %}
+    <link rel="manifest" href="{% static 'waiting-kiosk.webmanifest' %}">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="대기접수">
+    <meta name="theme-color" content="#2563eb">
+    {% endif %}
         <!-- Core theme CSS (includes Bootstrap)-->
     <link href = "{% static 'styles.css' %}" rel="stylesheet" />
     <!-- Google Fonts -->

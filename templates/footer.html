@@ -27,7 +27,7 @@
             
             
             <!-- Admin Functions Only -->
-            {% if user.is_superuser %}
+            {% if user.is_superuser and not is_tablet_user %}
                 <div class="col-lg-6 col-md-12 mb-4">
                     <div class="footer-section">
                         <div class="footer-admin">
@@ -43,6 +43,9 @@
                                 </a>
                                 <a href="{% url 'articleapp:waiting_update' pk=1 %}" class="admin-link-item">
                                     <i class="fas fa-users me-2"></i>대기환자수 입력
+                                </a>
+                                <a href="{% url 'superapp:waiting_list' %}" class="admin-link-item">
+                                    <i class="fas fa-clipboard-list me-2"></i>대기환자 명단
                                 </a>
                                 <a href="{% url 'articleapp:holiday_create' %}" class="admin-link-item">
                                     <i class="fas fa-calendar-times me-2"></i>휴일 생성
@@ -63,18 +66,11 @@
         <!-- Bottom Bar -->
         <div class="footer-bottom">
             <div class="row align-items-center">
-                <div class="col-md-8">
+                <div class="col-md-12">
                     <p class="copyright-text mb-0">
                         <i class="fas fa-copyright me-1"></i>
                         since 2010.10.11 푸른 마취통증의학과의원. All rights reserved.
                     </p>
-                </div>
-                <div class="col-md-4 text-md-end">
-                    <div class="footer-powered">
-                        <small class="text-muted">
-                            <i class="fas fa-code me-1"></i>Powered by Django
-                        </small>
-                    </div>
                 </div>
             </div>
         </div>

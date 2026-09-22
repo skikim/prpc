@@ -58,6 +58,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'middleware.CheckProfileMiddleware',
+    'middleware.TabletKioskMiddleware',
     'logapp.middleware.LoggingMiddleware',
 ]
 
@@ -75,6 +76,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'profileapp.context_processors.tablet_user',
             ],
         },
     },

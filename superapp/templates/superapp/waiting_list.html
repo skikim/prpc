@@ -1,0 +1,110 @@
+{% extends 'base.html' %}
+{% load bootstrap5 %}
+
+{% block content %}
+<div class="container" style="margin-top: 6rem; margin-bottom: 3rem; max-width: 900px;">
+    <h2 class="mb-3">오늘 대기환자 명단</h2>
+    <p class="mb-4">{{ today }} {% if period_label %}(현재 {{ period_label }}){% endif %}</p>
+
+    <div class="card mb-4">
+        <div class="card-body">
+            <h5 class="card-title">접수 열기 / 닫기</h5>
+            <p class="mb-2">
+                오늘:
+                {% if today_override == 'open' %}강제 열림
+                {% elif today_override == 'closed' %}강제 닫힘
+                {% else %}요일 기본{% endif %}
+            </p>
+            <form method="post" class="d-inline">
+                {% csrf_token %}
+                <input type="hidden" name="override_day" value="today">
+                <button class="btn btn-success btn-sm" name="override_mode" value="open">오늘 열기</button>
+                <button class="btn btn-danger btn-sm" name="override_mode" value="closed">오늘 닫기</button>
+                <button class="btn btn-outline-secondary btn-sm" name="override_mode" value="clear">오늘 해제</button>
+            </form>
+            <hr>
+            <p class="mb-2">
+                내일 ({{ tomorrow }}):
+                {% if tomorrow_override == 'open' %}강제 열림
+                {% elif tomorrow_override == 'closed' %}강제 닫힘
+                {% else %}요일 기본{% endif %}
+            </p>
+            <form method="post" class="d-inline">
+                {% csrf_token %}
+                <input type="hidden" name="override_day" value="tomorrow">
+                <button class="btn btn-success btn-sm" name="override_mode" value="open">내일 열기</button>
+                <button class="btn btn-danger btn-sm" name="override_mode" value="closed">내일 닫기</button>
+                <button class="btn btn-outline-secondary btn-sm" name="override_mode" value="clear">내일 해제</button>
+            </form>
+        </div>
+    </div>
+
+    <h4 class="mt-4">오전</h4>
+    <table class="table table-bordered table-striped">
+        <tr><th>순서</th><th>이름</th><th>생년월일</th><th>시각</th><th></th></tr>
+        {% for p in am_patients %}
+        <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>{{ p.real_name }}</td>
+            <td>{{ p.birth_date }}</td>
+            <td>{{ p.created_at|date:"H:i" }}</td>
+            <td>
+                <form method="post" onsubmit="return confirm('이 대기 접수를 삭제할까요?');">
+                    {% csrf_token %}
+                    <input type="hidden" name="patient_id" value="{{ p.id }}">
+                    <button type="submit" class="btn btn-outline-danger btn-sm">삭제</button>
+                </form>
+            </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="5">오전 대기 환자가 없습니다.</td></tr>
+        {% endfor %}
+    </table>
+
+    <h4 class="mt-4">오후</h4>
+    <table class="table table-bordered table-striped">
+        <tr><th>순서</th><th>이름</th><th>생년월일</th><th>시각</th><th></th></tr>
+        {% for p in pm_patients %}
+        <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>{{ p.real_name }}</td>
+            <td>{{ p.birth_date }}</td>
+            <td>{{ p.created_at|date:"H:i" }}</td>
+            <td>
+                <form method="post" onsubmit="return confirm('이 대기 접수를 삭제할까요?');">
+                    {% csrf_token %}
+                    <input type="hidden" name="patient_id" value="{{ p.id }}">
+                    <button type="submit" class="btn btn-outline-danger btn-sm">삭제</button>
+                </form>
+            </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="5">오후 대기 환자가 없습니다.</td></tr>
+        {% endfor %}
+    </table>
+</div>
+<script>
+    (function() {
+        var lastKey = null;
+        function pollList() {
+            if (document.hidden) {
+                setTimeout(pollList, 5000);
+                return;
+            }
+            fetch("{% url 'superapp:waiting_list_status' %}", {credentials: 'same-origin'})
+                .then(function(response) { return response.json(); })
+                .then(function(data) {
+                    var key = JSON.stringify(data);
+                    if (lastKey !== null && key !== lastKey) {
+                        location.reload();
+                        return;
+                    }
+                    lastKey = key;
+                    setTimeout(pollList, 5000);
+                })
+                .catch(function() { setTimeout(pollList, 8000); });
+        }
+        pollList();
+    })();
+</script>
+{% endblock %}

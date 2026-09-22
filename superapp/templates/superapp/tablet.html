@@ -1,0 +1,319 @@
+{% extends 'base.html' %}
+{% load bootstrap5 %}
+
+{% block content %}
+<style>
+    #table td {
+        text-align: center;
+        vertical-align: middle;
+        height: 2.4rem;
+    }
+    #tablet-overlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        z-index: 2000;
+        background: rgba(16, 185, 129, 0.95);
+        color: #fff;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        padding: 2rem;
+    }
+    #tablet-overlay.show {
+        display: flex;
+    }
+    #tablet-overlay p {
+        color: #fff !important;
+        -webkit-text-fill-color: #fff !important;
+        font-size: 2rem;
+        font-weight: 700;
+        margin: 0;
+    }
+    @keyframes tablet-sparkle {
+        0%, 100% {
+            box-shadow: 0 0 0 3px #111, 0 0 8px 2px #fff, 0 0 18px 6px #fbbf24;
+        }
+        50% {
+            box-shadow: 0 0 0 3px #111, 0 0 16px 8px #fff, 0 0 28px 12px #f59e0b;
+        }
+    }
+    @keyframes tablet-sparkle-star {
+        0% { opacity: 0.3; transform: scale(0.8) rotate(0deg); }
+        50% { opacity: 1; transform: scale(1.2) rotate(20deg); }
+        100% { opacity: 0.3; transform: scale(0.8) rotate(0deg); }
+    }
+    .slot-sparkle {
+        outline: 3px solid #111 !important;
+        animation: tablet-sparkle 0.35s ease-in-out infinite;
+        position: relative;
+        z-index: 5;
+    }
+    .slot-sparkle::before,
+    .slot-sparkle::after {
+        content: '✦';
+        position: absolute;
+        top: -0.7rem;
+        color: #fbbf24 !important;
+        -webkit-text-fill-color: #fbbf24 !important;
+        font-size: 1rem;
+        animation: tablet-sparkle-star 0.45s ease-in-out infinite;
+        pointer-events: none;
+    }
+    .slot-sparkle::before { left: 0.2rem; }
+    .slot-sparkle::after { right: 0.2rem; animation-delay: 0.2s; }
+    .tablet-notice {
+        color: #fff !important;
+        -webkit-text-fill-color: #fff !important;
+        font-size: 1.25rem;
+        font-weight: 800;
+        margin: 1rem 0 0;
+    }
+    .tablet-notice-bar {
+        background: #fff7ed;
+        border: 2px solid #f59e0b;
+        color: #9a3412 !important;
+        -webkit-text-fill-color: #9a3412 !important;
+        font-size: 1.2rem;
+        font-weight: 800;
+        text-align: center;
+        border-radius: 12px;
+        padding: 0.85rem 1rem;
+        margin-bottom: 1rem;
+    }
+</style>
+<div id="tablet-overlay"><p id="tablet-overlay-text"></p></div>
+    <div>
+        <div class="hero-section" style="padding: 2rem 0; margin-top: 4rem; margin-bottom: 2rem;">
+            <div class="container hero-content text-center">
+                <div class="icon-feature mx-auto mb-3">
+                    <i class="fas fa-calendar-plus fa-lg"></i>
+                </div>
+                <h2 class="fw-bold mb-2" style="font-family: 'Noto Sans KR', sans-serif;">진료 예약</h2>
+                <p class="lead mb-0">원하는 시간을 선택하여 예약하세요</p>
+                <p class="tablet-notice">오늘 진료 받으신 분만 예약할 수 있습니다.</p>
+            </div>
+        </div>
+
+        <div class="container mb-3">
+            <div class="tablet-notice-bar">오늘 진료 받으신 분만 이용 가능합니다.</div>
+        </div>
+
+        <div class="container mb-3" id="tablet-banner">
+            {% if messages %}
+                {% for message in messages %}
+            <div class="alert text-center {% if message.tags == 'error' %}alert-danger{% else %}alert-success{% endif %}">{{ message }}</div>
+                {% endfor %}
+            {% elif has_selection %}
+            <div class="alert alert-success text-center">시간이 선택되었습니다. 직원을 기다려 주세요.</div>
+            {% endif %}
+        </div>
+
+        <form action="{{ tablet_page_url }}" method="post">
+            {% csrf_token %}
+            <input class="date" type="hidden" id="date" name="date" value="{{ target_date }}" required/>
+            <input class="time" type="hidden" id="time" name="time" value="" required/>
+
+            <div class="modal" id="modal_post" tabindex="-1">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">예약 확인</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <p id="booking_date" style="font-weight: bold; font-size: 1.2rem"></p>
+                            <p id="booking_time" style="font-weight: bold; font-size: 1.2rem"></p>
+                            <p style="color: darkred">- 아래 승인 단추를 누르면 선택한 시간이 직원에게 전달됩니다.</p>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
+                            <button type="submit" class="btn btn-primary">승인</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+
+        <div class="container mb-5" style="max-width: 520px;">
+            <table id="table" class="table table-striped table-bordered" style="width:100%; margin: 0 auto;">
+                <tr>
+                    <td id="r0c0"></td>
+                    <td id="r0c1">{{ target_date }}</td>
+                </tr>
+                <tr>
+                    <td id="r1c0"></td>
+                    <td id="r1c1">{{ target_weekday }}</td>
+                </tr>
+                {% if not time_rows %}
+                <tr>
+                    <td colspan="2">진료가 없는 날입니다.</td>
+                </tr>
+                {% endif %}
+                {% for row in time_rows %}
+                    {% if row.time == '17:45' %}
+                <tr>
+                    <td>야간진료</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>(수요일만)</td>
+                    <td></td>
+                </tr>
+                    {% endif %}
+                <tr>
+                    <td id="r{{ row.time }}c0">{{ row.label }}</td>
+                    {% if row.kind == 'slot' %}
+                    <td id="r{{ row.time }}c1" onclick="input_form(this.id)"></td>
+                    {% else %}
+                    <td id="r{{ row.time }}c1"></td>
+                    {% endif %}
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+    </div>
+    <script>
+        const hasSelection = {{ has_selection|yesno:"true,false" }};
+        function input_form(clicked_id){
+            let selected_time = clicked_id.substring(1, 6);
+            if (document.getElementById(clicked_id).innerHTML == '예약가능'){
+                if (hasSelection) {
+                    alert('이미 선택된 시간이 있습니다. 직원이 처리한 뒤 다시 선택해 주세요.');
+                    return;
+                }
+                var modal = new bootstrap.Modal(document.getElementById('modal_post'));
+                modal.show();
+                document.getElementById('date').value = '{{ target_date }}';
+                document.getElementById('time').value = selected_time;
+                document.getElementById('booking_date').innerHTML = '예약날짜 :  {{ target_date }} ({{ target_weekday }})';
+                document.getElementById('booking_time').innerHTML = '예약시간 :  ' + selected_time;
+            }
+        }
+        function input_objects(){
+            {% for inform in inform_today %}
+                var cell = document.getElementById('r{{ inform.booking_time }}c1');
+                if (cell) {
+                    {% if inform.booking_status == '예약가능' %}
+                        cell.style.backgroundColor = 'lightblue';
+                        cell.style.cursor = 'pointer';
+                        cell.innerHTML = '{{ inform.booking_status }}';
+                    {% elif inform.booking_status == '선택중' %}
+                        cell.style.backgroundColor = '#E9D5FF';
+                        cell.style.cursor = 'default';
+                        cell.innerHTML = '{{ inform.booking_status }}';
+                    {% elif inform.booking_status == '예약승인' %}
+                        cell.style.backgroundColor = '#FFE8F4';
+                        cell.style.cursor = 'default';
+                        cell.innerHTML = '예약승인';
+                    {% elif inform.booking_status == '예약요청' %}
+                        cell.style.backgroundColor = 'beige';
+                        cell.style.cursor = 'default';
+                        cell.innerHTML = '예약요청';
+                    {% endif %}
+                }
+            {% endfor %}
+        }
+        input_objects();
+        const selectedDate = '{{ selected_date }}';
+        const selectedTime = '{{ selected_time }}';
+        let finished = false;
+        function showOverlay(text) {
+            document.getElementById('tablet-overlay-text').innerText = text;
+            document.getElementById('tablet-overlay').classList.add('show');
+        }
+        function finishAndReload(text, highlightTime) {
+            if (finished) return;
+            finished = true;
+            showOverlay(text);
+            setTimeout(function() {
+                var next = "{{ tablet_page_url }}";
+                if (highlightTime) {
+                    next += '?highlight=' + encodeURIComponent(highlightTime);
+                }
+                location.href = next;
+            }, 2000);
+        }
+        function pollStatus() {
+            if (finished) return;
+            var url = "{% url 'superapp:tablet_status' %}?date=" + encodeURIComponent(selectedDate) + "&time=" + encodeURIComponent(selectedTime);
+            fetch(url)
+                .then(function(response) { return response.json(); })
+                .then(function(data) {
+                    if (data.state === 'approved') {
+                        finishAndReload('예약이 승인되었습니다.', selectedTime);
+                    } else if (data.state === 'cleared') {
+                        finishAndReload('선택이 취소되었습니다. 다시 선택해 주세요.');
+                    } else {
+                        setTimeout(pollStatus, 2000);
+                    }
+                })
+                .catch(function() { setTimeout(pollStatus, 3000); });
+        }
+        function paintCell(cell, status) {
+            if (!cell || cell.classList.contains('slot-sparkle')) return;
+            if (status === '예약가능') {
+                cell.style.backgroundColor = 'lightblue';
+                cell.style.cursor = 'pointer';
+                cell.innerHTML = '예약가능';
+            } else if (status === '선택중') {
+                cell.style.backgroundColor = '#E9D5FF';
+                cell.style.cursor = 'default';
+                cell.innerHTML = '선택중';
+            } else if (status === '예약승인') {
+                cell.style.backgroundColor = '#FFE8F4';
+                cell.style.cursor = 'default';
+                cell.innerHTML = '예약승인';
+            } else if (status === '예약요청') {
+                cell.style.backgroundColor = 'beige';
+                cell.style.cursor = 'default';
+                cell.innerHTML = '예약요청';
+            } else {
+                cell.style.backgroundColor = '';
+                cell.style.cursor = 'default';
+                cell.innerHTML = '';
+            }
+        }
+        function pollSlots() {
+            if (hasSelection || finished) return;
+            if (document.hidden) {
+                setTimeout(pollSlots, 5000);
+                return;
+            }
+            fetch("{% url 'superapp:tablet_slots' %}?days={{ tablet_days }}", {credentials: 'same-origin'})
+                .then(function(response) { return response.json(); })
+                .then(function(data) {
+                    if (data.date && data.date !== '{{ target_date }}') {
+                        location.href = "{{ tablet_page_url }}";
+                        return;
+                    }
+                    var slots = data.slots || {};
+                    var cells = document.querySelectorAll('#table td[id^="r"][id$="c1"]');
+                    for (var i = 0; i < cells.length; i++) {
+                        var time = cells[i].id.substring(1, 6);
+                        if (!/^\d{2}:\d{2}$/.test(time)) continue;
+                        paintCell(cells[i], slots[time] || '');
+                    }
+                    setTimeout(pollSlots, 5000);
+                })
+                .catch(function() { setTimeout(pollSlots, 8000); });
+        }
+        if (hasSelection) {
+            pollStatus();
+        } else {
+            pollSlots();
+        }
+        var highlightTime = new URLSearchParams(window.location.search).get('highlight');
+        if (highlightTime) {
+            var highlightCell = document.getElementById('r' + highlightTime + 'c1');
+            if (highlightCell) {
+                highlightCell.classList.add('slot-sparkle');
+                highlightCell.scrollIntoView({block: 'center'});
+                setTimeout(function() {
+                    highlightCell.classList.remove('slot-sparkle');
+                    history.replaceState({}, '', "{{ tablet_page_url }}");
+                }, 2000);
+            }
+        }
+    </script>
+{% endblock %}

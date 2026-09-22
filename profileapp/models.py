@@ -10,6 +10,7 @@ class Profile(models.Model):
     birth_date = models.CharField(max_length=10, null=True)
     phone_num = models.CharField(max_length=16, null=True)
     chart_num = models.CharField(max_length=10, null=True, unique=True, blank=True)
+    is_tablet_user = models.BooleanField(default=False)
 
     def __str__(self):
         return self.real_name

@@ -3,6 +3,9 @@
     <nav class="navbar navbar-expand-lg navbar-modern fixed-top" id="mainNav">
         {#    <nav class="navbar navbar-expand-lg bg-dark">#}
         <div class="container-fluid">
+            {% if is_tablet_user %}
+            <span class="navbar-brand">푸른통증의학과의원</span>
+            {% else %}
             <a class="navbar-brand" href="{% url 'home' %}">푸른통증의학과의원</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
@@ -89,6 +92,7 @@
                     {% endif %}
                 </ul>
             </div>
+            {% endif %}
         </div>
     </nav>
 

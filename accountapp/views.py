@@ -1,7 +1,7 @@
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.shortcuts import redirect
-from django.urls import reverse_lazy
+from django.urls import reverse, reverse_lazy
 from django.utils.decorators import method_decorator
 from django.views.generic import CreateView, DetailView, UpdateView, DeleteView, TemplateView, FormView
 
@@ -9,6 +9,7 @@ from accountapp.decorators import account_ownership_required
 from accountapp.forms import AccountUpdateForm, CreateUserForm
 from django.contrib.auth.views import LoginView
 from .forms import CustomAuthenticationForm
+from profileapp.utils import is_tablet_user
 # from .forms import CustomUserCreationForm
 
 
@@ -42,6 +43,11 @@ class AccountCreateView(CreateView):
 class CustomLoginView(LoginView):
     authentication_form = CustomAuthenticationForm
     template_name = 'accountapp/login.html'
+
+    def get_success_url(self):
+        if is_tablet_user(self.request.user):
+            return reverse('superapp:tablet')
+        return super().get_success_url()
 
 
 @method_decorator(account_ownership_required, 'get')

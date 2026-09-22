@@ -47,7 +47,7 @@ has_ownership = [
 
 @login_required
 def booking(request):
-    today_1 = datetime.datetime.today()
+    today_1 = datetime.datetime.now() - timedelta(hours=9)
     today_2 = today_1 + timedelta(days=1)
     today_3 = today_1 + timedelta(days=2)
     today_4 = today_1 + timedelta(days=3)
@@ -79,6 +79,9 @@ def booking(request):
         booking_status = '예약요청'
         # 요청한 날짜가 속한 주의 일요일~토요일 범위 계산
         booking_date_obj = datetime.datetime.strptime(booking_date, '%Y-%m-%d').date()
+        if booking_date_obj < datetime.date.today():
+            errors.append('지난 날짜는 예약할 수 없습니다.')
+            return render(request, 'bookingapp/post_write.html', {'errors': errors})
         # 일요일을 기준으로 주 시작 계산 (일요일=0, 월요일=1, ..., 토요일=6)
         days_since_sunday = (booking_date_obj.weekday() + 1) % 7
         week_start = booking_date_obj - timedelta(days=days_since_sunday)  # 해당 주 일요일
@@ -97,7 +100,7 @@ def booking(request):
         for wb in weekly_bookings:
             logger.info(f"  기존 예약: ID={wb.pk}, 날짜={wb.booking_date}, 시간={wb.booking_time}, 상태={wb.booking_status}")
         
-        if weekly_bookings.count() < 1:
+        if weekly_bookings.count() < 2:
             # 예약 차단 확인 로직 추가
             if is_booking_blocked(booking_date, booking_time):
                 logger.info(f"예약 차단됨 - 날짜/시간: {booking_date} {booking_time}")
@@ -120,14 +123,14 @@ def booking(request):
                 return render(request, 'bookingapp/post_write.html', {'errors': errors})
         else:
             logger.info(f"주1회 예약 제한 - 사용자: {user.username}, 이미 {weekly_bookings.count()}개의 예약 존재")
-            errors.append('온라인 예약은 주 1회만 가능합니다.')
+            errors.append('온라인 예약은 주 2회만 가능합니다.')
             return render(request, 'bookingapp/post_write.html', {'errors': errors})
     return render(request, 'bookingapp/create.html', context)
 
 
 @login_required
 def booking_2(request):
-    today_1 = datetime.datetime.today()
+    today_1 = datetime.datetime.now() - timedelta(hours=9)
     today_8 = today_1 + timedelta(days=7)
     today_9 = today_1 + timedelta(days=8)
     today_10 = today_1 + timedelta(days=9)
@@ -177,7 +180,7 @@ def booking_2(request):
         for wb in weekly_bookings_2:
             logger.info(f"  기존 예약: ID={wb.pk}, 날짜={wb.booking_date}, 시간={wb.booking_time}, 상태={wb.booking_status}")
 
-        if weekly_bookings_2.count() < 1:
+        if weekly_bookings_2.count() < 2:
             # 예약 차단 확인 로직 추가
             if is_booking_blocked(booking_date, booking_time):
                 logger.info(f"예약 차단됨 (두 번째) - 날짜/시간: {booking_date} {booking_time}")
@@ -201,7 +204,7 @@ def booking_2(request):
                 return render(request, 'bookingapp/post_write.html', {'errors': errors})
         else:
             logger.info(f"주1회 예약 제한 (두 번째) - 사용자: {user.username}, 이미 {weekly_bookings_2.count()}개의 예약 존재")
-            errors.append('온라인 예약은 주 1회만 가능합니다.')
+            errors.append('온라인 예약은 주 2회만 가능합니다.')
             return render(request, 'bookingapp/post_write.html', {'errors': errors})
     return render(request, 'bookingapp/create_2.html', context)
 

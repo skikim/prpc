@@ -1,0 +1,17 @@
+{
+  "name": "선착순 대기 접수",
+  "short_name": "대기접수",
+  "start_url": "/supers/waiting_pt/",
+  "scope": "/supers/waiting_pt/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#2563eb",
+  "theme_color": "#2563eb",
+  "icons": [
+    {
+      "src": "/static/favicon.ico",
+      "sizes": "48x48",
+      "type": "image/x-icon"
+    }
+  ]
+}

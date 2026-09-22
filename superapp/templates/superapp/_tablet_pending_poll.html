@@ -1,0 +1,39 @@
+<script>
+    (function() {
+        var pendingUrl = "{% url 'superapp:tablet_pending' %}";
+        function findCell(date, time) {
+            var table = document.getElementById('table') || document.getElementsByTagName('table')[0];
+            if (!table || !table.rows.length) return null;
+            var header = table.rows[0].cells;
+            for (var c = 1; c < header.length; c++) {
+                if (header[c].innerText.trim() === date) {
+                    return document.getElementById('r' + time + 'c' + c);
+                }
+            }
+            return null;
+        }
+        function paintPending(slots) {
+            for (var i = 0; i < slots.length; i++) {
+                var cell = findCell(slots[i].date, slots[i].time);
+                if (cell && cell.innerHTML !== '선택중') {
+                    cell.style.backgroundColor = '#E9D5FF';
+                    cell.innerHTML = '선택중';
+                }
+            }
+        }
+        function pollPending() {
+            if (document.hidden) {
+                setTimeout(pollPending, 5000);
+                return;
+            }
+            fetch(pendingUrl, {credentials: 'same-origin'})
+                .then(function(response) { return response.json(); })
+                .then(function(data) {
+                    paintPending(data.slots || []);
+                    setTimeout(pollPending, 3000);
+                })
+                .catch(function() { setTimeout(pollPending, 5000); });
+        }
+        pollPending();
+    })();
+</script>
