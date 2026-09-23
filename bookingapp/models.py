@@ -28,3 +28,20 @@ class Booking(models.Model):
             return False
         return datetime.datetime.now() >= datetime.datetime.combine(self.booking_date, booking_clock)
 
+    def korean_time(self):
+        try:
+            hour, minute = self.booking_time.split(':')
+            hour = int(hour)
+            minute = int(minute)
+        except (ValueError, AttributeError):
+            return self.booking_time
+        if hour < 12:
+            period = '오전'
+            display_hour = 12 if hour == 0 else hour
+        else:
+            period = '오후'
+            display_hour = hour if hour == 12 else hour - 12
+        if minute == 0:
+            return f'{period} {display_hour}시'
+        return f'{period} {display_hour}시 {minute}분'
+

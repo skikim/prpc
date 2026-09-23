@@ -54,10 +54,12 @@
                                             <i class="fas fa-clock" style="color: #f59e0b; font-size: 1.125rem;"></i>
                                         </div>
                                         <div>
-                                            <h6 class="fw-bold mb-1" style="color: #1e293b; font-size: 1.125rem;">{{ book.booking_date }}</h6>
-                                            <p class="text-muted mb-2" style="font-size: 0.875rem;">{{ book.booking_time }}</p>
+                                            <h6 class="fw-bold mb-2" style="font-size: 1.15rem;">
+                                                <span style="color: #1e293b;">{{ book.booking_date }}</span>
+                                                <span style="color: #1e3a8a !important; -webkit-text-fill-color: #1e3a8a !important; margin-left: 0.6rem;">{{ book.korean_time }}</span>
+                                            </h6>
                                             <span class="status-badge requested" style="background: #fef3c7; color: #92400e; padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.75rem; font-weight: 600;">
-                                                {{ book.booking_status }}
+                                                예약요청 상태
                                             </span>
                                         </div>
                                     </div>
@@ -72,19 +74,21 @@
                                 </div>
                             </div>
                         {% elif book.booking_status == '예약승인' and book.booking_date >= today %}
-                            <div class="booking-card approved mb-3" style="background: white; border-radius: 12px; padding: 1.5rem; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); border-left: 4px solid #10b981; position: relative; overflow: hidden;">
-                                <div class="card-accent" style="position: absolute; top: 0; right: 0; width: 60px; height: 60px; background: linear-gradient(135deg, #10b981, #059669); border-radius: 0 12px 0 50px; opacity: 0.1;"></div>
+                            <div class="booking-card approved mb-3" style="background: white; border-radius: 12px; padding: 1.5rem; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); border-left: 4px solid #f9a8d4; position: relative; overflow: hidden;">
+                                <div class="card-accent" style="position: absolute; top: 0; right: 0; width: 60px; height: 60px; background: #FFE8F4; border-radius: 0 12px 0 50px; opacity: 0.8;"></div>
                                 
                                 <div class="d-flex align-items-center justify-content-between position-relative">
                                     <div class="booking-info d-flex align-items-center">
-                                        <div class="booking-icon me-3" style="width: 48px; height: 48px; background: linear-gradient(135deg, #d1fae5, #a7f3d0); border-radius: 12px; display: flex; align-items: center; justify-content: center;">
-                                            <i class="fas fa-check-circle" style="color: #10b981; font-size: 1.125rem;"></i>
+                                        <div class="booking-icon me-3" style="width: 48px; height: 48px; background: #FFE8F4; border-radius: 12px; display: flex; align-items: center; justify-content: center;">
+                                            <i class="fas fa-check-circle" style="color: #db2777; font-size: 1.125rem;"></i>
                                         </div>
                                         <div>
-                                            <h6 class="fw-bold mb-1" style="color: #1e293b; font-size: 1.125rem;">{{ book.booking_date }}</h6>
-                                            <p class="text-muted mb-2" style="font-size: 0.875rem;">{{ book.booking_time }}</p>
-                                            <span class="status-badge approved" style="background: #d1fae5; color: #065f46; padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.75rem; font-weight: 600;">
-                                                {{ book.booking_status }}
+                                            <h6 class="fw-bold mb-2" style="font-size: 1.15rem;">
+                                                <span style="color: #1e293b;">{{ book.booking_date }}</span>
+                                                <span style="color: #1e3a8a !important; -webkit-text-fill-color: #1e3a8a !important; margin-left: 0.6rem;">{{ book.korean_time }}</span>
+                                            </h6>
+                                            <span class="status-badge approved" style="background: #FFE8F4; color: #9d174d; padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.75rem; font-weight: 600;">
+                                                예약승인 됨
                                             </span>
                                         </div>
                                     </div>
@@ -134,12 +138,120 @@
     {% endif %}
 </div>
 
+        <div class="modal fade" id="cancelConfirmationModal" tabindex="-1" aria-labelledby="cancelConfirmationModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" style="max-width: 500px;">
+                <div class="modal-content" style="border-radius: 14px; border: 1px solid #fee2e2; box-shadow: 0 6px 16px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);">
+                    <div class="position-relative overflow-hidden">
+                        <div class="warning-decoration position-absolute" style="top: -35px; right: -35px; width: 70px; height: 70px; background: linear-gradient(135deg, #ef4444, #dc2626); border-radius: 50%; opacity: 0.05;"></div>
+                        <div class="modal-header border-0 text-center" style="padding: 1.75rem 1.5rem 1rem 1.5rem;">
+                            <div class="w-100">
+                                <div class="warning-icon mx-auto mb-2" style="width: 52px; height: 52px; background: linear-gradient(135deg, #fee2e2, #fecaca); border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 3px 8px rgba(239, 68, 68, 0.25);">
+                                    <i class="fas fa-exclamation-triangle" style="color: #ef4444; font-size: 1.3rem;"></i>
+                                </div>
+                                <h5 class="modal-title fw-bold mb-0" style="color: #1e293b; font-size: 1.15rem;">예약 취소 확인</h5>
+                            </div>
+                        </div>
+                        <div class="modal-body text-center" style="padding: 0 1.5rem 1.5rem 1.5rem;">
+                            <div class="booking-details mb-3">
+                                <div class="booking-info-compact mx-auto mb-3" style="background: #f8fafc; border-radius: 10px; padding: 1rem; max-width: 300px; border: 1px solid #f1f5f9;">
+                                    <div class="booking-datetime text-center">
+                                        <div class="d-flex align-items-center justify-content-center gap-4">
+                                            <div class="d-flex align-items-center">
+                                                <i class="fas fa-calendar me-2" style="color: #3b82f6; font-size: 0.9rem;"></i>
+                                                <span id="cancel_booking_date" class="fw-bold" style="color: #1e293b; font-size: 1rem;"></span>
+                                            </div>
+                                            <div class="d-flex align-items-center">
+                                                <i class="fas fa-clock me-2" style="color: #f59e0b; font-size: 0.9rem;"></i>
+                                                <span id="cancel_booking_time" class="fw-bold" style="color: #1e293b; font-size: 1rem;"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <p class="text-muted mb-3" style="font-size: 0.9rem; line-height: 1.4;">위 예약을 취소하시겠습니까?<br><small class="text-danger" style="font-size: 0.8rem;">취소 후 복구할 수 없습니다.</small></p>
+                            </div>
+                        </div>
+                        <div class="modal-footer border-0 justify-content-center" style="padding: 0 1.5rem 1.75rem 1.5rem;">
+                            <form id="cancelConfirmForm" method="post" class="d-inline">
+                                {% csrf_token %}
+                                <input type="hidden" name="redirect_to" value="detail">
+                                <div class="action-buttons d-flex gap-3 justify-content-center">
+                                    <button type="button" class="btn-cancel-action" data-bs-dismiss="modal" style="background: #f1f5f9; color: #64748b; padding: 0.7rem 1.4rem; border-radius: 10px; text-decoration: none; font-weight: 600; transition: all 0.2s ease; display: inline-flex; align-items: center; border: 2px solid #e2e8f0; font-size: 0.85rem; cursor: pointer;">
+                                        <i class="fas fa-arrow-left me-2" style="font-size: 0.75rem;"></i>돌아가기
+                                    </button>
+                                    <button type="submit" class="btn-confirm-cancel" style="background: linear-gradient(135deg, #ef4444, #dc2626); color: white; padding: 0.7rem 1.4rem; border-radius: 10px; border: none; font-weight: 600; box-shadow: 0 3px 8px rgba(239, 68, 68, 0.25); transition: all 0.2s ease; display: inline-flex; align-items: center; cursor: pointer; font-size: 0.85rem;">
+                                        <i class="fas fa-times me-2" style="font-size: 0.75rem;"></i>예약 취소
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+<script>
+    const userBookings = [
+        {% for booking in user.booking.all %}
+        {
+            id: {{ booking.pk }},
+            date: '{{ booking.booking_date|date:"Y-m-d" }}',
+            time: '{{ booking.booking_time }}',
+            isPast: {% if booking.is_past %}true{% else %}false{% endif %}
+        }{% if not forloop.last %},{% endif %}
+        {% endfor %}
+    ];
+
+    function showCancelModal(bookingId) {
+        const matchingBooking = userBookings.find(booking => String(booking.id) === String(bookingId));
+        if (!matchingBooking) {
+            return false;
+        }
+        if (matchingBooking.isPast) {
+            alert('지난 예약은 취소할 수 없습니다.');
+            return false;
+        }
+        document.getElementById('cancel_booking_date').innerHTML = matchingBooking.date;
+        document.getElementById('cancel_booking_time').innerHTML = matchingBooking.time;
+        document.getElementById('cancelConfirmForm').action = "{% url 'bookingapp:delete' pk=999999 %}".replace('999999', matchingBooking.id);
+        var modalEl = document.getElementById('cancelConfirmationModal');
+        if (window.bootstrap && bootstrap.Modal) {
+            bootstrap.Modal.getOrCreateInstance(modalEl).show();
+        } else if (window.jQuery) {
+            jQuery(modalEl).modal('show');
+        }
+        return true;
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const params = new URLSearchParams(window.location.search);
+        const cancelId = params.get('cancel');
+        if (cancelId) {
+            showCancelModal(cancelId);
+            if (window.history && window.history.replaceState) {
+                window.history.replaceState({}, '', window.location.pathname);
+            }
+        }
+    });
+</script>
+
 <style>
 /* 호버 효과 */
 .cancel-btn:hover {
     background: #fecaca !important;
     transform: translateY(-1px);
     box-shadow: 0 4px 8px rgba(220, 38, 38, 0.2);
+}
+
+.btn-cancel-action:hover {
+    background: #e2e8f0 !important;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(100, 116, 139, 0.2);
+    color: #475569 !important;
+}
+
+.btn-confirm-cancel:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(239, 68, 68, 0.4);
 }
 
 .btn-new-booking,
