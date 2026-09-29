@@ -1,7 +1,7 @@
 <style>
     .weekly-third-warning {
         display: none;
-        margin: 14px auto 0;
+        margin: 14px auto 16px;
         max-width: 280px;
         padding: 12px 14px;
         background: #FEF3F2;
@@ -47,7 +47,7 @@
                         hideWarning();
                         return;
                     }
-                    warn.innerHTML = '주의: 이 환자는 이번 주<b>' + Number(data.nth) + '번째 예약</b>입니다.';
+                    warn.innerHTML = '이 환자는 이번 주 <b>' + Number(data.nth) + '번째 예약</b>입니다.';
                     warn.style.display = 'block';
                 })
                 .catch(hideWarning);
