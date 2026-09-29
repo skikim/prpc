@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 from django.test import TestCase
 
 from bookingapp.models import Booking
-from superapp.utils import other_weekly_booking_count, weekly_limit_cell_ids
+from superapp.utils import other_weekly_booking_count, other_weekly_chart_count, weekly_limit_cell_ids
 
 
 class WeeklyLimitMarkTests(TestCase):
@@ -72,3 +72,26 @@ class WeeklyLimitMarkTests(TestCase):
         self.assertEqual(allowed.status_code, 200)
         self.assertFalse(allowed.json()['warn'])
         staff.delete()
+
+    def test_chart_number_marks_only_the_second_booking(self):
+        monday = datetime.date(2026, 9, 21)
+        Booking.objects.create(booking_date=monday, booking_time='09:20', booking_status='예약승인', booking_rn='홍길동 8613')
+        Booking.objects.create(booking_date=monday + datetime.timedelta(days=4), booking_time='14:20', booking_status='예약승인', booking_rn='홍길동8613')
+        Booking.objects.create(booking_date=monday, booking_time='09:25', booking_status='예약승인', booking_rn='김철수 100')
+
+        cells = weekly_limit_cell_ids([
+            (1, monday),
+            (5, monday + datetime.timedelta(days=4)),
+        ])
+
+        self.assertEqual(cells, ['r14:20c5'])
+
+    def test_chart_notice_ignores_deleted_booking(self):
+        monday = datetime.date(2026, 9, 21)
+        friday = monday + datetime.timedelta(days=4)
+        first = Booking.objects.create(booking_date=monday, booking_time='09:20', booking_status='예약승인', booking_rn='홍길동 8613')
+        Booking.objects.create(booking_date=friday, booking_time='14:20', booking_status='예약승인', booking_rn='홍길동 8613')
+
+        self.assertEqual(other_weekly_chart_count('8613', friday + datetime.timedelta(days=1), '10:05'), 2)
+        first.delete()
+        self.assertEqual(other_weekly_chart_count('8613', friday + datetime.timedelta(days=1), '10:05'), 1)

@@ -9,14 +9,12 @@
         border-radius: 8px;
         color: #9A3412;
         font-weight: 700;
-        font-size: 1.15rem;
-        line-height: 1.45;
+        font-size: 0.95rem;
+        line-height: 1.4;
     }
     .weekly-third-warning b {
-        display: block;
-        margin-top: 2px;
         color: #C2410C;
-        font-size: 1.45rem;
+        font-size: 0.95rem;
     }
 </style>
 <script>
@@ -30,13 +28,18 @@
             var warn = document.getElementById('weekly-third-warning');
             var status = document.getElementById('status_sel');
             var userId = document.getElementById('booking_user_id');
+            var bookingRn = document.getElementById('booking_rn');
             var date = document.getElementById('date');
             var time = document.getElementById('time');
-            if (!warn || !userId || !date || !userId.value || !date.value || !status || (status.value !== '예약요청' && status.value !== '예약승인')) {
+            var hasUser = userId && userId.value;
+            var hasChart = bookingRn && /\d+\s*$/.test(bookingRn.value) && bookingRn.value.trim() !== '*';
+            if (!warn || !date || !date.value || !status || (status.value !== '예약요청' && status.value !== '예약승인') || (!hasUser && !hasChart)) {
                 hideWarning();
                 return;
             }
-            var url = noticeUrl + '?user_id=' + encodeURIComponent(userId.value) + '&date=' + encodeURIComponent(date.value) + '&time=' + encodeURIComponent(time ? time.value : '');
+            var url = noticeUrl + '?date=' + encodeURIComponent(date.value) + '&time=' + encodeURIComponent(time ? time.value : '');
+            if (hasUser) url += '&user_id=' + encodeURIComponent(userId.value);
+            else url += '&booking_rn=' + encodeURIComponent(bookingRn.value);
             fetch(url, {credentials: 'same-origin', cache: 'no-store'})
                 .then(function(response) { return response.json(); })
                 .then(function(data) {
@@ -49,7 +52,7 @@
                 })
                 .catch(hideWarning);
         }
-        $(document).on('input change', '#booking_user_id', refreshWeeklyThird);
+        $(document).on('input change', '#booking_user_id, #booking_rn', refreshWeeklyThird);
         $(document).on('change', '#status_sel', refreshWeeklyThird);
         $(document).on('click', '#result_table tr', function() { setTimeout(refreshWeeklyThird, 0); });
         $('#modal_post').on('show.bs.modal', hideWarning);

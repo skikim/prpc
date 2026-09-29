@@ -13,7 +13,7 @@ from django.views.generic import DetailView, DeleteView
 from bookingapp.decorators import booking_ownership_required
 from bookingapp.models import Booking, BOOKING_TIME
 from profileapp.utils import is_tablet_user
-from superapp.utils import other_weekly_booking_count, send_discord_message, weekly_limit_cell_ids
+from superapp.utils import chart_key, other_weekly_booking_count, other_weekly_chart_count, send_discord_message, weekly_limit_cell_ids
 from articleapp.models import KioskScreen, WaitingOverride, WaitingPatient
 from articleapp.waiting_utils import (
     MAX_WAITING,
@@ -76,11 +76,21 @@ def weekly_third_notice(request):
     if not request.user.is_superuser:
         return JsonResponse({}, status=403)
     try:
-        user_id = int(request.GET.get('user_id'))
         booking_date = datetime.datetime.strptime(request.GET.get('date'), '%Y-%m-%d').date()
     except (TypeError, ValueError):
         return JsonResponse({'warn': False})
-    others = other_weekly_booking_count(user_id, booking_date, request.GET.get('time'))
+    booking_time = request.GET.get('time')
+    user_raw = request.GET.get('user_id')
+    if user_raw:
+        try:
+            others = other_weekly_booking_count(int(user_raw), booking_date, booking_time)
+        except ValueError:
+            return JsonResponse({'warn': False})
+    else:
+        chart = chart_key(request.GET.get('booking_rn'))
+        if not chart:
+            return JsonResponse({'warn': False})
+        others = other_weekly_chart_count(chart, booking_date, booking_time)
     if others < 2:
         return JsonResponse({'warn': False})
     return JsonResponse({'warn': True, 'nth': others + 1})

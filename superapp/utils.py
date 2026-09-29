@@ -2,6 +2,7 @@
 예약 차단 기능을 위한 유틸리티 함수들
 """
 import datetime
+import re
 from datetime import timedelta
 from django.core.cache import cache
 from django.conf import settings
@@ -292,6 +293,18 @@ def _as_date(day):
     return day
 
 
+def chart_key(booking_rn):
+    if not booking_rn:
+        return None
+    text = booking_rn.strip()
+    if not text or text == '*':
+        return None
+    match = re.search(r'(\d+)\s*$', text)
+    if not match:
+        return None
+    return match.group(1)
+
+
 def week_bounds(day):
     day = _as_date(day)
     days_since_sunday = (day.weekday() + 1) % 7
@@ -312,10 +325,21 @@ def weekly_limit_cell_ids(column_dates):
         user__isnull=False,
         booking_status__in=['예약승인', '예약요청'],
     ).values_list('user_id', 'booking_date', 'booking_time')
+    chart_rows = Booking.objects.filter(
+        query,
+        user__isnull=True,
+        booking_status__in=['예약승인', '예약요청'],
+    ).values_list('booking_rn', 'booking_date', 'booking_time')
     grouped = {}
     for user_id, booking_date, booking_time in rows:
         start, _ = week_bounds(booking_date)
         grouped.setdefault((user_id, start), []).append((booking_date, booking_time))
+    for booking_rn, booking_date, booking_time in chart_rows:
+        chart = chart_key(booking_rn)
+        if not chart:
+            continue
+        start, _ = week_bounds(booking_date)
+        grouped.setdefault(('chart', chart, start), []).append((booking_date, booking_time))
     limited = set()
     for items in grouped.values():
         if len(items) >= 2:
@@ -339,3 +363,21 @@ def other_weekly_booking_count(user_id, booking_date, booking_time=None):
     if booking_time:
         bookings = bookings.exclude(booking_date=day, booking_time=booking_time)
     return bookings.count()
+
+
+def other_weekly_chart_count(chart, booking_date, booking_time=None):
+    day = _as_date(booking_date)
+    start, end = week_bounds(day)
+    bookings = Booking.objects.filter(
+        user__isnull=True,
+        booking_date__range=(start, end),
+        booking_status__in=['예약승인', '예약요청'],
+    )
+    count = 0
+    for booking in bookings:
+        if chart_key(booking.booking_rn) != chart:
+            continue
+        if booking_time and booking.booking_date == day and booking.booking_time == booking_time:
+            continue
+        count += 1
+    return count
