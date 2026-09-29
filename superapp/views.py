@@ -14,7 +14,7 @@ from bookingapp.decorators import booking_ownership_required
 from bookingapp.models import Booking, BOOKING_TIME
 from profileapp.utils import is_tablet_user
 from superapp.utils import send_discord_message
-from articleapp.models import WaitingOverride, WaitingPatient
+from articleapp.models import KioskScreen, WaitingOverride, WaitingPatient
 from articleapp.waiting_utils import (
     MAX_WAITING,
     current_waiting_period,
@@ -886,6 +886,36 @@ def _tablet_waiting_allowed(user):
     return is_tablet_user(user) or user.is_superuser
 
 
+def kiosk_screen_mode():
+    screen, _ = KioskScreen.objects.get_or_create(pk=1, defaults={'mode': 'wait'})
+    if screen.mode not in ('wait', 'book'):
+        return 'wait'
+    return screen.mode
+
+
+def _kiosk_redirect(mode):
+    target = 'superapp:tablet' if mode == 'book' else 'superapp:waiting_pt'
+    response = redirect(target)
+    response['Cache-Control'] = 'no-store'
+    return response
+
+
+@login_required
+def kiosk_screen(request):
+    if not _tablet_waiting_allowed(request.user):
+        return redirect('articleapp:index')
+    return _kiosk_redirect(kiosk_screen_mode())
+
+
+@login_required
+def kiosk_status(request):
+    if not _tablet_waiting_allowed(request.user):
+        return JsonResponse({}, status=403)
+    response = JsonResponse({'mode': kiosk_screen_mode()})
+    response['Cache-Control'] = 'no-store'
+    return response
+
+
 @login_required
 def waiting_pt(request):
     if not _tablet_waiting_allowed(request.user):
@@ -987,6 +1017,10 @@ def waiting_list(request):
                     defaults={'mode': override_mode},
                 )
             return redirect('superapp:waiting_list')
+        kiosk_choice = request.POST.get('kiosk_mode')
+        if kiosk_choice in ('wait', 'book'):
+            KioskScreen.objects.update_or_create(pk=1, defaults={'mode': kiosk_choice})
+            return redirect('superapp:waiting_list')
         patient_id = request.POST.get('patient_id')
         patient = WaitingPatient.objects.filter(pk=patient_id, visit_date=today).first()
         if patient:
@@ -1009,6 +1043,7 @@ def waiting_list(request):
         'period_label': period_label(current_waiting_period()),
         'today_override': overrides.get(today),
         'tomorrow_override': overrides.get(tomorrow),
+        'kiosk_mode': kiosk_screen_mode(),
     }
     return render(request, 'superapp/waiting_list.html', context)
 

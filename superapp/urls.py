@@ -1,6 +1,6 @@
 from django.urls import path
 
-from superapp.views import superbooking, superbooking2, superbooking3, superbooking4, superbooking2_1, superbooking2_2, block_online_bookings, unblock_online_bookings, tablet_booking, tablet_booking2, tablet_booking3, tablet_status, tablet_pending, tablet_slots, waiting_pt, waiting_pt_status, waiting_list, waiting_list_status
+from superapp.views import superbooking, superbooking2, superbooking3, superbooking4, superbooking2_1, superbooking2_2, block_online_bookings, unblock_online_bookings, tablet_booking, tablet_booking2, tablet_booking3, tablet_status, tablet_pending, tablet_slots, waiting_pt, waiting_pt_status, waiting_list, waiting_list_status, kiosk_screen, kiosk_status
 
 app_name = 'superapp'
 
@@ -15,6 +15,8 @@ urlpatterns = [
     path('waiting_pt/', waiting_pt, name='waiting_pt'),
     path('waiting_list/status/', waiting_list_status, name='waiting_list_status'),
     path('waiting_list/', waiting_list, name='waiting_list'),
+    path('kiosk/status/', kiosk_status, name='kiosk_status'),
+    path('kiosk/', kiosk_screen, name='kiosk'),
     path('supercreate/', superbooking, name='supercreate'),
     path('supercreate2/', superbooking2, name='supercreate2'),
     path('supercreate2_1/', superbooking2_1, name='supercreate2_1'),

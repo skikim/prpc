@@ -102,6 +102,38 @@ class KioskAccessTests(TestCase):
         self.assertEqual(locked.status_code, 302)
         self.assertIn('/supers/tablet/', locked.url)
 
+    def test_kiosk_follows_superuser_screen(self):
+        self.client.login(username='tablet', password='pass1234')
+        waiting = self.client.get('/supers/kiosk/')
+        self.assertRedirects(waiting, '/supers/waiting_pt/', fetch_redirect_response=False)
+        status = self.client.get('/supers/kiosk/status/')
+        self.assertEqual(status.status_code, 200)
+        self.assertEqual(status.json()['mode'], 'wait')
+        self.client.logout()
+
+        self.client.login(username='admin', password='pass1234')
+        switched = self.client.post('/supers/waiting_list/', {'kiosk_mode': 'book'})
+        self.assertRedirects(switched, '/supers/waiting_list/')
+        page = self.client.get('/supers/waiting_list/')
+        self.assertContains(page, '태블릿 화면')
+        self.assertContains(page, '현재: 예약')
+        self.client.logout()
+
+        self.client.login(username='tablet', password='pass1234')
+        booking = self.client.get('/supers/kiosk/')
+        self.assertRedirects(booking, '/supers/tablet/', fetch_redirect_response=False)
+        blocked = self.client.post('/supers/waiting_list/', {'kiosk_mode': 'wait'})
+        self.assertEqual(blocked.status_code, 302)
+        self.assertIn('/supers/tablet/', blocked.url)
+        self.assertEqual(self.client.get('/supers/kiosk/status/').json()['mode'], 'book')
+
+    def test_kiosk_blocks_normal_user(self):
+        self.client.login(username='patient', password='pass1234')
+        resp = self.client.get('/supers/kiosk/', follow=False)
+        self.assertEqual(resp.status_code, 302)
+        self.assertNotIn('/supers/waiting_pt/', resp.url)
+        self.assertEqual(self.client.get('/supers/kiosk/status/').status_code, 403)
+
     def test_search_requires_superuser(self):
         self.client.login(username='patient', password='pass1234')
         self.assertEqual(self.client.post('/searches/search/').status_code, 403)

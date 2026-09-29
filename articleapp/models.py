@@ -31,3 +31,8 @@ class WaitingOverride(models.Model):
     MODE_CHOICES = (('open', '열기'), ('closed', '닫기'))
     visit_date = models.DateField(unique=True)
     mode = models.CharField(max_length=8, choices=MODE_CHOICES)
+
+
+class KioskScreen(models.Model):
+    MODE_CHOICES = (('wait', '대기 명단'), ('book', '예약'))
+    mode = models.CharField(max_length=8, choices=MODE_CHOICES, default='wait')

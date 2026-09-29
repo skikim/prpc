@@ -31,6 +31,8 @@ class TabletKioskMiddleware:
                 or path.startswith('/supers/tablet2/')
                 or path.startswith('/supers/tablet3/')
                 or path.startswith('/supers/waiting_pt/')
+                or path == '/supers/kiosk'
+                or path.startswith('/supers/kiosk/')
                 or path.startswith('/static/')
                 or path.startswith('/accounts/logout/')
             ):

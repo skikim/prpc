@@ -39,6 +39,18 @@
         </div>
     </div>
 
+    <div class="card mb-4">
+        <div class="card-body">
+            <h5 class="card-title">태블릿 화면</h5>
+            <p class="mb-2">현재: {% if kiosk_mode == 'book' %}예약{% else %}대기 명단{% endif %}</p>
+            <form method="post" class="d-inline">
+                {% csrf_token %}
+                <button class="btn btn-outline-primary btn-sm" name="kiosk_mode" value="wait" {% if kiosk_mode != 'book' %}disabled{% endif %}>대기 명단</button>
+                <button class="btn btn-outline-primary btn-sm" name="kiosk_mode" value="book" {% if kiosk_mode == 'book' %}disabled{% endif %}>예약</button>
+            </form>
+        </div>
+    </div>
+
     <h4 class="mt-4">오전</h4>
     <table class="table table-bordered table-striped">
         <tr><th>순서</th><th>이름</th><th>생년월일</th><th>시각</th><th></th></tr>
