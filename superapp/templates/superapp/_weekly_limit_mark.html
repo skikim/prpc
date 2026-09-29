@@ -1,0 +1,18 @@
+{{ weekly_limit_cells|json_script:"weekly-limit-cells" }}
+<script>
+    (function() {
+        var node = document.getElementById('weekly-limit-cells');
+        if (!node) return;
+        var ids = JSON.parse(node.textContent);
+        ids.forEach(function(id) {
+            var cell = document.getElementById(id);
+            if (!cell || cell.querySelector('.week-second-mark')) return;
+            cell.style.boxShadow = 'inset 4px 0 0 #C2410C';
+            var mark = document.createElement('span');
+            mark.className = 'week-second-mark';
+            mark.textContent = '2';
+            mark.style.cssText = 'float:right;margin-left:4px;color:#C2410C;font-weight:700;font-size:12px;line-height:1;';
+            cell.appendChild(mark);
+        });
+    })();
+</script>

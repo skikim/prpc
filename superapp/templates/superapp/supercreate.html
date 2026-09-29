@@ -28,6 +28,7 @@
                             <div class="modal-body" style="text-align: center">
                                 <p id="booking_date" style="font-weight: bold; font-size: 1.1rem"></p>
                                 <p id="booking_time" style="font-weight: bold; font-size: 1.1rem"></p>
+                                <p id="weekly-third-warning" style="display:none;color:#C2410C;font-weight:700;margin:12px 0 0;"></p>
                                 <select class="form-select" id="status_sel" name="status_sel" onchange="change_sel()"
                                         required>
                                     <option value="예약가능" selected>예약가능</option>
@@ -1519,6 +1520,8 @@
             input_form()
 
         </script>
+        {% include 'superapp/_weekly_limit_mark.html' %}
+        {% include 'superapp/_weekly_third_notice.html' %}
         {% include 'superapp/_tablet_pending_poll.html' %}
 
     {% endif %}

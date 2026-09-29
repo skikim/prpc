@@ -13,7 +13,7 @@ from django.views.generic import DetailView, DeleteView
 from bookingapp.decorators import booking_ownership_required
 from bookingapp.models import Booking, BOOKING_TIME
 from profileapp.utils import is_tablet_user
-from superapp.utils import send_discord_message
+from superapp.utils import other_weekly_booking_count, send_discord_message, weekly_limit_cell_ids
 from articleapp.models import KioskScreen, WaitingOverride, WaitingPatient
 from articleapp.waiting_utils import (
     MAX_WAITING,
@@ -69,6 +69,21 @@ def aligo_sms_send(rec, msg_2):
                 }
     send_response = requests.post(send_url, data=sms_data)
     print(send_response.json())
+
+
+@login_required
+def weekly_third_notice(request):
+    if not request.user.is_superuser:
+        return JsonResponse({}, status=403)
+    try:
+        user_id = int(request.GET.get('user_id'))
+        booking_date = datetime.datetime.strptime(request.GET.get('date'), '%Y-%m-%d').date()
+    except (TypeError, ValueError):
+        return JsonResponse({'warn': False})
+    others = other_weekly_booking_count(user_id, booking_date, request.GET.get('time'))
+    if others < 2:
+        return JsonResponse({'warn': False})
+    return JsonResponse({'warn': True, 'nth': others + 1})
 
 
 @login_required
@@ -187,6 +202,9 @@ def superbooking(request):
                 if booking.exists():
                     booking.delete()
             return redirect(reverse('superapp:supercreate'))
+        context['weekly_limit_cells'] = weekly_limit_cell_ids([
+            (index, today_1 + timedelta(days=index - 1)) for index in range(1, 8)
+        ])
         return render(request, 'superapp/supercreate.html', context)
     else:
         return redirect(reverse('articleapp:index'))
@@ -310,6 +328,9 @@ def superbooking2(request):
                 if booking.exists():
                     booking.delete()
             return redirect(reverse('superapp:supercreate2'))
+        context['weekly_limit_cells'] = weekly_limit_cell_ids([
+            (index, today_8 + timedelta(days=index - 1)) for index in range(1, 9)
+        ])
         return render(request, 'superapp/supercreate2.html', context)
     else:
         return redirect(reverse('articleapp:index'))
@@ -433,6 +454,9 @@ def superbooking2_1(request):
                 if booking.exists():
                     booking.delete()
             return redirect(reverse('superapp:supercreate2_1'))
+        context['weekly_limit_cells'] = weekly_limit_cell_ids([
+            (index, today_16 + timedelta(days=index - 1)) for index in range(1, 9)
+        ])
         return render(request, 'superapp/supercreate2_1.html', context)
     else:
         return redirect(reverse('articleapp:index'))
@@ -556,6 +580,9 @@ def superbooking2_2(request):
                 if booking.exists():
                     booking.delete()
             return redirect(reverse('superapp:supercreate2_2'))
+        context['weekly_limit_cells'] = weekly_limit_cell_ids([
+            (index, today_24 + timedelta(days=index - 1)) for index in range(1, 9)
+        ])
         return render(request, 'superapp/supercreate2_2.html', context)
     else:
         return redirect(reverse('articleapp:index'))

@@ -5,6 +5,7 @@ import datetime
 from datetime import timedelta
 from django.core.cache import cache
 from django.conf import settings
+from django.db.models import Q
 from bookingapp.models import Booking
 import logging
 import requests
@@ -283,3 +284,58 @@ def send_discord_message_both(message):
     
     logger.info(f"Discord message sent to both webhooks: {results}")
     return results
+
+
+def _as_date(day):
+    if isinstance(day, datetime.datetime):
+        return day.date()
+    return day
+
+
+def week_bounds(day):
+    day = _as_date(day)
+    days_since_sunday = (day.weekday() + 1) % 7
+    start = day - timedelta(days=days_since_sunday)
+    return start, start + timedelta(days=6)
+
+
+def weekly_limit_cell_ids(column_dates):
+    normalized = [(col, _as_date(day)) for col, day in column_dates]
+    if not normalized:
+        return []
+    week_starts = {week_bounds(day)[0] for _, day in normalized}
+    query = Q()
+    for start in week_starts:
+        query |= Q(booking_date__range=(start, start + timedelta(days=6)))
+    rows = Booking.objects.filter(
+        query,
+        user__isnull=False,
+        booking_status__in=['예약승인', '예약요청'],
+    ).values_list('user_id', 'booking_date', 'booking_time')
+    grouped = {}
+    for user_id, booking_date, booking_time in rows:
+        start, _ = week_bounds(booking_date)
+        grouped.setdefault((user_id, start), []).append((booking_date, booking_time))
+    limited = set()
+    for items in grouped.values():
+        if len(items) >= 2:
+            limited.add(sorted(items)[1])
+    visible = {day: col for col, day in normalized}
+    return [
+        f'r{booking_time}c{visible[booking_date]}'
+        for booking_date, booking_time in sorted(limited)
+        if booking_date in visible
+    ]
+
+
+def other_weekly_booking_count(user_id, booking_date, booking_time=None):
+    day = _as_date(booking_date)
+    start, end = week_bounds(day)
+    bookings = Booking.objects.filter(
+        user_id=user_id,
+        booking_date__range=(start, end),
+        booking_status__in=['예약승인', '예약요청'],
+    )
+    if booking_time:
+        bookings = bookings.exclude(booking_date=day, booking_time=booking_time)
+    return bookings.count()

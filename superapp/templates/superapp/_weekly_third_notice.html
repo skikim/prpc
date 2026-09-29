@@ -1,0 +1,37 @@
+<script>
+    (function() {
+        var noticeUrl = "{% url 'superapp:weekly_third_notice' %}";
+        function hideWarning() {
+            var warn = document.getElementById('weekly-third-warning');
+            if (warn) warn.style.display = 'none';
+        }
+        function refreshWeeklyThird() {
+            var warn = document.getElementById('weekly-third-warning');
+            var status = document.getElementById('status_sel');
+            var userId = document.getElementById('booking_user_id');
+            var date = document.getElementById('date');
+            var time = document.getElementById('time');
+            if (!warn || !userId || !date || !userId.value || !date.value || !status || (status.value !== '예약요청' && status.value !== '예약승인')) {
+                hideWarning();
+                return;
+            }
+            var url = noticeUrl + '?user_id=' + encodeURIComponent(userId.value) + '&date=' + encodeURIComponent(date.value) + '&time=' + encodeURIComponent(time ? time.value : '');
+            fetch(url, {credentials: 'same-origin', cache: 'no-store'})
+                .then(function(response) { return response.json(); })
+                .then(function(data) {
+                    if (!data.warn) {
+                        hideWarning();
+                        return;
+                    }
+                    warn.textContent = '이번 주 ' + data.nth + '번째 예약입니다.';
+                    warn.style.display = 'block';
+                })
+                .catch(hideWarning);
+        }
+        $(document).on('input change', '#booking_user_id', refreshWeeklyThird);
+        $(document).on('change', '#status_sel', refreshWeeklyThird);
+        $(document).on('click', '#result_table tr', function() { setTimeout(refreshWeeklyThird, 0); });
+        $('#modal_post').on('show.bs.modal', hideWarning);
+        $('#modal_post').on('shown.bs.modal', refreshWeeklyThird);
+    })();
+</script>
