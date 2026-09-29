@@ -99,6 +99,22 @@ def weekly_third_notice(request):
 
 
 @login_required
+def superbooking_past(request):
+    if not request.user.is_superuser:
+        return redirect('articleapp:index')
+    today = datetime.datetime.today()
+    days = [today - timedelta(days=7 - index) for index in range(7)]
+    context = {
+        f'inform_today_{index}': Booking.objects.filter(booking_date=day.strftime('%Y-%m-%d'))
+        for index, day in enumerate(days, start=1)
+    }
+    context['weekly_limit_cells'] = weekly_limit_cell_ids([
+        (index, day) for index, day in enumerate(days, start=1)
+    ])
+    return render(request, 'superapp/supercreate_past.html', context)
+
+
+@login_required
 def superbooking(request):
     today_1 = datetime.datetime.today()
     today_2 = today_1 + timedelta(days=1)

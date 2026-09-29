@@ -7,6 +7,34 @@ from bookingapp.models import Booking
 from superapp.utils import other_weekly_booking_count, other_weekly_chart_count, weekly_limit_cell_ids
 
 
+class PastWeekPageTests(TestCase):
+    def test_past_week_is_view_only(self):
+        User.objects.create_superuser('admin', 'admin@example.com', 'pass1234')
+        patient = User.objects.create_user('patient', password='pass1234')
+        yesterday = datetime.date.today() - datetime.timedelta(days=1)
+        booking = Booking.objects.create(
+            booking_date=yesterday,
+            booking_time='09:20',
+            booking_status='예약승인',
+            booking_rn='지난환자 9',
+        )
+        self.client.login(username='patient', password='pass1234')
+        denied = self.client.get('/supers/supercreate_past/')
+        self.assertEqual(denied.status_code, 302)
+        self.client.login(username='admin', password='pass1234')
+        page = self.client.get('/supers/supercreate_past/')
+        self.assertEqual(page.status_code, 200)
+        self.assertContains(page, '지난환자 9')
+        self.assertNotContains(page, 'method="post"')
+        self.client.post('/supers/supercreate_past/', {
+            'date': yesterday.isoformat(),
+            'time': '09:20',
+            'status': '예약가능',
+        })
+        booking.refresh_from_db()
+        self.assertEqual(booking.booking_status, '예약승인')
+
+
 class WeeklyLimitMarkTests(TestCase):
     def test_marks_only_the_second_booking(self):
         user = User.objects.create_user('p1', password='pass1234')

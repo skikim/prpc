@@ -1,0 +1,51 @@
+<style>
+    .super-week-nav { margin: 0 auto 1.25rem; max-width: 760px; }
+    .super-week-pills {
+        display: flex; justify-content: center; flex-wrap: wrap; width: fit-content;
+        margin: 0 auto; background: #fff; border: 1px solid #dbe4f0; border-radius: 12px;
+        box-shadow: 0 2px 12px rgba(37, 99, 235, 0.08); overflow: hidden;
+    }
+    .super-week-pills a {
+        padding: 8px 14px; color: #2563eb; text-decoration: none; font-size: 0.84rem;
+        font-weight: 600; border-right: 1px solid #e8eef6;
+    }
+    .super-week-pills a:last-child { border-right: 0; }
+    .super-week-pills a:hover { color: #14b8a6; background: #f8fafc; }
+    .super-week-pills a.is-current { background: #2563eb; color: #fff; }
+    .super-week-pills a.is-past { color: #64748b; }
+    .super-week-tools { display: flex; justify-content: center; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
+    .super-week-tools a, .super-week-tools button {
+        border-radius: 999px; padding: 6px 14px; font-size: 0.8rem; font-weight: 600;
+        text-decoration: none; border: 1px solid #dbe4f0; background: #fff; color: #2563eb;
+    }
+    .super-week-tools a:hover { color: #14b8a6; border-color: #14b8a6; }
+    .super-week-tools a.is-current { background: #2563eb; color: #fff; border-color: #2563eb; }
+    .super-week-tools button.block { color: #b42318; border-color: #fecdca; background: #fff; }
+    .super-week-tools button.release { color: #067647; border-color: #abefc6; background: #fff; }
+</style>
+<nav class="super-week-nav" aria-label="예약 주 이동">
+    <div class="super-week-pills">
+        <a class="{% if current == 'past' %}is-current{% else %}is-past{% endif %}" href="{% url 'superapp:supercreate_past' %}">지난 주</a>
+        <a class="{% if current == '1' %}is-current{% endif %}" href="{% url 'superapp:supercreate' %}">1주차</a>
+        <a class="{% if current == '2' %}is-current{% endif %}" href="{% url 'superapp:supercreate2' %}">2주차</a>
+        <a class="{% if current == '3' %}is-current{% endif %}" href="{% url 'superapp:supercreate2_1' %}">3주차</a>
+        <a class="{% if current == '4' %}is-current{% endif %}" href="{% url 'superapp:supercreate2_2' %}">4주차</a>
+        <a class="{% if current == 'msg' %}is-current{% endif %}" href="{% url 'superapp:supercreate3' %}">문자</a>
+        <a class="{% if current == 'msg2' %}is-current{% endif %}" href="{% url 'superapp:supercreate4' %}">문자2</a>
+    </div>
+    {% if tools %}
+    <div class="super-week-tools">
+        {% if is_blocking_active %}
+            <form method="post" action="{% url 'superapp:unblock_bookings' %}" style="display:inline;">
+                {% csrf_token %}
+                <button class="release" type="submit" onclick="return confirm('온라인 예약 차단을 해제하시겠습니까?')">차단 해제</button>
+            </form>
+        {% else %}
+            <form method="post" action="{% url 'superapp:block_bookings' %}" style="display:inline;">
+                {% csrf_token %}
+                <button class="block" type="submit" onclick="return confirm('온라인 예약을 차단하시겠습니까? (3분 후 자동 해제)')">예약 차단</button>
+            </form>
+        {% endif %}
+    </div>
+    {% endif %}
+</nav>
