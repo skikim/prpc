@@ -91,9 +91,10 @@ def weekly_third_notice(request):
         if not chart:
             return JsonResponse({'warn': False})
         others = other_weekly_chart_count(chart, booking_date, booking_time)
-    if others < 2:
+    nth = others + 1
+    if nth < 2:
         return JsonResponse({'warn': False})
-    return JsonResponse({'warn': True, 'nth': others + 1})
+    return JsonResponse({'warn': True, 'nth': nth})
 
 
 @login_required

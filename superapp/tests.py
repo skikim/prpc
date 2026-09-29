@@ -71,6 +71,10 @@ class WeeklyLimitMarkTests(TestCase):
         allowed = self.client.get('/supers/weekly-third/', {'user_id': patient.id, 'date': '2026-09-23', 'time': '10:05'})
         self.assertEqual(allowed.status_code, 200)
         self.assertFalse(allowed.json()['warn'])
+        Booking.objects.create(user=patient, booking_date=datetime.date(2026, 9, 21), booking_time='09:20', booking_status='예약승인')
+        second = self.client.get('/supers/weekly-third/', {'user_id': patient.id, 'date': '2026-09-23', 'time': '10:05'})
+        self.assertTrue(second.json()['warn'])
+        self.assertEqual(second.json()['nth'], 2)
         staff.delete()
 
     def test_chart_number_marks_only_the_second_booking(self):

@@ -17,7 +17,7 @@ services:
      - prpc_container_gunicorn
 
  prpc_container_gunicorn:
-   image: prpc_image:16
+   image: prpc_image:17
    networks:
      - network
    volumes:

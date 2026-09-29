@@ -16,13 +16,23 @@
         color: #C2410C;
         font-size: 0.95rem;
     }
+    .weekly-third-warning.weekly-second-warning {
+        background: #EEF3F9;
+        border-color: #1d4e89;
+        color: #1e3a5f;
+    }
+    .weekly-third-warning.weekly-second-warning b {
+        color: #1d4e89;
+    }
 </style>
 <script>
     (function() {
         var noticeUrl = "{% url 'superapp:weekly_third_notice' %}";
         function hideWarning() {
             var warn = document.getElementById('weekly-third-warning');
-            if (warn) warn.style.display = 'none';
+            if (!warn) return;
+            warn.style.display = 'none';
+            warn.classList.remove('weekly-second-warning');
         }
         function refreshWeeklyThird() {
             var warn = document.getElementById('weekly-third-warning');
@@ -47,6 +57,7 @@
                         hideWarning();
                         return;
                     }
+                    warn.classList.toggle('weekly-second-warning', Number(data.nth) === 2);
                     warn.innerHTML = '이 환자는 이번 주 <b>' + Number(data.nth) + '번째 예약</b>입니다.';
                     warn.style.display = 'block';
                 })
