@@ -11,7 +11,10 @@
     }
     .super-week-pills a:last-child { border-right: 0; }
     .super-week-pills a:hover { color: #14b8a6; background: #f8fafc; }
-    .super-week-pills a.is-current { background: #2563eb; color: #fff; }
+    .super-week-pills a.is-current,
+    .super-week-pills a.is-current:hover {
+        background: #2563eb; color: #fff !important; -webkit-text-fill-color: #fff !important;
+    }
     .super-week-pills a.is-past { color: #64748b; }
     .super-week-tools { display: flex; justify-content: center; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
     .super-week-tools a, .super-week-tools button {
@@ -19,7 +22,10 @@
         text-decoration: none; border: 1px solid #dbe4f0; background: #fff; color: #2563eb;
     }
     .super-week-tools a:hover { color: #14b8a6; border-color: #14b8a6; }
-    .super-week-tools a.is-current { background: #2563eb; color: #fff; border-color: #2563eb; }
+    .super-week-tools a.is-current,
+    .super-week-tools a.is-current:hover {
+        background: #2563eb; color: #fff !important; -webkit-text-fill-color: #fff !important; border-color: #2563eb;
+    }
     .super-week-tools button.block { color: #b42318; border-color: #fecdca; background: #fff; }
     .super-week-tools button.release { color: #067647; border-color: #abefc6; background: #fff; }
 </style>
