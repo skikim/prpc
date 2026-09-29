@@ -67,9 +67,7 @@
                     }
                     var nth = Number(data.nth);
                     var slots = (data.slots || []).slice();
-                    if (nth === 2 && date.value && time && time.value) {
-                        slots.push({date: date.value, time: time.value});
-                    }
+                    if (nth === 2) slots = slots.slice(0, 1);
                     var lines = slots.map(function(slot, index) {
                         var parts = String(slot.date || '').split('-');
                         var clock = String(slot.time || '');
