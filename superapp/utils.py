@@ -352,6 +352,37 @@ def weekly_limit_cell_ids(column_dates):
     ]
 
 
+def weekly_other_slots(user_id, chart, booking_date, booking_time=None):
+    day = _as_date(booking_date)
+    start, end = week_bounds(day)
+    if user_id:
+        bookings = Booking.objects.filter(
+            user_id=user_id,
+            booking_date__range=(start, end),
+            booking_status__in=['예약승인', '예약요청'],
+        )
+        if booking_time:
+            bookings = bookings.exclude(booking_date=day, booking_time=booking_time)
+        rows = list(bookings.values_list('booking_date', 'booking_time'))
+    else:
+        bookings = Booking.objects.filter(
+            user__isnull=True,
+            booking_date__range=(start, end),
+            booking_status__in=['예약승인', '예약요청'],
+        )
+        rows = []
+        for booking in bookings:
+            if chart_key(booking.booking_rn) != chart:
+                continue
+            if booking_time and booking.booking_date == day and booking.booking_time == booking_time:
+                continue
+            rows.append((booking.booking_date, booking.booking_time))
+    return [
+        {'date': slot_date.strftime('%Y-%m-%d'), 'time': slot_time}
+        for slot_date, slot_time in sorted(rows)
+    ]
+
+
 def other_weekly_booking_count(user_id, booking_date, booking_time=None):
     day = _as_date(booking_date)
     start, end = week_bounds(day)

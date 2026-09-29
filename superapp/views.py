@@ -13,7 +13,7 @@ from django.views.generic import DetailView, DeleteView
 from bookingapp.decorators import booking_ownership_required
 from bookingapp.models import Booking, BOOKING_TIME
 from profileapp.utils import is_tablet_user
-from superapp.utils import chart_key, other_weekly_booking_count, other_weekly_chart_count, send_discord_message, weekly_limit_cell_ids
+from superapp.utils import chart_key, send_discord_message, weekly_limit_cell_ids, weekly_other_slots
 from articleapp.models import KioskScreen, WaitingOverride, WaitingPatient
 from articleapp.waiting_utils import (
     MAX_WAITING,
@@ -83,18 +83,19 @@ def weekly_third_notice(request):
     user_raw = request.GET.get('user_id')
     if user_raw:
         try:
-            others = other_weekly_booking_count(int(user_raw), booking_date, booking_time)
+            user_id = int(user_raw)
         except ValueError:
             return JsonResponse({'warn': False})
+        slots = weekly_other_slots(user_id, None, booking_date, booking_time)
     else:
         chart = chart_key(request.GET.get('booking_rn'))
         if not chart:
             return JsonResponse({'warn': False})
-        others = other_weekly_chart_count(chart, booking_date, booking_time)
-    nth = others + 1
+        slots = weekly_other_slots(None, chart, booking_date, booking_time)
+    nth = len(slots) + 1
     if nth < 2:
         return JsonResponse({'warn': False})
-    return JsonResponse({'warn': True, 'nth': nth})
+    return JsonResponse({'warn': True, 'nth': nth, 'slots': slots})
 
 
 @login_required

@@ -75,6 +75,7 @@ class WeeklyLimitMarkTests(TestCase):
         second = self.client.get('/supers/weekly-third/', {'user_id': patient.id, 'date': '2026-09-23', 'time': '10:05'})
         self.assertTrue(second.json()['warn'])
         self.assertEqual(second.json()['nth'], 2)
+        self.assertEqual(second.json()['slots'], [{'date': '2026-09-21', 'time': '09:20'}])
         staff.delete()
 
     def test_chart_number_marks_only_the_second_booking(self):
