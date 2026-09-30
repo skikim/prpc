@@ -1078,6 +1078,18 @@ def waiting_pt_status(request):
     })
 
 
+def _waiting_day_switch(day, mode, when):
+    sunday = day.weekday() == 6
+    on = mode == ('open' if sunday else 'closed')
+    if sunday:
+        detail = f'{when}은 휴일인데 진료합니다' if on else f'{when}은 쉽니다'
+        label = '진료함'
+    else:
+        detail = f'{when}은 쉽니다' if on else '평소대로 받습니다'
+        label = '쉽니다'
+    return {'on': on, 'label': label, 'detail': detail}
+
+
 @login_required
 def waiting_list(request):
     if not request.user.is_superuser:
@@ -1086,15 +1098,15 @@ def waiting_list(request):
     tomorrow = today + timedelta(days=1)
     if request.method == 'POST':
         override_day = request.POST.get('override_day')
-        override_mode = request.POST.get('override_mode')
-        if override_day in ('today', 'tomorrow') and override_mode in ('open', 'closed', 'clear'):
+        override_switch = request.POST.get('override_switch')
+        if override_day in ('today', 'tomorrow') and override_switch in ('on', 'off'):
             target = today if override_day == 'today' else tomorrow
-            if override_mode == 'clear':
+            if override_switch == 'off':
                 WaitingOverride.objects.filter(visit_date=target).delete()
             else:
                 WaitingOverride.objects.update_or_create(
                     visit_date=target,
-                    defaults={'mode': override_mode},
+                    defaults={'mode': 'open' if target.weekday() == 6 else 'closed'},
                 )
             return redirect('superapp:waiting_list')
         kiosk_choice = request.POST.get('kiosk_mode')
@@ -1121,8 +1133,8 @@ def waiting_list(request):
         'pm_patients': patients.filter(period='pm'),
         'period': current_waiting_period(),
         'period_label': period_label(current_waiting_period()),
-        'today_override': overrides.get(today),
-        'tomorrow_override': overrides.get(tomorrow),
+        'today_switch': _waiting_day_switch(today, overrides.get(today), '오늘'),
+        'tomorrow_switch': _waiting_day_switch(tomorrow, overrides.get(tomorrow), '내일'),
         'kiosk_mode': kiosk_screen_mode(),
         'kiosk_modes': KIOSK_MODES,
     }

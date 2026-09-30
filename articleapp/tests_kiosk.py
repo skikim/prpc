@@ -149,6 +149,18 @@ class KioskAccessTests(TestCase):
         self.assertNotIn('/supers/waiting_pt/', resp.url)
         self.assertEqual(self.client.get('/supers/kiosk/status/').status_code, 403)
 
+    def test_waiting_switch_sets_day_exception(self):
+        self.client.login(username='admin', password='pass1234')
+        today = datetime.date.today()
+        page = self.client.get('/supers/waiting_list/')
+        self.assertContains(page, '진료함' if today.weekday() == 6 else '쉽니다')
+        self.assertNotContains(page, '오늘 열기')
+        self.client.post('/supers/waiting_list/', {'override_day': 'today', 'override_switch': 'on'})
+        saved = WaitingOverride.objects.get(visit_date=today)
+        self.assertEqual(saved.mode, 'open' if today.weekday() == 6 else 'closed')
+        self.client.post('/supers/waiting_list/', {'override_day': 'today', 'override_switch': 'off'})
+        self.assertFalse(WaitingOverride.objects.filter(visit_date=today).exists())
+
     def test_search_requires_superuser(self):
         self.client.login(username='patient', password='pass1234')
         self.assertEqual(self.client.post('/searches/search/').status_code, 403)

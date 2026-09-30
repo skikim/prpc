@@ -8,36 +8,86 @@
 
     <div class="card mb-4">
         <div class="card-body">
-            <h5 class="card-title">접수 열기 / 닫기</h5>
-            <p class="mb-2">
-                오늘:
-                {% if today_override == 'open' %}강제 열림
-                {% elif today_override == 'closed' %}강제 닫힘
-                {% else %}요일 기본{% endif %}
-            </p>
-            <form method="post" class="d-inline">
+            <h5 class="card-title">선착순 접수</h5>
+            <form method="post" class="wait-switch-row">
                 {% csrf_token %}
                 <input type="hidden" name="override_day" value="today">
-                <button class="btn btn-success btn-sm" name="override_mode" value="open">오늘 열기</button>
-                <button class="btn btn-danger btn-sm" name="override_mode" value="closed">오늘 닫기</button>
-                <button class="btn btn-outline-secondary btn-sm" name="override_mode" value="clear">오늘 해제</button>
+                <input type="hidden" name="override_switch" value="off">
+                <div>
+                    <div class="wait-switch-title">오늘</div>
+                    <div class="wait-switch-detail">{{ today_switch.detail }}</div>
+                </div>
+                <label class="wait-switch">
+                    <input type="checkbox" name="override_switch" value="on" {% if today_switch.on %}checked{% endif %} onchange="this.form.submit()">
+                    <span>{{ today_switch.label }}</span>
+                </label>
             </form>
-            <hr>
-            <p class="mb-2">
-                내일 ({{ tomorrow }}):
-                {% if tomorrow_override == 'open' %}강제 열림
-                {% elif tomorrow_override == 'closed' %}강제 닫힘
-                {% else %}요일 기본{% endif %}
-            </p>
-            <form method="post" class="d-inline">
+            <form method="post" class="wait-switch-row">
                 {% csrf_token %}
                 <input type="hidden" name="override_day" value="tomorrow">
-                <button class="btn btn-success btn-sm" name="override_mode" value="open">내일 열기</button>
-                <button class="btn btn-danger btn-sm" name="override_mode" value="closed">내일 닫기</button>
-                <button class="btn btn-outline-secondary btn-sm" name="override_mode" value="clear">내일 해제</button>
+                <input type="hidden" name="override_switch" value="off">
+                <div>
+                    <div class="wait-switch-title">내일 {{ tomorrow }}</div>
+                    <div class="wait-switch-detail">{{ tomorrow_switch.detail }}</div>
+                </div>
+                <label class="wait-switch">
+                    <input type="checkbox" name="override_switch" value="on" {% if tomorrow_switch.on %}checked{% endif %} onchange="this.form.submit()">
+                    <span>{{ tomorrow_switch.label }}</span>
+                </label>
             </form>
+            <p class="text-muted mb-0">퇴근 전에 내일을 정해 두세요. 끄면 평소대로 돌아갑니다.</p>
         </div>
     </div>
+    <style>
+        .wait-switch-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            padding: 0.9rem 0;
+            border-bottom: 1px solid #e5e7eb;
+            margin-bottom: 0.4rem;
+        }
+        .wait-switch-title { font-weight: 700; }
+        .wait-switch-detail { color: #64748b; font-size: 0.92rem; }
+        .wait-switch {
+            display: flex;
+            align-items: center;
+            gap: 0.55rem;
+            margin: 0;
+            font-weight: 700;
+            cursor: pointer;
+        }
+        .wait-switch input {
+            appearance: none;
+            -webkit-appearance: none;
+            width: 3.2rem;
+            height: 1.8rem;
+            margin: 0;
+            border-radius: 999px;
+            background: #cbd5e1;
+            position: relative;
+            cursor: pointer;
+            border: none;
+        }
+        .wait-switch input::after {
+            content: '';
+            position: absolute;
+            top: 0.15rem;
+            left: 0.15rem;
+            width: 1.5rem;
+            height: 1.5rem;
+            border-radius: 50%;
+            background: #fff;
+            transition: left 0.15s;
+        }
+        .wait-switch input:checked {
+            background: #2563eb;
+        }
+        .wait-switch input:checked::after {
+            left: 1.55rem;
+        }
+    </style>
 
     <div class="card mb-4">
         <div class="card-body">
