@@ -85,6 +85,24 @@ def mask_name(name):
     return name[0] + ('*' * (len(name) - 2)) + name[-1]
 
 
+def normalize_birth_date(raw, today=None):
+    raw = (raw or '').strip()
+    if not raw.isdigit() or len(raw) not in (6, 8):
+        return None
+    today = today or datetime.date.today()
+    if len(raw) == 6:
+        yy = int(raw[:2])
+        year = 1900 + yy if yy > today.year % 100 else 2000 + yy
+        raw = f'{year:04d}{raw[2:]}'
+    try:
+        parsed = datetime.date(int(raw[:4]), int(raw[4:6]), int(raw[6:8]))
+    except ValueError:
+        return None
+    if parsed.year < 1910 or parsed > today:
+        return None
+    return parsed.strftime('%Y%m%d')
+
+
 def waiting_board(visit_date, period):
     if not period:
         return []

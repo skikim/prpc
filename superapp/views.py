@@ -22,6 +22,7 @@ from articleapp.waiting_utils import (
     current_waiting_period,
     period_label,
     sync_waiting_count,
+    normalize_birth_date,
     waiting_board,
     waiting_count,
     waiting_gate,
@@ -951,8 +952,20 @@ KIOSK_MODES = {
 }
 
 
-def kiosk_screen_mode():
+def kiosk_reset_boundary(now):
+    boundary = now.replace(hour=18, minute=0, second=0, microsecond=0)
+    if now < boundary:
+        boundary -= timedelta(days=1)
+    return boundary
+
+
+def kiosk_screen_mode(now=None):
+    now = now or datetime.datetime.now()
     screen, _ = KioskScreen.objects.get_or_create(pk=1, defaults={'mode': 'wait'})
+    changed_at = screen.updated_at
+    if screen.mode != 'wait' and (changed_at is None or changed_at < kiosk_reset_boundary(now)):
+        screen.mode = 'wait'
+        screen.save()
     if screen.mode not in KIOSK_MODES:
         return 'wait'
     return screen.mode
@@ -1000,16 +1013,16 @@ def waiting_pt(request):
         if count >= MAX_WAITING:
             return redirect('superapp:waiting_pt')
         real_name = (request.POST.get('real_name') or '').strip()
-        birth_date = (request.POST.get('birth_date') or '').strip()
+        raw_birth = (request.POST.get('birth_date') or '').strip()
         if len(real_name) < 2:
             messages.error(request, '이름을 입력해 주세요.')
             return redirect('superapp:waiting_pt')
-        if len(birth_date) != 8 or not birth_date.isdigit():
-            messages.error(request, '생년월일 8자리를 입력해 주세요.')
-            return redirect('superapp:waiting_pt')
-        year = int(birth_date[:4])
-        if year < 1910 or year > datetime.date.today().year:
-            messages.error(request, '생년월일을 다시 확인해 주세요.')
+        birth_date = normalize_birth_date(raw_birth, today)
+        if not birth_date:
+            if raw_birth.isdigit() and len(raw_birth) in (6, 8):
+                messages.error(request, '생년월일을 다시 확인해 주세요.')
+            else:
+                messages.error(request, '생년월일 6자리 또는 8자리를 입력해 주세요.')
             return redirect('superapp:waiting_pt')
         exists = WaitingPatient.objects.filter(
             visit_date=today,

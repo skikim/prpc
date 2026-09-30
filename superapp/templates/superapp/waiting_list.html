@@ -43,6 +43,7 @@
         <div class="card-body">
             <h5 class="card-title">태블릿 화면</h5>
             <p class="mb-2">현재: {% for key, item in kiosk_modes.items %}{% if key == kiosk_mode %}{{ item.1 }}{% endif %}{% endfor %}</p>
+            <p class="text-muted mb-2">매일 오후 6시에 대기 명단으로 바뀝니다.</p>
             <form method="post" class="d-inline">
                 {% csrf_token %}
                 {% for key, item in kiosk_modes.items %}

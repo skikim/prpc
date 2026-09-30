@@ -4,8 +4,9 @@ from django.contrib.auth.models import User
 from django.db.models import Q
 from django.test import TestCase
 
-from articleapp.models import WaitingOverride
-from articleapp.waiting_utils import waiting_gate
+from articleapp.models import KioskScreen, WaitingOverride
+from articleapp.waiting_utils import normalize_birth_date, waiting_gate
+from superapp.views import kiosk_screen_mode
 from bookingapp.models import Booking
 from profileapp.models import Profile
 
@@ -174,3 +175,57 @@ class WeeklyBookingLimitTests(TestCase):
         )
         self.assertEqual(weekly.count(), 2)
         self.assertFalse(weekly.count() < 2)
+
+
+class KioskDailyResetTests(TestCase):
+    def set_changed_at(self, when, mode='book'):
+        screen, _ = KioskScreen.objects.update_or_create(pk=1, defaults={'mode': mode})
+        KioskScreen.objects.filter(pk=screen.pk).update(updated_at=when)
+        return screen
+
+    def test_before_18_keeps_manual_screen(self):
+        self.set_changed_at(datetime.datetime(2026, 9, 30, 17, 0))
+        self.assertEqual(kiosk_screen_mode(datetime.datetime(2026, 9, 30, 17, 59)), 'book')
+
+    def test_at_18_resets_to_wait(self):
+        self.set_changed_at(datetime.datetime(2026, 9, 30, 17, 0))
+        self.assertEqual(kiosk_screen_mode(datetime.datetime(2026, 9, 30, 18, 0)), 'wait')
+        self.assertEqual(KioskScreen.objects.get(pk=1).mode, 'wait')
+
+    def test_manual_change_after_18_sticks_until_next_day(self):
+        self.set_changed_at(datetime.datetime(2026, 9, 30, 18, 10))
+        self.assertEqual(kiosk_screen_mode(datetime.datetime(2026, 9, 30, 19, 0)), 'book')
+        self.assertEqual(kiosk_screen_mode(datetime.datetime(2026, 10, 1, 7, 0)), 'wait')
+
+    def test_status_poll_applies_missed_reset(self):
+        tablet = User.objects.create_user('tablet-reset', password='pass1234')
+        Profile.objects.create(
+            user=tablet,
+            real_name='태블릿',
+            phone_num='010',
+            birth_date='19900101',
+            is_tablet_user=True,
+        )
+        self.client.login(username='tablet-reset', password='pass1234')
+        self.set_changed_at(datetime.datetime(2000, 1, 1, 10, 0), mode='book21')
+        status = self.client.get('/supers/kiosk/status/')
+        self.assertEqual(status.json()['mode'], 'wait')
+        self.assertEqual(status.json()['url'], '/supers/waiting_pt/')
+
+
+class NormalizeBirthDateTests(TestCase):
+    today = datetime.date(2026, 9, 30)
+
+    def test_eight_digits_kept(self):
+        self.assertEqual(normalize_birth_date('19620428', self.today), '19620428')
+
+    def test_six_digits_expand_to_1900s(self):
+        self.assertEqual(normalize_birth_date('620428', self.today), '19620428')
+
+    def test_six_digits_expand_to_2000s(self):
+        self.assertEqual(normalize_birth_date('100101', self.today), '20100101')
+
+    def test_invalid_rejected(self):
+        self.assertIsNone(normalize_birth_date('620431', self.today))
+        self.assertIsNone(normalize_birth_date('19000101', self.today))
+        self.assertIsNone(normalize_birth_date('12345', self.today))

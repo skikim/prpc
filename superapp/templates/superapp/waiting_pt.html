@@ -75,6 +75,7 @@
         align-items: center;
     }
     .wait-label { font-size: 1.15rem; font-weight: 800; margin: 0.85rem 0 0.35rem; color: #334155; }
+    .wait-hint { font-size: 0.85rem; font-weight: 600; color: #64748b; margin-left: 0.35rem; }
     .wait-input {
         width: 100%;
         font-size: 2.05rem;
@@ -280,7 +281,7 @@
                 {% csrf_token %}
                 <div class="wait-label">이름</div>
                 <input class="wait-input" type="text" name="real_name" id="real_name" maxlength="16" autocomplete="off" inputmode="text">
-                <div class="wait-label">생년월일 8자리</div>
+                <div class="wait-label">생년월일 8자리 <span class="wait-hint">6자리도 가능</span></div>
                 <input class="wait-input wait-birth" type="text" name="birth_date" id="birth_date" maxlength="8" inputmode="numeric" pattern="[0-9]*" placeholder="19620428" autocomplete="off">
                 <button type="button" class="wait-submit" onclick="showConfirm()">확인</button>
             </form>
@@ -295,9 +296,29 @@
             this.value = this.value.replace(/\D/g, '').slice(0, 8);
         });
     }
+    function expandBirth(value) {
+        if (value.length === 8) return value;
+        if (value.length !== 6) return '';
+        var yy = parseInt(value.slice(0, 2), 10);
+        var currentYy = new Date().getFullYear() % 100;
+        var year = yy > currentYy ? 1900 + yy : 2000 + yy;
+        return String(year) + value.slice(2);
+    }
+    function validBirth(value) {
+        var full = expandBirth(value);
+        if (full.length !== 8) return false;
+        var y = parseInt(full.slice(0, 4), 10);
+        var m = parseInt(full.slice(4, 6), 10);
+        var d = parseInt(full.slice(6, 8), 10);
+        var dt = new Date(y, m - 1, d);
+        var today = new Date();
+        today.setHours(0, 0, 0, 0);
+        return dt.getFullYear() === y && dt.getMonth() === m - 1 && dt.getDate() === d && y >= 1910 && dt <= today;
+    }
     function formatBirth(value) {
-        if (value.length !== 8) return value;
-        return value.slice(0, 4) + '년 ' + value.slice(4, 6) + '월 ' + value.slice(6, 8) + '일';
+        var full = expandBirth(value);
+        if (full.length !== 8) return value;
+        return full.slice(0, 4) + '년 ' + full.slice(4, 6) + '월 ' + full.slice(6, 8) + '일';
     }
     function showConfirm() {
         var name = (document.getElementById('real_name').value || '').trim();
@@ -306,8 +327,12 @@
             alert('이름을 입력해 주세요.');
             return;
         }
-        if (birth.length !== 8) {
-            alert('생년월일 8자리를 입력해 주세요.');
+        if (birth.length !== 6 && birth.length !== 8) {
+            alert('생년월일 6자리 또는 8자리를 입력해 주세요.');
+            return;
+        }
+        if (!validBirth(birth)) {
+            alert('생년월일을 다시 확인해 주세요.');
             return;
         }
         document.getElementById('confirm-name').innerText = '이름 : ' + name;

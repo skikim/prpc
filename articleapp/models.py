@@ -36,3 +36,4 @@ class WaitingOverride(models.Model):
 class KioskScreen(models.Model):
     MODE_CHOICES = (('wait', '대기 명단'), ('book', '14일'), ('book21', '21일'), ('book28', '28일'))
     mode = models.CharField(max_length=8, choices=MODE_CHOICES, default='wait')
+    updated_at = models.DateTimeField(auto_now=True)
