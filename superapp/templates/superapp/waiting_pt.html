@@ -29,7 +29,7 @@
         -webkit-text-fill-color: #fff !important;
     }
     .wait-top h1 {
-        font-size: 1.7rem;
+        font-size: 2.8rem;
         font-weight: 800;
         margin: 0 0 0.4rem;
     }
@@ -135,6 +135,13 @@
         color: #1e3a8a !important;
         -webkit-text-fill-color: #1e3a8a !important;
         letter-spacing: -0.02em;
+        line-height: 1.55;
+    }
+    .wait-closed strong {
+        font-weight: 900;
+        text-decoration: underline;
+        text-underline-offset: 0.12em;
+        -webkit-text-fill-color: #1e3a8a !important;
     }
     .wait-board {
         display: flex;
@@ -256,7 +263,7 @@
             </div>
             <div class="wait-closed">{{ period_label }} 선착순이 마감되었습니다.</div>
             {% else %}
-            <div class="wait-closed">{{ gate_message|linebreaksbr }}</div>
+            <div class="wait-closed">{{ gate_message }}</div>
             {% endif %}
         {% else %}
             <div class="wait-board" id="wait-board">

@@ -5,6 +5,8 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.db.models import Q
 from django.http import HttpResponse, HttpResponseForbidden, JsonResponse
+from django.utils.html import escape
+from django.utils.safestring import mark_safe
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse, reverse_lazy
 from django.utils.decorators import method_decorator
@@ -1035,7 +1037,9 @@ def waiting_pt(request):
         'max_waiting': MAX_WAITING,
         'closed': bool(period and count >= MAX_WAITING),
         'can_input': bool(gate['can_input'] and count < MAX_WAITING),
-        'gate_message': gate['message'],
+        'gate_message': mark_safe(
+            escape(gate['message']).replace('자동으로', '<strong>자동으로</strong>').replace('\n', '<br>')
+        ),
         'done': request.GET.get('done'),
         'board': waiting_board(today, period) if period else [],
     }

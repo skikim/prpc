@@ -19,7 +19,9 @@ class WaitingGateTests(TestCase):
         monday = dt(2026, 9, 21, 6, 30)
         self.assertEqual(waiting_gate(monday)['period'], 'am')
         self.assertTrue(waiting_gate(monday)['can_input'])
-        self.assertFalse(waiting_gate(dt(2026, 9, 21, 6, 29))['can_input'])
+        early = waiting_gate(dt(2026, 9, 21, 6, 29))
+        self.assertFalse(early['can_input'])
+        self.assertIn('자동으로', early['message'])
         self.assertFalse(waiting_gate(dt(2026, 9, 21, 9, 0))['can_input'])
 
     def test_weekday_pm_window(self):
@@ -31,6 +33,8 @@ class WaitingGateTests(TestCase):
     def test_wednesday_am_closed_pm_open(self):
         wed_am = dt(2026, 9, 23, 7, 0)
         self.assertFalse(waiting_gate(wed_am)['can_input'])
+        self.assertIn('11시 30분', waiting_gate(wed_am)['message'])
+        self.assertIn('자동으로', waiting_gate(wed_am)['message'])
         self.assertIsNone(waiting_gate(wed_am)['period'])
         wed_pm = dt(2026, 9, 23, 12, 0)
         self.assertTrue(waiting_gate(wed_pm)['can_input'])

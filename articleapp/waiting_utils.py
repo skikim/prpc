@@ -31,22 +31,22 @@ def waiting_gate(now=None):
         return result(None, False, '일요일은 선착순 접수가 없습니다.')
     if weekday == 2:
         if total < PM_START:
-            return result(None, False, '수요일은 오후 진료입니다.\n11시 30분부터 접수할 수 있습니다.')
+            return result(None, False, '수요일은 오후 진료입니다.\n11시 30분이 되면 자동으로 접수 화면으로 바뀝니다.\n조금만 기다려 주세요!!!')
         if total < PM_END:
             return result('pm', True, '')
         return result(None, False, '오늘 선착순 접수가 마감되었습니다.')
     if weekday == 5:
         if total < AM_START:
-            return result(None, False, '오전 접수는 6시 30분부터 시작됩니다.')
+            return result(None, False, '오전 접수는 6시 30분부터입니다.\n6시 30분이 되면 자동으로 접수 화면으로 바뀝니다.\n조금만 기다려 주세요!!!')
         if total < AM_END:
             return result('am', True, '')
         return result(None, False, '오늘 선착순 접수가 마감되었습니다.')
     if total < AM_START:
-        return result(None, False, '오전 접수는 6시 30분부터 시작됩니다.')
+        return result(None, False, '오전 접수는 6시 30분부터입니다.\n6시 30분이 되면 자동으로 접수 화면으로 바뀝니다.\n조금만 기다려 주세요!!!')
     if total < AM_END:
         return result('am', True, '')
     if total < PM_START:
-        return result(None, False, '오전 접수가 마감되었습니다.\n오후 접수는 11시 30분부터입니다.')
+        return result(None, False, '오전 접수가 마감되었습니다.\n오후 접수는 11시 30분부터입니다.\n11시 30분이 되면 자동으로 접수 화면으로 바뀝니다.\n조금만 기다려 주세요!!!')
     if total < PM_END:
         return result('pm', True, '')
     return result(None, False, '오늘 선착순 접수가 마감되었습니다.')
