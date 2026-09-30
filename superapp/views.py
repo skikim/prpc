@@ -941,16 +941,23 @@ def _tablet_waiting_allowed(user):
     return is_tablet_user(user) or user.is_superuser
 
 
+KIOSK_MODES = {
+    'wait': ('superapp:waiting_pt', '대기 명단'),
+    'book': ('superapp:tablet', '14일'),
+    'book21': ('superapp:tablet2', '21일'),
+    'book28': ('superapp:tablet3', '28일'),
+}
+
+
 def kiosk_screen_mode():
     screen, _ = KioskScreen.objects.get_or_create(pk=1, defaults={'mode': 'wait'})
-    if screen.mode not in ('wait', 'book'):
+    if screen.mode not in KIOSK_MODES:
         return 'wait'
     return screen.mode
 
 
 def _kiosk_redirect(mode):
-    target = 'superapp:tablet' if mode == 'book' else 'superapp:waiting_pt'
-    response = redirect(target)
+    response = redirect(KIOSK_MODES[mode][0])
     response['Cache-Control'] = 'no-store'
     return response
 
@@ -966,7 +973,8 @@ def kiosk_screen(request):
 def kiosk_status(request):
     if not _tablet_waiting_allowed(request.user):
         return JsonResponse({}, status=403)
-    response = JsonResponse({'mode': kiosk_screen_mode()})
+    mode = kiosk_screen_mode()
+    response = JsonResponse({'mode': mode, 'url': reverse(KIOSK_MODES[mode][0])})
     response['Cache-Control'] = 'no-store'
     return response
 
@@ -1073,7 +1081,7 @@ def waiting_list(request):
                 )
             return redirect('superapp:waiting_list')
         kiosk_choice = request.POST.get('kiosk_mode')
-        if kiosk_choice in ('wait', 'book'):
+        if kiosk_choice in KIOSK_MODES:
             KioskScreen.objects.update_or_create(pk=1, defaults={'mode': kiosk_choice})
             return redirect('superapp:waiting_list')
         patient_id = request.POST.get('patient_id')
@@ -1099,6 +1107,7 @@ def waiting_list(request):
         'today_override': overrides.get(today),
         'tomorrow_override': overrides.get(tomorrow),
         'kiosk_mode': kiosk_screen_mode(),
+        'kiosk_modes': KIOSK_MODES,
     }
     return render(request, 'superapp/waiting_list.html', context)
 

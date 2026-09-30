@@ -1,15 +1,12 @@
 <script>
     (function() {
-        var pageMode = "{{ page_mode }}";
         var statusUrl = "{% url 'superapp:kiosk_status' %}";
-        var waitUrl = "{% url 'superapp:waiting_pt' %}";
-        var bookUrl = "{% url 'superapp:tablet' %}";
         function pollScreen() {
             fetch(statusUrl, {credentials: 'same-origin', cache: 'no-store'})
                 .then(function(response) { return response.json(); })
                 .then(function(data) {
-                    if (data.mode && data.mode !== pageMode) {
-                        location.href = data.mode === 'book' ? bookUrl : waitUrl;
+                    if (data.url && location.pathname !== data.url) {
+                        location.href = data.url;
                         return;
                     }
                     setTimeout(pollScreen, 3000);

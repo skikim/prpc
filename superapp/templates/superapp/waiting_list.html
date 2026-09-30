@@ -42,11 +42,12 @@
     <div class="card mb-4">
         <div class="card-body">
             <h5 class="card-title">태블릿 화면</h5>
-            <p class="mb-2">현재: {% if kiosk_mode == 'book' %}예약{% else %}대기 명단{% endif %}</p>
+            <p class="mb-2">현재: {% for key, item in kiosk_modes.items %}{% if key == kiosk_mode %}{{ item.1 }}{% endif %}{% endfor %}</p>
             <form method="post" class="d-inline">
                 {% csrf_token %}
-                <button class="btn btn-outline-primary btn-sm" name="kiosk_mode" value="wait" {% if kiosk_mode != 'book' %}disabled{% endif %}>대기 명단</button>
-                <button class="btn btn-outline-primary btn-sm" name="kiosk_mode" value="book" {% if kiosk_mode == 'book' %}disabled{% endif %}>예약</button>
+                {% for key, item in kiosk_modes.items %}
+                <button class="btn btn-outline-primary btn-sm" name="kiosk_mode" value="{{ key }}" {% if key == kiosk_mode %}disabled{% endif %}>{{ item.1 }}</button>
+                {% endfor %}
             </form>
         </div>
     </div>
