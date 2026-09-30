@@ -22,6 +22,7 @@ from articleapp.waiting_utils import (
     current_waiting_period,
     period_label,
     sync_waiting_count,
+    is_legal_holiday,
     normalize_birth_date,
     waiting_board,
     waiting_count,
@@ -1079,10 +1080,15 @@ def waiting_pt_status(request):
 
 
 def _waiting_day_switch(day, mode, when):
-    sunday = day.weekday() == 6
-    on = mode == ('open' if sunday else 'closed')
-    if sunday:
-        detail = f'{when}은 휴일인데 진료합니다' if on else f'{when}은 쉽니다'
+    closed_by_default = day.weekday() == 6 or is_legal_holiday(day)
+    on = mode == ('open' if closed_by_default else 'closed')
+    if closed_by_default:
+        if on:
+            detail = f'{when}은 휴일인데 진료합니다'
+        elif is_legal_holiday(day):
+            detail = f'{when}은 공휴일이라 쉽니다'
+        else:
+            detail = f'{when}은 쉽니다'
         label = '진료함'
     else:
         detail = f'{when}은 쉽니다' if on else '평소대로 받습니다'
@@ -1106,7 +1112,7 @@ def waiting_list(request):
             else:
                 WaitingOverride.objects.update_or_create(
                     visit_date=target,
-                    defaults={'mode': 'open' if target.weekday() == 6 else 'closed'},
+                    defaults={'mode': 'open' if target.weekday() == 6 or is_legal_holiday(target) else 'closed'},
                 )
             return redirect('superapp:waiting_list')
         kiosk_choice = request.POST.get('kiosk_mode')

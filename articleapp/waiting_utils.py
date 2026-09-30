@@ -1,5 +1,7 @@
 import datetime
 
+import holidays
+
 from articleapp.models import Waiting, WaitingOverride, WaitingPatient
 
 AM_START = 6 * 60 + 30
@@ -7,6 +9,19 @@ AM_END = 9 * 60
 PM_START = 11 * 60 + 30
 PM_END = 14 * 60
 MAX_WAITING = 4
+_kr_holidays = {}
+
+
+def legal_holiday_name(day):
+    calendar = _kr_holidays.get(day.year)
+    if calendar is None:
+        calendar = holidays.KR(years=day.year)
+        _kr_holidays[day.year] = calendar
+    return calendar.get(day) or ''
+
+
+def is_legal_holiday(day):
+    return bool(legal_holiday_name(day))
 
 
 def waiting_gate(now=None):
@@ -25,7 +40,10 @@ def waiting_gate(now=None):
     override = WaitingOverride.objects.filter(visit_date=now.date()).first()
     if override and override.mode == 'closed':
         return result(None, False, '오늘은 선착순 접수가 없습니다.')
-    if override and override.mode == 'open' and weekday == 6:
+    opened = bool(override and override.mode == 'open')
+    if not opened and is_legal_holiday(now.date()):
+        return result(None, False, '오늘은 공휴일이라 선착순 접수가 없습니다.')
+    if opened and weekday == 6:
         weekday = 0
     elif weekday == 6:
         return result(None, False, '일요일은 선착순 접수가 없습니다.')

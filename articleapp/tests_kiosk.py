@@ -5,7 +5,7 @@ from django.db.models import Q
 from django.test import TestCase
 
 from articleapp.models import KioskScreen, WaitingOverride
-from articleapp.waiting_utils import normalize_birth_date, waiting_gate
+from articleapp.waiting_utils import is_legal_holiday, normalize_birth_date, waiting_gate
 from superapp.views import kiosk_screen_mode
 from bookingapp.models import Booking
 from profileapp.models import Profile
@@ -60,6 +60,22 @@ class WaitingGateTests(TestCase):
         WaitingOverride.objects.create(visit_date=sunday.date(), mode='open')
         self.assertTrue(waiting_gate(sunday)['can_input'])
         self.assertEqual(waiting_gate(sunday)['period'], 'am')
+
+    def test_legal_holiday_closed_unless_opened(self):
+        chuseok = dt(2026, 9, 25, 7, 0)
+        self.assertFalse(waiting_gate(chuseok)['can_input'])
+        self.assertIn('공휴일', waiting_gate(chuseok)['message'])
+        WaitingOverride.objects.create(visit_date=chuseok.date(), mode='open')
+        opened = waiting_gate(chuseok)
+        self.assertTrue(opened['can_input'])
+        self.assertEqual(opened['period'], 'am')
+        substitute = waiting_gate(dt(2026, 3, 2, 12, 0))
+        self.assertFalse(substitute['can_input'])
+        self.assertIn('공휴일', substitute['message'])
+        election = waiting_gate(dt(2026, 6, 3, 12, 0))
+        self.assertFalse(election['can_input'])
+        self.assertIn('공휴일', election['message'])
+        self.assertTrue(is_legal_holiday(datetime.date(2026, 6, 3)))
 
 
 class KioskAccessTests(TestCase):
@@ -152,12 +168,13 @@ class KioskAccessTests(TestCase):
     def test_waiting_switch_sets_day_exception(self):
         self.client.login(username='admin', password='pass1234')
         today = datetime.date.today()
+        closed_by_default = today.weekday() == 6 or is_legal_holiday(today)
         page = self.client.get('/supers/waiting_list/')
-        self.assertContains(page, '진료함' if today.weekday() == 6 else '쉽니다')
+        self.assertContains(page, '진료함' if closed_by_default else '쉽니다')
         self.assertNotContains(page, '오늘 열기')
         self.client.post('/supers/waiting_list/', {'override_day': 'today', 'override_switch': 'on'})
         saved = WaitingOverride.objects.get(visit_date=today)
-        self.assertEqual(saved.mode, 'open' if today.weekday() == 6 else 'closed')
+        self.assertEqual(saved.mode, 'open' if closed_by_default else 'closed')
         self.client.post('/supers/waiting_list/', {'override_day': 'today', 'override_switch': 'off'})
         self.assertFalse(WaitingOverride.objects.filter(visit_date=today).exists())
 
