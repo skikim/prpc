@@ -71,12 +71,13 @@
     
     /* 대기환자 카드 */
     .waiting-card {
-        background: linear-gradient(135deg, #fef3c7 0%, #fde68a 50%, #f59e0b 20%);
-        color: #92400e;
+        background: #fff;
+        color: #1e3a8a;
+        border: 1px solid #e2e8f0;
     }
     
     .waiting-card::before {
-        background: linear-gradient(90deg, #f59e0b, #d97706);
+        background: #2563eb;
     }
     
     /* 아이콘 스타일 */
@@ -113,8 +114,9 @@
     }
     
     .waiting-card .alert-card-icon {
-        background: rgba(245, 158, 11, 0.15);
-        color: #d97706;
+        background: #eff6ff;
+        color: #2563eb;
+        border-color: #dbeafe;
     }
     
     /* 콘텐츠 스타일 */
@@ -185,36 +187,28 @@
     /* 대기환자 정보 */
     .waiting-info {
         display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        margin: 1rem 0;
-        padding: 1rem;
-        background: rgba(255, 255, 255, 0.6);
-        border-radius: 12px;
-        backdrop-filter: blur(10px);
-    }
-    
-    .waiting-text {
-        font-size: 0.875rem;
-        font-weight: 600;
-        color: #92400e;
+        align-items: baseline;
+        gap: 0.35rem;
+        margin: 0.35rem 0 0.75rem;
     }
     
     .waiting-number {
-        font-size: 1.5rem;
+        font-size: 2.75rem;
         font-weight: 800;
-        color: #d97706;
-        background: rgba(255, 255, 255, 0.9);
-        padding: 0.25rem 0.75rem;
-        border-radius: 8px;
-        min-width: 2.5rem;
-        text-align: center;
+        color: #2563eb;
+        line-height: 1;
+        letter-spacing: -0.04em;
     }
     
     .waiting-total {
-        font-size: 0.875rem;
+        font-size: 0.95rem;
         font-weight: 600;
-        color: #92400e;
+        color: #64748b;
+    }
+    .waiting-card .alert-card-datetime {
+        color: #64748b;
+        font-weight: 500;
+        margin-bottom: 0;
     }
     
     /* 반응형 조정 */
@@ -297,6 +291,17 @@
                 </div>
             {% endif %}
 
+            <div id='waiting_num_notice' class="alert-card waiting-card">
+                <div class="alert-card-content">
+                    <h6 class="alert-card-title">선착순 대기</h6>
+                    <div class="waiting-info">
+                        <span class="waiting-number">{{ waiting.waiting_num }}</span>
+                        <span class="waiting-total">/ 4명</span>
+                    </div>
+                    <p class="alert-card-datetime">{{ waiting_clock }}</p>
+                </div>
+            </div>
+
             {% if holiday_messages %}
                 <div class="alert-card holiday-card">
                     <div class="alert-card-icon">
@@ -310,24 +315,6 @@
                     </div>
                 </div>
             {% endif %}
-
-            <div id='waiting_num_notice' class="alert-card waiting-card">
-                <div class="alert-card-icon">
-                    <i class="fas fa-users"></i>
-                </div>
-                <div class="alert-card-content">
-                    <h6 class="alert-card-title">선착순 대기환자 안내</h6>
-                    <p class="alert-card-datetime">{{ waiting_date }} {{ waiting_time }} (현재)</p>
-                    <div class="waiting-info">
-                        <span class="waiting-text">대기환자</span>
-                        <span class="waiting-number">{{ waiting.waiting_num }}</span>
-                        <span class="waiting-total">/ 4 명</span>
-                    </div>
-                    <p class="alert-card-notice">
-                        <i class="fas fa-info-circle me-1"></i>꼭!!! 집계된 시간을 체크하세요.
-                    </p>
-                </div>
-            </div>
         </div>
 
 
@@ -725,25 +712,15 @@
             const t_day = t_today.getDate().toString().padStart(2, '0');
             const today_date_han = `${t_month}월 ${t_day}일`;
 
-            const t_hours_2 = t_today.getHours().toString().padStart(2, '0');
-            const t_hours_3 = t_hours_2.substring(0, 2)
-            const t_waiting_time_2 = '{{ waiting_time }}'
-            const t_waiting_time_3 = t_waiting_time_2.substring(0, 2)
-            const t_waiting_time_4 = (+t_waiting_time_3 + 1).toString().padStart(2, '0')
-            {#const t_minutes_2 = t_today.getMinutes().toString().padStart(2, '0');#}
-            {#const today_time_han = `${t_hours_2}시 ${t_minutes_2}분`;#}
-
-            var t_hours = t_today.getHours(); // 시
-            {#document.getElementById('test123').innerText = t_waiting_time_4 +"  "+ t_waiting_time_3 +"  "+t_hours_3#}
-            var t_min = t_today.getMinutes(); //분
-            var t_total = (t_hours*60) + t_min;
-            if (t_total > 479 && t_total < 550 && '{{ waiting_date }}'==today_date_han && (t_hours_3==t_waiting_time_3 || t_hours_3==t_waiting_time_4)) {
+            const waitingTime = '{{ waiting_time }}';
+            const waitingMatch = waitingTime.match(/(\d{2})시\s*(\d{2})분/);
+            const waitingTotal = waitingMatch ? (parseInt(waitingMatch[1], 10) * 60 + parseInt(waitingMatch[2], 10)) : -1;
+            var t_total = (t_today.getHours() * 60) + t_today.getMinutes();
+            var sameDay = '{{ waiting_date }}' == today_date_han;
+            var morning = sameDay && t_total >= 390 && t_total < 550 && waitingTotal >= 390 && waitingTotal < 690;
+            var afternoon = sameDay && t_total >= 690 && t_total < 850 && waitingTotal >= 690;
+            if (morning || afternoon) {
                 $('#waiting_num_notice').show();
-                {#document.getElementById('waiting_inform').style.display='block';#}
-            }
-            else if (t_total > 690 && t_total < 850 && '{{ waiting_date }}'==today_date_han && (t_hours_3==t_waiting_time_3 || t_hours_3==t_waiting_time_4)) {
-                $('#waiting_num_notice').show();
-                {#document.getElementById('waiting_inform').style.display='block';#}
             }
             else {
                 $('#waiting_num_notice').hide();

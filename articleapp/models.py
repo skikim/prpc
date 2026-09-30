@@ -33,6 +33,11 @@ class WaitingOverride(models.Model):
     mode = models.CharField(max_length=8, choices=MODE_CHOICES)
 
 
+class WaitingBreak(models.Model):
+    start_date = models.DateField()
+    end_date = models.DateField()
+
+
 class KioskScreen(models.Model):
     MODE_CHOICES = (('wait', '대기 명단'), ('book', '14일'), ('book21', '21일'), ('book28', '28일'))
     mode = models.CharField(max_length=8, choices=MODE_CHOICES, default='wait')

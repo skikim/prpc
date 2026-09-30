@@ -2,7 +2,7 @@ import datetime
 
 import holidays
 
-from articleapp.models import Waiting, WaitingOverride, WaitingPatient
+from articleapp.models import Waiting, WaitingBreak, WaitingOverride, WaitingPatient
 
 AM_START = 6 * 60 + 30
 AM_END = 9 * 60
@@ -22,6 +22,34 @@ def legal_holiday_name(day):
 
 def is_legal_holiday(day):
     return bool(legal_holiday_name(day))
+
+
+def break_label(start, end):
+    def text(day):
+        return f'{day.month}월 {day.day}일'
+    if start == end:
+        return f'{text(start)} 쉽니다'
+    return f'{text(start)}부터 {text(end)}까지 쉽니다'
+
+
+def clear_waiting_break():
+    current = WaitingBreak.objects.order_by('-id').first()
+    if not current:
+        return
+    WaitingOverride.objects.filter(
+        visit_date__range=(current.start_date, current.end_date),
+        mode='closed',
+    ).delete()
+    current.delete()
+
+
+def apply_waiting_break(start, end):
+    clear_waiting_break()
+    WaitingBreak.objects.create(start_date=start, end_date=end)
+    day = start
+    while day <= end:
+        WaitingOverride.objects.update_or_create(visit_date=day, defaults={'mode': 'closed'})
+        day += datetime.timedelta(days=1)
 
 
 def waiting_gate(now=None):

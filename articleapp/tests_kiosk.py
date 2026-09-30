@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 from django.db.models import Q
 from django.test import TestCase
 
-from articleapp.models import KioskScreen, WaitingOverride
+from articleapp.models import KioskScreen, WaitingBreak, WaitingOverride
 from articleapp.waiting_utils import is_legal_holiday, normalize_birth_date, waiting_gate
 from superapp.views import kiosk_screen_mode
 from bookingapp.models import Booking
@@ -177,6 +177,25 @@ class KioskAccessTests(TestCase):
         self.assertEqual(saved.mode, 'open' if closed_by_default else 'closed')
         self.client.post('/supers/waiting_list/', {'override_day': 'today', 'override_switch': 'off'})
         self.assertFalse(WaitingOverride.objects.filter(visit_date=today).exists())
+
+    def test_waiting_break_closes_range_and_cancel_clears_it(self):
+        self.client.login(username='admin', password='pass1234')
+        start = datetime.date.today() + datetime.timedelta(days=2)
+        end = start + datetime.timedelta(days=2)
+        saved = self.client.post('/supers/waiting_list/', {
+            'break_action': 'save',
+            'break_start': start.isoformat(),
+            'break_end': end.isoformat(),
+        })
+        self.assertRedirects(saved, '/supers/waiting_list/')
+        self.assertEqual(WaitingOverride.objects.filter(visit_date__range=(start, end), mode='closed').count(), 3)
+        closed = waiting_gate(datetime.datetime.combine(start, datetime.time(7, 0)))
+        self.assertFalse(closed['can_input'])
+        page = self.client.get('/supers/waiting_list/')
+        self.assertContains(page, '까지 쉽니다')
+        self.client.post('/supers/waiting_list/', {'break_action': 'clear'})
+        self.assertFalse(WaitingBreak.objects.exists())
+        self.assertFalse(WaitingOverride.objects.filter(visit_date__range=(start, end)).exists())
 
     def test_search_requires_superuser(self):
         self.client.login(username='patient', password='pass1234')

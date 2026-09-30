@@ -16,12 +16,15 @@ from bookingapp.decorators import booking_ownership_required
 from bookingapp.models import Booking, BOOKING_TIME
 from profileapp.utils import is_tablet_user
 from superapp.utils import chart_key, send_discord_message, weekly_limit_cell_ids, weekly_other_slots
-from articleapp.models import KioskScreen, WaitingOverride, WaitingPatient
+from articleapp.models import KioskScreen, WaitingBreak, WaitingOverride, WaitingPatient
 from articleapp.waiting_utils import (
     MAX_WAITING,
     current_waiting_period,
     period_label,
     sync_waiting_count,
+    apply_waiting_break,
+    break_label,
+    clear_waiting_break,
     is_legal_holiday,
     normalize_birth_date,
     waiting_board,
@@ -1079,6 +1082,13 @@ def waiting_pt_status(request):
     })
 
 
+def _parse_break_date(value):
+    try:
+        return datetime.datetime.strptime(value or '', '%Y-%m-%d').date()
+    except ValueError:
+        return None
+
+
 def _waiting_day_switch(day, mode, when):
     closed_by_default = day.weekday() == 6 or is_legal_holiday(day)
     on = mode == ('open' if closed_by_default else 'closed')
@@ -1115,6 +1125,24 @@ def waiting_list(request):
                     defaults={'mode': 'open' if target.weekday() == 6 or is_legal_holiday(target) else 'closed'},
                 )
             return redirect('superapp:waiting_list')
+        break_action = request.POST.get('break_action')
+        if break_action == 'clear':
+            clear_waiting_break()
+            return redirect('superapp:waiting_list')
+        if break_action == 'save':
+            start = _parse_break_date(request.POST.get('break_start'))
+            end = _parse_break_date(request.POST.get('break_end'))
+            if not start or not end:
+                messages.error(request, '시작일과 끝나는 날을 선택해 주세요.')
+            elif start < today or end < today:
+                messages.error(request, '지난 날짜는 선택할 수 없습니다.')
+            elif end < start:
+                messages.error(request, '끝나는 날이 시작일보다 빠릅니다.')
+            elif (end - start).days + 1 > 31:
+                messages.error(request, '한 번에 31일까지 설정할 수 있습니다.')
+            else:
+                apply_waiting_break(start, end)
+            return redirect('superapp:waiting_list')
         kiosk_choice = request.POST.get('kiosk_mode')
         if kiosk_choice in KIOSK_MODES:
             KioskScreen.objects.update_or_create(pk=1, defaults={'mode': kiosk_choice})
@@ -1127,6 +1155,7 @@ def waiting_list(request):
             count = sync_waiting_count(today, period)
             send_discord_message(f"선착순 대기 환자수 : {count}명")
         return redirect('superapp:waiting_list')
+    current_break = WaitingBreak.objects.order_by('-id').first()
     patients = WaitingPatient.objects.filter(visit_date=today).order_by('created_at')
     overrides = {
         item.visit_date: item.mode
@@ -1139,6 +1168,7 @@ def waiting_list(request):
         'pm_patients': patients.filter(period='pm'),
         'period': current_waiting_period(),
         'period_label': period_label(current_waiting_period()),
+        'break_label': break_label(current_break.start_date, current_break.end_date) if current_break else '',
         'today_switch': _waiting_day_switch(today, overrides.get(today), '오늘'),
         'tomorrow_switch': _waiting_day_switch(tomorrow, overrides.get(tomorrow), '내일'),
         'kiosk_mode': kiosk_screen_mode(),

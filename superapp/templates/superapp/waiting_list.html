@@ -38,6 +38,34 @@
             <p class="text-muted mb-0">법정공휴일은 자동으로 쉽니다. 퇴근 전에 내일을 정해 두세요. 끄면 평소대로 돌아갑니다.</p>
         </div>
     </div>
+
+    <div class="card mb-4">
+        <div class="card-body">
+            <h5 class="card-title">휴가</h5>
+            {% if messages %}
+                {% for message in messages %}
+                <div class="alert alert-danger py-2">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+            {% if break_label %}
+            <p class="fw-bold mb-2">{{ break_label }}</p>
+            <form method="post" class="mb-3">
+                {% csrf_token %}
+                <button class="btn btn-outline-secondary btn-sm" name="break_action" value="clear">휴가 취소</button>
+            </form>
+            {% endif %}
+            <form method="post" class="d-flex flex-wrap align-items-end gap-2">
+                {% csrf_token %}
+                <label class="mb-0">시작
+                    <input class="form-control" type="date" name="break_start" min="{{ today|date:'Y-m-d' }}" required>
+                </label>
+                <label class="mb-0">끝
+                    <input class="form-control" type="date" name="break_end" min="{{ today|date:'Y-m-d' }}" required>
+                </label>
+                <button class="btn btn-danger" name="break_action" value="save">이 기간 쉽니다</button>
+            </form>
+        </div>
+    </div>
     <style>
         .wait-switch-row {
             display: flex;

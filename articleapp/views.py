@@ -122,6 +122,10 @@ def index(request):
     waiting, created = Waiting.objects.get_or_create(id=1)
     waiting_date = waiting.added_on_datetime.strftime('%m월 %d일')
     waiting_time = waiting.added_on_datetime.strftime('%H시 %M분')
+    clock = waiting.added_on_datetime
+    period = '오전' if clock.hour < 12 else '오후'
+    hour12 = clock.hour % 12 or 12
+    waiting_clock = f'{period} {hour12}시 {clock.minute}분 기준'
     if request.user.is_authenticated:
         notes = Note.objects.filter(recipient=request.user)
         notes_count = notes.count()
@@ -133,6 +137,7 @@ def index(request):
         context = {'waiting': waiting,
                    'waiting_date': waiting_date,
                    'waiting_time': waiting_time,
+                   'waiting_clock': waiting_clock,
                    'notes': notes,
                    'notes_count': notes_count,
                    'unread_notes_count': unread_notes_count,
@@ -142,6 +147,7 @@ def index(request):
         context = {'waiting': waiting,
                    'waiting_date': waiting_date,
                    'waiting_time': waiting_time,
+                   'waiting_clock': waiting_clock,
                    'holiday_messages': holiday_messages,
                    }
     return render(request, 'articleapp/index.html', context)
