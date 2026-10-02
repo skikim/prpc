@@ -1,6 +1,7 @@
 import datetime
 from datetime import timedelta
 from dateutil.parser import parse
+from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.db.models import Q
@@ -1059,8 +1060,27 @@ def waiting_pt(request):
         ),
         'done': request.GET.get('done'),
         'board': waiting_board(today, period) if period else [],
+        'preview': False,
     }
     return render(request, 'superapp/waiting_pt.html', context)
+
+
+def waiting_pt_preview(request, n):
+    if not settings.DEBUG:
+        return HttpResponseForbidden()
+    n = min(max(int(n), 1), MAX_WAITING)
+    return render(request, 'superapp/waiting_pt.html', {
+        'period': 'am',
+        'period_label': '오전',
+        'count': n,
+        'max_waiting': MAX_WAITING,
+        'closed': False,
+        'can_input': False,
+        'gate_message': '',
+        'done': str(n),
+        'board': [],
+        'preview': True,
+    })
 
 
 @login_required

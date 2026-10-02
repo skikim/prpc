@@ -173,19 +173,108 @@
         position: fixed;
         inset: 0;
         z-index: 2000;
-        background: rgba(22, 163, 74, 0.96);
+        background: linear-gradient(165deg, #1d4ed8 0%, #0f766e 100%);
         align-items: center;
         justify-content: center;
         text-align: center;
-        padding: 2rem;
+        padding: 1.4rem;
     }
     #wait-overlay.show { display: flex; }
-    #wait-overlay p {
+    .wait-done {
+        width: 100%;
+        max-width: 560px;
+        background: #fff;
+        border-radius: 1.6rem;
+        box-shadow: 0 24px 48px rgba(15, 23, 42, 0.18);
+        padding: 1.7rem 1.35rem 1.35rem;
+        position: relative;
+        overflow: hidden;
+    }
+    .wait-done::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 6px;
+        background: linear-gradient(90deg, #2563eb, #14b8a6);
+    }
+    .wait-done-badge {
+        width: 4.2rem;
+        height: 4.2rem;
+        margin: 0.35rem auto 0.85rem;
+        border-radius: 999px;
+        background: linear-gradient(135deg, #2563eb 0%, #14b8a6 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 8px 18px rgba(37, 99, 235, 0.28);
+    }
+    .wait-done-badge i {
         color: #fff !important;
         -webkit-text-fill-color: #fff !important;
-        font-size: 2.4rem;
-        font-weight: 800;
+        font-size: 1.7rem;
+    }
+    .wait-done-title {
+        color: #64748b !important;
+        -webkit-text-fill-color: #64748b !important;
+        font-size: 1.45rem;
+        font-weight: 700;
+        letter-spacing: 0.04em;
         margin: 0;
+        line-height: 1.2;
+    }
+    .wait-done-order {
+        margin: 0.15rem 0 1rem;
+        line-height: 1.05;
+        letter-spacing: -0.03em;
+    }
+    .wait-done-order span {
+        color: #1d4ed8 !important;
+        -webkit-text-fill-color: #1d4ed8 !important;
+        font-size: 4.2rem;
+        font-weight: 800;
+    }
+    .wait-done-ord {
+        color: #1e293b !important;
+        -webkit-text-fill-color: #1e293b !important;
+        font-size: 2rem !important;
+        font-weight: 800;
+        margin-left: 0.15rem;
+    }
+    .wait-done-note {
+        display: none;
+        border-top: 1px solid #e2e8f0;
+        padding-top: 0.95rem;
+        text-align: center;
+    }
+    .wait-done-note.on { display: block; }
+    .wait-done-note p {
+        color: #334155 !important;
+        -webkit-text-fill-color: #334155 !important;
+        font-size: 1.55rem;
+        font-weight: 700;
+        line-height: 1.4;
+        margin: 0.05rem 0;
+        word-break: keep-all;
+    }
+    .wait-done-note p b {
+        color: #1e3a8a !important;
+        -webkit-text-fill-color: #1e3a8a !important;
+        font-weight: 800;
+    }
+    .wait-done-by {
+        margin: 0.85rem 0 0.35rem !important;
+        background: #fff7ed;
+        border-radius: 0.9rem;
+        padding: 0.7rem 0.6rem;
+        line-height: 1.2;
+    }
+    .wait-done-by b {
+        font-size: 2.15rem;
+        font-weight: 800;
+        color: #9a3412 !important;
+        -webkit-text-fill-color: #9a3412 !important;
     }
     #wait-confirm {
         display: none;
@@ -224,7 +313,19 @@
         -webkit-text-fill-color: #fff !important;
     }
 </style>
-<div id="wait-overlay"><p id="wait-overlay-text"></p></div>
+<div id="wait-overlay">
+    <div class="wait-done">
+        <div class="wait-done-badge"><i class="fas fa-check"></i></div>
+        <p class="wait-done-title">접수되었습니다</p>
+        <p class="wait-done-order"><span id="wait-done-n"></span><span class="wait-done-ord">번째입니다</span></p>
+        <div class="wait-done-note" id="wait-done-note">
+            <p>진료는 <b>오전 9시</b>부터</p>
+            <p>접수 순서대로 합니다.</p>
+            <p class="wait-done-by"><b>오전 8시 50분까지</b></p>
+            <p>병원 안에 계세요.</p>
+        </div>
+    </div>
+</div>
 <div id="wait-confirm">
     <div class="wait-confirm-box">
         <h2>본인 정보가 맞습니까?</h2>
@@ -345,16 +446,23 @@
     function submitWait() {
         document.getElementById('wait-form').submit();
     }
-    var done = new URLSearchParams(window.location.search).get('done');
-    if (done) {
-        document.getElementById('wait-overlay-text').innerText = '접수되었습니다.\n' + done + '번째입니다.';
-        document.getElementById('wait-overlay').classList.add('show');
-        setTimeout(function() {
-            location.href = "{% url 'superapp:waiting_pt' %}";
-        }, 2500);
-    }
     var pageClosed = {{ closed|yesno:"true,false" }};
     var pagePeriod = '{{ period|default:"" }}';
+    var preview = {{ preview|yesno:"true,false" }};
+    var done = preview ? '{{ done }}' : new URLSearchParams(window.location.search).get('done');
+    if (done) {
+        document.getElementById('wait-done-n').textContent = done;
+        var showArrive = preview || pagePeriod !== 'pm';
+        if (showArrive) {
+            document.getElementById('wait-done-note').classList.add('on');
+        }
+        document.getElementById('wait-overlay').classList.add('show');
+        if (!preview) {
+            setTimeout(function() {
+                location.href = "{% url 'superapp:waiting_pt' %}";
+            }, showArrive ? 12000 : 2500);
+        }
+    }
     var pageCanInput = {{ can_input|yesno:"true,false" }};
     function pollWaiting() {
         if (done || document.getElementById('wait-overlay').classList.contains('show')) {
@@ -395,5 +503,7 @@
         pollWaiting();
     }
 </script>
+{% if not preview %}
 {% include 'superapp/_kiosk_screen_poll.html' with page_mode='wait' %}
+{% endif %}
 {% endblock %}
