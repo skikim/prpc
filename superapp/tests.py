@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 from django.test import TestCase
 
 from bookingapp.models import Booking
-from superapp.utils import other_weekly_booking_count, other_weekly_chart_count, weekly_limit_cell_ids
+from superapp.utils import booking_rn_error, other_weekly_booking_count, other_weekly_chart_count, weekly_limit_cell_ids
 
 
 class PastWeekPageTests(TestCase):
@@ -128,3 +128,72 @@ class WeeklyLimitMarkTests(TestCase):
         self.assertEqual(other_weekly_chart_count('8613', friday + datetime.timedelta(days=1), '10:05'), 2)
         first.delete()
         self.assertEqual(other_weekly_chart_count('8613', friday + datetime.timedelta(days=1), '10:05'), 1)
+
+
+class BookingRnGuardTests(TestCase):
+    def test_allows_name_chart_and_star(self):
+        self.assertIsNone(booking_rn_error(None))
+        self.assertIsNone(booking_rn_error(''))
+        self.assertIsNone(booking_rn_error('*'))
+        self.assertIsNone(booking_rn_error('권연이17888'))
+        self.assertIsNone(booking_rn_error('홍길동 8613'))
+        self.assertIsNone(booking_rn_error('Kim 12'))
+
+    def test_rejects_symbols(self):
+        message = '예약자명을 다시 확인한 뒤 저장하세요'
+        self.assertEqual(booking_rn_error('권연이17888\\'), message)
+        self.assertEqual(booking_rn_error('권연이17888₩'), message)
+        self.assertEqual(booking_rn_error("홍길동'123"), message)
+        self.assertEqual(booking_rn_error('김철수(초진)'), message)
+
+    def test_invalid_name_is_not_saved_and_existing_booking_stays(self):
+        User.objects.create_superuser('admin', 'admin@example.com', 'pass1234')
+        self.client.login(username='admin', password='pass1234')
+        day = datetime.date.today() + datetime.timedelta(days=8)
+        existing = Booking.objects.create(
+            booking_date=day,
+            booking_time='12:30',
+            booking_status='예약승인',
+            booking_rn='기존환자1',
+        )
+        response = self.client.post('/supers/supercreate2/', {
+            'date': day.isoformat(),
+            'time': '12:30',
+            'status': '예약승인',
+            'booking_rn': '권연이17888\\',
+        })
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, '예약자명을 다시 확인한 뒤 저장하세요')
+        existing.refresh_from_db()
+        self.assertEqual(existing.booking_rn, '기존환자1')
+        self.assertFalse(Booking.objects.filter(booking_rn__contains='\\').exists())
+
+    def test_valid_name_is_saved(self):
+        User.objects.create_superuser('admin2', 'admin2@example.com', 'pass1234')
+        self.client.login(username='admin2', password='pass1234')
+        day = datetime.date.today() + datetime.timedelta(days=8)
+        response = self.client.post('/supers/supercreate2/', {
+            'date': day.isoformat(),
+            'time': '12:30',
+            'status': '예약승인',
+            'booking_rn': '권연이17888',
+        })
+        self.assertEqual(response.status_code, 302)
+        saved = Booking.objects.get(booking_date=day, booking_time='12:30')
+        self.assertEqual(saved.booking_rn, '권연이17888')
+        self.assertEqual(saved.booking_status, '예약승인')
+
+    def test_existing_backslash_does_not_break_page(self):
+        User.objects.create_superuser('admin3', 'admin3@example.com', 'pass1234')
+        self.client.login(username='admin3', password='pass1234')
+        day = datetime.date.today() + datetime.timedelta(days=7)
+        Booking.objects.create(
+            booking_date=day,
+            booking_time='12:30',
+            booking_status='예약승인',
+            booking_rn='권연이17888\\',
+        )
+        page = self.client.get('/supers/supercreate2/')
+        self.assertEqual(page.status_code, 200)
+        self.assertContains(page, '권연이17888\\u005C')
+        self.assertNotContains(page, "17888\\'")

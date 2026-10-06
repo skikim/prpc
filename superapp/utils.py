@@ -293,6 +293,18 @@ def _as_date(day):
     return day
 
 
+BOOKING_RN_INVALID_MESSAGE = '예약자명을 다시 확인한 뒤 저장하세요'
+_BOOKING_RN_RE = re.compile(r'^[0-9A-Za-z가-힣 *]*$')
+
+
+def booking_rn_error(booking_rn):
+    if not booking_rn:
+        return None
+    if _BOOKING_RN_RE.fullmatch(booking_rn):
+        return None
+    return BOOKING_RN_INVALID_MESSAGE
+
+
 def chart_key(booking_rn):
     if not booking_rn:
         return None

@@ -16,7 +16,7 @@ from django.views.generic import DetailView, DeleteView
 from bookingapp.decorators import booking_ownership_required
 from bookingapp.models import Booking, BOOKING_TIME
 from profileapp.utils import is_tablet_user
-from superapp.utils import chart_key, send_discord_message, weekly_limit_cell_ids, weekly_other_slots
+from superapp.utils import booking_rn_error, chart_key, send_discord_message, weekly_limit_cell_ids, weekly_other_slots
 from articleapp.models import KioskScreen, WaitingBreak, WaitingOverride, WaitingPatient
 from articleapp.waiting_utils import (
     MAX_WAITING,
@@ -167,6 +167,10 @@ def superbooking(request):
             booking_status = request.POST.get('status')
             booking_rn = request.POST.get('booking_rn')
             booking_user_id = request.POST.get('booking_user_id')
+            if booking_status in ('예약요청', '예약승인'):
+                rn_error = booking_rn_error(booking_rn)
+                if rn_error:
+                    return HttpResponse(rn_error)
             try:
                 pre_booking = Booking.objects.filter(booking_date=booking_date, booking_time=booking_time).first()
             except:
@@ -293,6 +297,10 @@ def superbooking2(request):
             booking_status = request.POST.get('status')
             booking_rn = request.POST.get('booking_rn')
             booking_user_id = request.POST.get('booking_user_id')
+            if booking_status in ('예약요청', '예약승인'):
+                rn_error = booking_rn_error(booking_rn)
+                if rn_error:
+                    return HttpResponse(rn_error)
             try:
                 pre_booking = Booking.objects.filter(booking_date=booking_date, booking_time=booking_time).first()
             except:
@@ -419,6 +427,10 @@ def superbooking2_1(request):
             booking_status = request.POST.get('status')
             booking_rn = request.POST.get('booking_rn')
             booking_user_id = request.POST.get('booking_user_id')
+            if booking_status in ('예약요청', '예약승인'):
+                rn_error = booking_rn_error(booking_rn)
+                if rn_error:
+                    return HttpResponse(rn_error)
             try:
                 pre_booking = Booking.objects.filter(booking_date=booking_date, booking_time=booking_time).first()
             except:
@@ -545,6 +557,10 @@ def superbooking2_2(request):
             booking_status = request.POST.get('status')
             booking_rn = request.POST.get('booking_rn')
             booking_user_id = request.POST.get('booking_user_id')
+            if booking_status in ('예약요청', '예약승인'):
+                rn_error = booking_rn_error(booking_rn)
+                if rn_error:
+                    return HttpResponse(rn_error)
             try:
                 pre_booking = Booking.objects.filter(booking_date=booking_date, booking_time=booking_time).first()
             except:

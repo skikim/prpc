@@ -86,5 +86,13 @@
         $(document).on('click', '#result_table tr', function() { setTimeout(refreshWeeklyThird, 0); });
         $('#modal_post').on('show.bs.modal', hideWarning);
         $('#modal_post').on('shown.bs.modal', refreshWeeklyThird);
+        $('#my-form').on('submit', function (event) {
+            var status = $('#status').val();
+            var name = $('#booking_rn').val();
+            if ((status === '예약요청' || status === '예약승인') && name && !/^[0-9A-Za-z가-힣 *]*$/.test(name)) {
+                event.preventDefault();
+                alert('예약자명을 다시 확인한 뒤 저장하세요');
+            }
+        });
     })();
 </script>
