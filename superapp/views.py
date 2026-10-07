@@ -31,6 +31,7 @@ from articleapp.waiting_utils import (
     waiting_board,
     waiting_count,
     waiting_gate,
+    tablet_screen_off,
 )
 import requests
 from noteapp.models import Note
@@ -1020,7 +1021,11 @@ def kiosk_status(request):
     if not _tablet_waiting_allowed(request.user):
         return JsonResponse({}, status=403)
     mode = kiosk_screen_mode()
-    response = JsonResponse({'mode': mode, 'url': reverse(KIOSK_MODES[mode][0])})
+    response = JsonResponse({
+        'mode': mode,
+        'url': reverse(KIOSK_MODES[mode][0]),
+        'screen_off': tablet_screen_off(),
+    })
     response['Cache-Control'] = 'no-store'
     return response
 

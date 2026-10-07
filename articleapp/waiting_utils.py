@@ -52,6 +52,23 @@ def apply_waiting_break(start, end):
         day += datetime.timedelta(days=1)
 
 
+def _reception_closed_day(day):
+    override = WaitingOverride.objects.filter(visit_date=day).first()
+    if override:
+        return override.mode == 'closed'
+    return day.weekday() == 6 or is_legal_holiday(day)
+
+
+def tablet_screen_off(now=None):
+    now = now or datetime.datetime.now()
+    if _reception_closed_day(now.date()):
+        return True
+    minutes = now.hour * 60 + now.minute
+    if now.weekday() == 2:
+        return minutes < 11 * 60 or minutes >= 20 * 60 + 30
+    return minutes < 6 * 60 or minutes >= 18 * 60
+
+
 def waiting_gate(now=None):
     now = now or datetime.datetime.now()
     weekday = now.weekday()

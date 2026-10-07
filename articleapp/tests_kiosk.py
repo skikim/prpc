@@ -5,7 +5,7 @@ from django.db.models import Q
 from django.test import TestCase
 
 from articleapp.models import KioskScreen, WaitingBreak, WaitingOverride
-from articleapp.waiting_utils import is_legal_holiday, normalize_birth_date, waiting_gate
+from articleapp.waiting_utils import is_legal_holiday, normalize_birth_date, tablet_screen_off, waiting_gate
 from superapp.views import kiosk_screen_mode
 from bookingapp.models import Booking
 from profileapp.models import Profile
@@ -264,6 +264,29 @@ class KioskDailyResetTests(TestCase):
         status = self.client.get('/supers/kiosk/status/')
         self.assertEqual(status.json()['mode'], 'wait')
         self.assertEqual(status.json()['url'], '/supers/waiting_pt/')
+        self.assertIn('screen_off', status.json())
+
+
+class TabletScreenOffTests(TestCase):
+    def test_sunday_stays_off_unless_opened(self):
+        sunday = datetime.datetime(2026, 10, 11, 10, 0)
+        self.assertTrue(tablet_screen_off(sunday))
+        WaitingOverride.objects.create(visit_date=sunday.date(), mode='open')
+        self.assertFalse(tablet_screen_off(sunday))
+
+    def test_closed_switch_turns_the_screen_off_all_day(self):
+        thursday = datetime.datetime(2026, 10, 8, 10, 0)
+        self.assertFalse(tablet_screen_off(thursday))
+        WaitingOverride.objects.create(visit_date=thursday.date(), mode='closed')
+        self.assertTrue(tablet_screen_off(thursday))
+
+    def test_legal_holiday_stays_off(self):
+        self.assertTrue(tablet_screen_off(datetime.datetime(2026, 1, 1, 10, 0)))
+
+    def test_wednesday_hours_stay_when_the_day_is_open(self):
+        self.assertTrue(tablet_screen_off(datetime.datetime(2026, 10, 7, 10, 0)))
+        self.assertFalse(tablet_screen_off(datetime.datetime(2026, 10, 7, 15, 0)))
+        self.assertTrue(tablet_screen_off(datetime.datetime(2026, 10, 7, 21, 0)))
 
 
 class NormalizeBirthDateTests(TestCase):

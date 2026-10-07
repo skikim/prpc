@@ -1,7 +1,10 @@
 <script>
     (function() {
         var statusUrl = "{% url 'superapp:kiosk_status' %}";
+        var serverScreenOff = null;
         function shouldTurnScreenOff(now) {
+            if (serverScreenOff === true) return true;
+            if (serverScreenOff === false) return false;
             var minutes = now.getHours() * 60 + now.getMinutes();
             if (now.getDay() === 3) {
                 return minutes < 11 * 60 || minutes >= 20 * 60 + 30;
@@ -19,6 +22,8 @@
             fetch(statusUrl, {credentials: 'same-origin', cache: 'no-store'})
                 .then(function(response) { return response.json(); })
                 .then(function(data) {
+                    if (typeof data.screen_off === 'boolean') serverScreenOff = data.screen_off;
+                    turnScreenOffAtNight();
                     if (data.url && location.pathname !== data.url) {
                         location.href = data.url;
                         return;
