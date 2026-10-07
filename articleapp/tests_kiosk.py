@@ -110,8 +110,13 @@ class KioskAccessTests(TestCase):
 
     def test_superuser_can_open(self):
         self.client.login(username='admin', password='pass1234')
-        self.assertEqual(self.client.get('/supers/waiting_pt/').status_code, 200)
-        self.assertEqual(self.client.get('/supers/tablet/').status_code, 200)
+        waiting = self.client.get('/supers/waiting_pt/')
+        tablet = self.client.get('/supers/tablet/')
+        self.assertEqual(waiting.status_code, 200)
+        self.assertEqual(tablet.status_code, 200)
+        self.assertContains(waiting, 'fully.turnScreenOff')
+        self.assertContains(waiting, '20 * 60 + 30')
+        self.assertContains(tablet, 'fully.turnScreenOff')
         self.assertEqual(self.client.get('/supers/tablet2/').status_code, 200)
         self.assertEqual(self.client.get('/supers/tablet3/').status_code, 200)
 
