@@ -58,25 +58,38 @@
             var url = noticeUrl + '?date=' + encodeURIComponent(date.value) + '&time=' + encodeURIComponent(time ? time.value : '');
             if (hasUser) url += '&user_id=' + encodeURIComponent(userId.value);
             else url += '&booking_rn=' + encodeURIComponent(bookingRn.value);
+            function slotLines(slots) {
+                return (slots || []).map(function(slot, index) {
+                    var parts = String(slot.date || '').split('-');
+                    var clock = String(slot.time || '');
+                    if (parts.length !== 3 || !/^\d{2}:\d{2}/.test(clock)) return '';
+                    return (index + 1) + '회 ' + Number(parts[1]) + '/' + Number(parts[2]) + ' ' + clock.slice(0, 5);
+                }).filter(Boolean);
+            }
             fetch(url, {credentials: 'same-origin', cache: 'no-store'})
                 .then(function(response) { return response.json(); })
                 .then(function(data) {
-                    if (!data.warn) {
+                    if (!data.warn && !data.same_day) {
                         hideWarning();
                         return;
                     }
-                    var nth = Number(data.nth);
-                    var slots = (data.slots || []).slice();
-                    if (nth === 2) slots = slots.slice(0, 1);
-                    var lines = slots.map(function(slot, index) {
-                        var parts = String(slot.date || '').split('-');
-                        var clock = String(slot.time || '');
-                        if (parts.length !== 3 || !/^\d{2}:\d{2}/.test(clock)) return '';
-                        return (index + 1) + '회 ' + Number(parts[1]) + '/' + Number(parts[2]) + ' ' + clock.slice(0, 5);
-                    }).filter(Boolean);
-                    warn.classList.toggle('weekly-second-warning', nth === 2);
-                    warn.innerHTML = '이 환자는 이번 주 <b>' + nth + '번째 예약</b>입니다.' +
-                        (lines.length ? '<span class="weekly-slot-times">' + lines.join('<br>') + '</span>' : '');
+                    var html = '';
+                    if (data.same_day) {
+                        var dayLines = slotLines(data.same_day_slots);
+                        html += '이 환자는 <b>같은 날 2회째</b> 예약입니다.' +
+                            (dayLines.length ? '<span class="weekly-slot-times">' + dayLines.join('<br>') + '</span>' : '');
+                    }
+                    if (data.warn) {
+                        var nth = Number(data.nth);
+                        var slots = (data.slots || []).slice();
+                        if (nth === 2) slots = slots.slice(0, 1);
+                        var lines = slotLines(slots);
+                        if (html) html += '<br>';
+                        html += '이 환자는 이번 주 <b>' + nth + '번째 예약</b>입니다.' +
+                            (lines.length ? '<span class="weekly-slot-times">' + lines.join('<br>') + '</span>' : '');
+                    }
+                    warn.classList.toggle('weekly-second-warning', !data.same_day && Number(data.nth) === 2);
+                    warn.innerHTML = html;
                     warn.style.display = 'block';
                 })
                 .catch(hideWarning);
@@ -86,13 +99,50 @@
         $(document).on('click', '#result_table tr', function() { setTimeout(refreshWeeklyThird, 0); });
         $('#modal_post').on('show.bs.modal', hideWarning);
         $('#modal_post').on('shown.bs.modal', refreshWeeklyThird);
+        var scrollKey = 'superScrollCell';
+        var clickedCellId = null;
+        $(document).on('click', 'td[id^="r"]', function () {
+            if (/^r\d{2}:\d{2}c\d+$/.test(this.id)) clickedCellId = this.id;
+        });
+        function cellIdFromForm() {
+            if (clickedCellId && document.getElementById(clickedCellId)) return clickedCellId;
+            var time = $('#time').val();
+            var date = $('#date').val();
+            if (!time || !date) return null;
+            for (var col = 1; col <= 8; col++) {
+                var header = document.getElementById('r0c' + col);
+                if (header && header.textContent === date) return 'r' + time + 'c' + col;
+            }
+            return null;
+        }
         $('#my-form').on('submit', function (event) {
             var status = $('#status').val();
             var name = $('#booking_rn').val();
             if ((status === '예약요청' || status === '예약승인') && name && !/^[0-9A-Za-z가-힣 *]*$/.test(name)) {
                 event.preventDefault();
                 alert('예약자명을 다시 확인한 뒤 저장하세요');
+                return;
             }
+            var cellId = cellIdFromForm();
+            if (cellId) sessionStorage.setItem(scrollKey, location.pathname + '|' + cellId);
         });
+        var savedCell = sessionStorage.getItem(scrollKey);
+        if (savedCell) {
+            var savedParts = savedCell.split('|');
+            if (savedParts[0] === location.pathname) {
+                sessionStorage.removeItem(scrollKey);
+                var savedTarget = document.getElementById(savedParts[1]);
+                if (savedTarget) {
+                    if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+                    var restoreCell = function () {
+                        savedTarget.scrollIntoView({block: 'center', inline: 'nearest'});
+                    };
+                    restoreCell();
+                    requestAnimationFrame(restoreCell);
+                    window.addEventListener('load', restoreCell);
+                    setTimeout(restoreCell, 0);
+                }
+            }
+        }
     })();
 </script>

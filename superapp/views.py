@@ -16,7 +16,7 @@ from django.views.generic import DetailView, DeleteView
 from bookingapp.decorators import booking_ownership_required
 from bookingapp.models import Booking, BOOKING_TIME
 from profileapp.utils import is_tablet_user
-from superapp.utils import booking_rn_error, chart_key, send_discord_message, weekly_limit_cell_ids, weekly_other_slots
+from superapp.utils import booking_rn_error, chart_key, same_day_slots, send_discord_message, weekly_limit_cell_ids, weekly_other_slots
 from articleapp.models import KioskScreen, WaitingBreak, WaitingOverride, WaitingPatient
 from articleapp.waiting_utils import (
     MAX_WAITING,
@@ -95,15 +95,25 @@ def weekly_third_notice(request):
         except ValueError:
             return JsonResponse({'warn': False})
         slots = weekly_other_slots(user_id, None, booking_date, booking_time)
+        from profileapp.models import Profile
+        chart = chart_key(Profile.objects.filter(user_id=user_id).values_list('chart_num', flat=True).first())
     else:
         chart = chart_key(request.GET.get('booking_rn'))
+        user_id = None
         if not chart:
-            return JsonResponse({'warn': False})
+            return JsonResponse({'warn': False, 'same_day': False})
         slots = weekly_other_slots(None, chart, booking_date, booking_time)
+    day_slots = same_day_slots(user_id, chart, booking_date, booking_time)
     nth = len(slots) + 1
-    if nth < 2:
-        return JsonResponse({'warn': False})
-    return JsonResponse({'warn': True, 'nth': nth, 'slots': slots})
+    if nth < 2 and not day_slots:
+        return JsonResponse({'warn': False, 'same_day': False})
+    return JsonResponse({
+        'warn': nth >= 2,
+        'nth': nth,
+        'slots': slots,
+        'same_day': bool(day_slots),
+        'same_day_slots': day_slots,
+    })
 
 
 @login_required

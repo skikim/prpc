@@ -20,7 +20,7 @@ import requests
 
 from noteapp.models import Note
 from django.contrib.auth.models import User
-from superapp.utils import is_booking_blocked, send_discord_message_both
+from superapp.utils import chart_key, is_booking_blocked, same_day_slots, send_discord_message_both
 
 
 def delete_approval_messages(user, booking_date, booking_time):
@@ -90,9 +90,14 @@ def booking(request):
         end_date = week_end
         try:
             request_real_name = request.user.profile.real_name
+            patient_chart = chart_key(request.user.profile.chart_num)
         except:
             return redirect(reverse('profileapp:create'))
             # return redirect(reverse('accountapp:detail', kwargs={'pk': request.user.pk}))
+
+        if same_day_slots(user.id, patient_chart, booking_date_obj):
+            errors.append('온라인 예약은 하루에 1회만 가능합니다.')
+            return render(request, 'bookingapp/post_write.html', {'errors': errors})
 
         # 디버깅: 주1회 예약 제한 체크 (첫 번째 예약 로직)
         weekly_bookings = Booking.objects.filter(Q(user=user), Q(booking_date__range=(start_date, end_date)), Q(booking_status='예약승인') | Q(booking_status='예약요청'))
@@ -170,9 +175,14 @@ def booking_2(request):
         end_date = week_end
         try:
             request_real_name = request.user.profile.real_name
+            patient_chart = chart_key(request.user.profile.chart_num)
         except:
             return redirect(reverse('profileapp:create'))
             # return redirect(reverse('accountapp:detail', kwargs={'pk': request.user.pk}))
+
+        if same_day_slots(user.id, patient_chart, booking_date_obj):
+            errors.append('온라인 예약은 하루에 1회만 가능합니다.')
+            return render(request, 'bookingapp/post_write.html', {'errors': errors})
 
         # 디버깅: 주1회 예약 제한 체크 (두 번째 예약 로직)
         weekly_bookings_2 = Booking.objects.filter(Q(user=user), Q(booking_date__range=(start_date, end_date)), Q(booking_status='예약승인') | Q(booking_status='예약요청'))

@@ -4,6 +4,7 @@ from django.contrib.auth.models import User
 from django.test import TestCase
 
 from bookingapp.models import Booking
+from profileapp.models import Profile
 from superapp.utils import booking_rn_error, other_weekly_booking_count, other_weekly_chart_count, weekly_limit_cell_ids
 
 
@@ -104,7 +105,41 @@ class WeeklyLimitMarkTests(TestCase):
         self.assertTrue(second.json()['warn'])
         self.assertEqual(second.json()['nth'], 2)
         self.assertEqual(second.json()['slots'], [{'date': '2026-09-21', 'time': '09:20'}])
+        self.assertFalse(second.json()['same_day'])
+        Booking.objects.create(user=patient, booking_date=datetime.date(2026, 9, 23), booking_time='09:25', booking_status='예약승인')
+        same_day = self.client.get('/supers/weekly-third/', {'user_id': patient.id, 'date': '2026-09-23', 'time': '10:05'})
+        self.assertTrue(same_day.json()['same_day'])
+        self.assertEqual(same_day.json()['same_day_slots'], [{'date': '2026-09-23', 'time': '09:25'}])
         staff.delete()
+
+    def test_admin_can_save_a_second_booking_on_the_same_day(self):
+        User.objects.create_superuser('admin', 'admin@example.com', 'pass1234')
+        patient = User.objects.create_user('mover', password='pass1234')
+        Profile.objects.create(user=patient, real_name='김이동', chart_num='7701')
+        day = datetime.date.today() + datetime.timedelta(days=8)
+        Booking.objects.create(user=patient, booking_date=day, booking_time='09:20', booking_status='예약승인')
+        self.client.login(username='admin', password='pass1234')
+
+        response = self.client.post('/supers/supercreate2/', {
+            'date': day.isoformat(),
+            'time': '14:20',
+            'status': '예약승인',
+            'booking_user_id': patient.id,
+            'booking_rn': '*',
+        })
+
+        self.assertEqual(response.status_code, 302)
+        self.assertTrue(Booking.objects.filter(
+            user=patient,
+            booking_date=day,
+            booking_time='14:20',
+            booking_status='예약승인',
+        ).exists())
+        self.assertTrue(Booking.objects.filter(
+            user=patient,
+            booking_date=day,
+            booking_time='09:20',
+        ).exists())
 
     def test_chart_number_marks_only_the_second_booking(self):
         monday = datetime.date(2026, 9, 21)
@@ -197,3 +232,10 @@ class BookingRnGuardTests(TestCase):
         self.assertEqual(page.status_code, 200)
         self.assertContains(page, '권연이17888\\u005C')
         self.assertNotContains(page, "17888\\'")
+
+    def test_week_page_returns_to_the_saved_cell(self):
+        User.objects.create_superuser('admin4', 'admin4@example.com', 'pass1234')
+        self.client.login(username='admin4', password='pass1234')
+        page = self.client.get('/supers/supercreate2/')
+        self.assertContains(page, 'superScrollCell')
+        self.assertContains(page, 'scrollIntoView')

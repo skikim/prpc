@@ -395,6 +395,33 @@ def weekly_other_slots(user_id, chart, booking_date, booking_time=None):
     ]
 
 
+def same_day_slots(user_id, chart, booking_date, booking_time=None):
+    day = _as_date(booking_date)
+    found = set()
+    if user_id:
+        rows = Booking.objects.filter(
+            user_id=user_id,
+            booking_date=day,
+            booking_status__in=['예약승인', '예약요청'],
+        )
+        if booking_time:
+            rows = rows.exclude(booking_time=booking_time)
+        found.update(rows.values_list('booking_time', flat=True))
+    if chart:
+        rows = Booking.objects.filter(
+            booking_date=day,
+            booking_status__in=['예약승인', '예약요청'],
+        )
+        for booking in rows:
+            if booking_time and booking.booking_time == booking_time:
+                continue
+            if chart_key(booking.booking_rn) != chart:
+                continue
+            found.add(booking.booking_time)
+    day_text = day.strftime('%Y-%m-%d')
+    return [{'date': day_text, 'time': slot_time} for slot_time in sorted(found)]
+
+
 def other_weekly_booking_count(user_id, booking_date, booking_time=None):
     day = _as_date(booking_date)
     start, end = week_bounds(day)
