@@ -20,6 +20,7 @@ import requests
 
 from noteapp.models import Note
 from django.contrib.auth.models import User
+from profileapp.utils import is_tablet_user
 from superapp.utils import chart_key, is_booking_blocked, same_day_slots, send_discord_message_both
 
 
@@ -73,6 +74,8 @@ def booking(request):
 
     errors = []
     if request.method == 'POST':
+        if is_tablet_user(request.user):
+            return redirect('bookingapp:create')
         booking_date = request.POST.get('date')
         booking_time = request.POST.get('time')
         user = request.user
@@ -161,6 +164,8 @@ def booking_2(request):
     }
     errors = []
     if request.method == 'POST':
+        if is_tablet_user(request.user):
+            return redirect('bookingapp:create2')
         booking_date = request.POST.get('date')
         booking_time = request.POST.get('time')
         user = request.user

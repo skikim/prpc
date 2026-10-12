@@ -80,7 +80,7 @@
                     <i class="fas fa-calendar-plus fa-lg"></i>
                 </div>
                 <h2 class="fw-bold mb-2" style="font-family: 'Noto Sans KR', sans-serif;">진료 예약 1주차</h2>
-                <p id="booking-hint" class="lead mb-0">파란색 칸을 누르면 예약됩니다.</p>
+                <p id="booking-hint" class="lead mb-0">{% if is_tablet_user %}예약 가능한 시간을 확인해 주세요.{% else %}파란색 칸을 누르면 예약됩니다.{% endif %}</p>
                 <p id="no-slot-notice" class="lead mb-0" style="display: none;">현재 1주차에는 예약 가능한 시간이 없습니다.</p>
             </div>
         </div>
@@ -1699,5 +1699,6 @@
         }
 
     </script>
+{% include 'superapp/_tablet_booking_display.html' %}
 
 {% endblock %}

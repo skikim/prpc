@@ -1,0 +1,19 @@
+{% if is_tablet_user %}
+{% include 'superapp/_kiosk_screen_poll.html' %}
+<script>
+    (function() {
+        document.querySelectorAll('#table td').forEach(function(cell) {
+            cell.onclick = null;
+            cell.removeAttribute('onclick');
+        });
+        document.querySelectorAll('form').forEach(function(form) {
+            form.addEventListener('submit', function(event) { event.preventDefault(); });
+        });
+        document.querySelectorAll('a.week-tab').forEach(function(tab) {
+            tab.addEventListener('click', function(event) { event.preventDefault(); });
+        });
+        var hint = document.getElementById('booking-hint');
+        if (hint) hint.textContent = '예약 가능한 시간을 확인해 주세요.';
+    })();
+</script>
+{% endif %}

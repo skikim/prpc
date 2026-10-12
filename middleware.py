@@ -8,7 +8,7 @@ class CheckProfileMiddleware:
         self.get_response = get_response
 
     def __call__(self, request):
-        if request.path == '/bookings/create/' and request.user.is_authenticated:
+        if request.path == '/bookings/create/' and request.user.is_authenticated and not is_tablet_user(request.user):
             try:
                 profile = Profile.objects.get(user=request.user)
                 if not profile.real_name or not profile.phone_num or not profile.birth_date:
@@ -33,6 +33,7 @@ class TabletKioskMiddleware:
                 or path.startswith('/supers/waiting_pt/')
                 or path == '/supers/kiosk'
                 or path.startswith('/supers/kiosk/')
+                or path.rstrip('/') in ('/bookings/create', '/bookings/create2')
                 or path.startswith('/static/')
                 or path.startswith('/accounts/logout/')
             ):

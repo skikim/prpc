@@ -981,6 +981,8 @@ KIOSK_MODES = {
     'book': ('superapp:tablet', '14일'),
     'book21': ('superapp:tablet2', '21일'),
     'book28': ('superapp:tablet3', '28일'),
+    'week1': ('bookingapp:create', '1주차'),
+    'week2': ('bookingapp:create2', '2주차'),
 }
 
 
