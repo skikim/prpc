@@ -24,8 +24,10 @@
                 .then(function(data) {
                     if (typeof data.screen_off === 'boolean') serverScreenOff = data.screen_off;
                     turnScreenOffAtNight();
-                    if (data.url && location.pathname !== data.url) {
-                        location.href = data.url;
+                    var nextPath = data.url ? data.url.split('?')[0].replace(/\/+$/, '') : '';
+                    var herePath = location.pathname.replace(/\/+$/, '');
+                    if (nextPath && herePath !== nextPath) {
+                        location.replace(data.url);
                         return;
                     }
                     setTimeout(pollScreen, 3000);

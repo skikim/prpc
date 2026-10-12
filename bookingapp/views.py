@@ -22,6 +22,7 @@ from noteapp.models import Note
 from django.contrib.auth.models import User
 from profileapp.utils import is_tablet_user
 from superapp.utils import chart_key, is_booking_blocked, same_day_slots, send_discord_message_both
+from superapp.views import sync_tablet_week_screen
 
 
 def delete_approval_messages(user, booking_date, booking_time):
@@ -48,6 +49,8 @@ has_ownership = [
 
 @login_required
 def booking(request):
+    if request.method == 'GET':
+        sync_tablet_week_screen(request, 'week1')
     today_1 = datetime.datetime.now() - timedelta(hours=9)
     today_2 = today_1 + timedelta(days=1)
     today_3 = today_1 + timedelta(days=2)
@@ -138,6 +141,8 @@ def booking(request):
 
 @login_required
 def booking_2(request):
+    if request.method == 'GET':
+        sync_tablet_week_screen(request, 'week2')
     today_1 = datetime.datetime.now() - timedelta(hours=9)
     today_8 = today_1 + timedelta(days=7)
     today_9 = today_1 + timedelta(days=8)

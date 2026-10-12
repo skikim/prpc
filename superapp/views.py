@@ -1005,6 +1005,14 @@ def kiosk_screen_mode(now=None):
     return screen.mode
 
 
+def sync_tablet_week_screen(request, mode):
+    if not is_tablet_user(request.user):
+        return
+    current = kiosk_screen_mode()
+    if current in ('week1', 'week2') and current != mode:
+        KioskScreen.objects.update_or_create(pk=1, defaults={'mode': mode})
+
+
 def _kiosk_redirect(mode):
     response = redirect(KIOSK_MODES[mode][0])
     response['Cache-Control'] = 'no-store'

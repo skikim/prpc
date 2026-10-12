@@ -202,8 +202,19 @@ class KioskAccessTests(TestCase):
         self.assertRedirects(later, '/bookings/create2/', fetch_redirect_response=False)
         shown = self.client.get('/bookings/create2/')
         self.assertEqual(shown.status_code, 200)
+        self.assertContains(shown, 'kiosk/status')
+        self.assertNotContains(shown, 'a.week-tab')
         blocked = self.client.post('/bookings/create2/', {'date': '2026-10-19', 'time': '09:20'})
         self.assertRedirects(blocked, '/bookings/create2/')
+        self.client.logout()
+
+        self.client.login(username='admin', password='pass1234')
+        self.client.post('/supers/waiting_list/', {'kiosk_mode': 'week1'})
+        self.client.logout()
+        self.client.login(username='tablet', password='pass1234')
+        switched_week = self.client.get('/bookings/create2/')
+        self.assertEqual(switched_week.status_code, 200)
+        self.assertEqual(KioskScreen.objects.get(pk=1).mode, 'week2')
 
     def test_kiosk_blocks_normal_user(self):
         self.client.login(username='patient', password='pass1234')

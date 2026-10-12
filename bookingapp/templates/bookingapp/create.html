@@ -2,6 +2,9 @@
 {% load bootstrap5 %}
 
 {% block content %}
+{% if is_tablet_user %}
+{% include 'superapp/_kiosk_screen_poll.html' %}
+{% endif %}
 <style>
 /* 새로운 주차 탭 스타일 */
 .week-tabs {
