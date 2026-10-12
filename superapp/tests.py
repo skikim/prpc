@@ -1,10 +1,13 @@
 import datetime
+from io import BytesIO
 
 from django.contrib.auth.models import User
 from django.test import TestCase
+from openpyxl import load_workbook
 
 from bookingapp.models import Booking
 from profileapp.models import Profile
+from superapp.models import BackupSetting
 from superapp.utils import booking_rn_error, other_weekly_booking_count, other_weekly_chart_count, weekly_limit_cell_ids
 
 
@@ -239,3 +242,121 @@ class BookingRnGuardTests(TestCase):
         page = self.client.get('/supers/supercreate2/')
         self.assertContains(page, 'superScrollCell')
         self.assertContains(page, 'scrollIntoView')
+
+
+def fill_hex(cell):
+    color = cell.fill.fgColor
+    rgb = getattr(color, 'rgb', None)
+    if not rgb or not isinstance(rgb, str):
+        return ''
+    return rgb[-6:].upper()
+
+
+def find_text(ws, text):
+    for row in ws.iter_rows():
+        for cell in row:
+            if cell.value and text in str(cell.value):
+                return cell
+    return None
+
+
+class BackupTests(TestCase):
+    def setUp(self):
+        self.admin = User.objects.create_superuser('backup-admin', 'backup@example.com', 'pass1234')
+        self.patient = User.objects.create_user('backup-patient', password='pass1234')
+        Profile.objects.create(user=self.patient, real_name='김백업', chart_num='B100', phone_num='01012345678', birth_date='900101')
+        self.today = datetime.date.today()
+        Booking.objects.create(
+            user=self.patient,
+            booking_date=self.today,
+            booking_time='09:20',
+            booking_status='예약승인',
+            booking_rn='김백업9',
+        )
+        Booking.objects.create(
+            user=self.patient,
+            booking_date=self.today + datetime.timedelta(days=7),
+            booking_time='14:20',
+            booking_status='예약요청',
+            booking_rn='김백업2',
+        )
+        Booking.objects.create(
+            booking_date=self.today,
+            booking_time='09:25',
+            booking_status='예약가능',
+        )
+        Booking.objects.create(
+            booking_date=self.today,
+            booking_time='13:00',
+            booking_status='예약승인',
+            booking_rn='점심환자',
+        )
+        Booking.objects.create(
+            booking_date=self.today,
+            booking_time='09:30',
+            booking_status='예약불가',
+        )
+
+    def test_pages_require_superuser(self):
+        denied = self.client.get('/supers/backup/')
+        self.assertEqual(denied.status_code, 302)
+        self.client.login(username='backup-patient', password='pass1234')
+        self.assertEqual(self.client.get('/supers/backup/').status_code, 302)
+        self.assertEqual(self.client.get('/supers/backup/export/').status_code, 403)
+        self.client.login(username='backup-admin', password='pass1234')
+        page = self.client.get('/supers/backup/')
+        self.assertEqual(page.status_code, 200)
+        self.assertContains(page, '자동 백업 활성화')
+        self.assertContains(page, 'backup.js')
+
+    def test_settings_save_and_reject_invalid_interval(self):
+        self.client.login(username='backup-admin', password='pass1234')
+        saved = self.client.post('/supers/backup/', {
+            'enabled': 'on',
+            'interval_minutes': '5',
+            'retention_days': '3',
+        })
+        self.assertEqual(saved.status_code, 302)
+        setting = BackupSetting.load()
+        self.assertTrue(setting.enabled)
+        self.assertEqual(setting.interval_minutes, 5)
+        self.assertEqual(setting.retention_days, 3)
+        rejected = self.client.post('/supers/backup/', {
+            'enabled': 'on',
+            'interval_minutes': '3',
+            'retention_days': '3',
+        })
+        self.assertEqual(rejected.status_code, 200)
+        setting.refresh_from_db()
+        self.assertEqual(setting.interval_minutes, 5)
+
+    def test_export_contains_both_weeks_and_page_colors(self):
+        self.client.login(username='backup-admin', password='pass1234')
+        week1 = self.client.get('/supers/supercreate/')
+        week2 = self.client.get('/supers/supercreate2/')
+        self.assertContains(week1, 'backup.js')
+        self.assertContains(week2, 'backup.js')
+        response = self.client.get('/supers/backup/export/')
+        self.assertEqual(response.status_code, 200)
+        self.assertIn('spreadsheet', response['Content-Type'])
+        self.assertRegex(response['X-Backup-Stamp'], r'^\d{8}_\d{6}$')
+        workbook = load_workbook(BytesIO(response.content))
+        self.assertEqual(workbook.sheetnames, ['1주차', '2주차'])
+        first = workbook['1주차']
+        second = workbook['2주차']
+        self.assertEqual(first.cell(1, 2).value, self.today.isoformat())
+        self.assertEqual(second.cell(1, 2).value, (self.today + datetime.timedelta(days=7)).isoformat())
+        self.assertEqual(first.max_column, 8)
+        self.assertEqual(second.max_column, 9)
+        approved = find_text(first, '김백업')
+        self.assertIsNotNone(approved)
+        self.assertIn('B100', approved.value)
+        self.assertIn('김백업9', approved.value)
+        self.assertEqual(fill_hex(approved), 'FFB6C1')
+        self.assertEqual(find_text(first, '예약가능').value, '예약가능')
+        self.assertEqual(fill_hex(find_text(first, '예약가능')), 'ADD8E6')
+        self.assertIsNotNone(find_text(first, '점심환자'))
+        requested = find_text(second, '김백업')
+        self.assertIsNotNone(requested)
+        self.assertEqual(fill_hex(requested), 'F5F5DC')
+        self.assertNotIn('예약불가', [cell.value for row in first.iter_rows() for cell in row])

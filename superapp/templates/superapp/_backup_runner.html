@@ -1,0 +1,7 @@
+{% load static %}
+<script src="{% static 'backup.js' %}?v=1"
+        data-config-url="{% url 'superapp:backup_config' %}"
+        data-export-url="{% url 'superapp:backup_export' %}"
+        data-settings-url="{% url 'superapp:backup_settings' %}"
+        data-auto="{{ auto|default:'0' }}"
+        data-panel="{{ panel|default:'0' }}"></script>
