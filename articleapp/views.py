@@ -8,6 +8,7 @@ from django.views.generic import CreateView, UpdateView
 from articleapp.decorators import staff_required
 from articleapp.forms import WaitingCreationForm
 from articleapp.models import Waiting, Holiday
+from articleapp.waiting_utils import homepage_waiting, local_now, notice_sessions
 from noteapp.models import Note
 import datetime
 from superapp.utils import send_discord_message
@@ -126,6 +127,19 @@ def index(request):
     period = '오전' if clock.hour < 12 else '오후'
     hour12 = clock.hour % 12 or 12
     waiting_clock = f'{period} {hour12}시 {clock.minute}분 기준'
+    now = local_now()
+    sessions = notice_sessions(now)
+    notice_am = 'am' in sessions
+    notice_pm = 'pm' in sessions
+    display = homepage_waiting(now, waiting.added_on_datetime, waiting.waiting_num)
+    waiting_notice = display['visible']
+    waiting_display_num = display['number']
+    notice_period = display['period']
+    if display['clock']:
+        clock = display['clock']
+        period = '오전' if clock.hour < 12 else '오후'
+        hour12 = clock.hour % 12 or 12
+        waiting_clock = f'{period} {hour12}시 {clock.minute}분 기준'
     if request.user.is_authenticated:
         notes = Note.objects.filter(recipient=request.user)
         notes_count = notes.count()
@@ -142,6 +156,11 @@ def index(request):
                    'notes_count': notes_count,
                    'unread_notes_count': unread_notes_count,
                    'holiday_messages': holiday_messages,
+                   'notice_am': notice_am,
+                   'notice_pm': notice_pm,
+                   'notice_period': notice_period,
+                   'waiting_notice': waiting_notice,
+                   'waiting_display_num': waiting_display_num,
                    }
     else:
         context = {'waiting': waiting,
@@ -149,5 +168,10 @@ def index(request):
                    'waiting_time': waiting_time,
                    'waiting_clock': waiting_clock,
                    'holiday_messages': holiday_messages,
+                   'notice_am': notice_am,
+                   'notice_pm': notice_pm,
+                   'notice_period': notice_period,
+                   'waiting_notice': waiting_notice,
+                   'waiting_display_num': waiting_display_num,
                    }
     return render(request, 'articleapp/index.html', context)

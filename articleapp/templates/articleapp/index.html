@@ -291,11 +291,11 @@
                 </div>
             {% endif %}
 
-            <div id='waiting_num_notice' class="alert-card waiting-card">
+            <div id='waiting_num_notice' class="alert-card waiting-card"{% if not waiting_notice %} style="display: none;"{% endif %}>
                 <div class="alert-card-content">
                     <h6 class="alert-card-title">선착순 대기</h6>
                     <div class="waiting-info">
-                        <span class="waiting-number">{{ waiting.waiting_num }}</span>
+                        <span class="waiting-number">{{ waiting_display_num }}</span>
                         <span class="waiting-total">/ 4명</span>
                     </div>
                     <p class="alert-card-datetime">{{ waiting_clock }}</p>
@@ -708,17 +708,12 @@
         function waiting_inform_2() {
             var t_today = new Date();
 
-            const t_month = (t_today.getMonth() + 1).toString().padStart(2, '0');
-            const t_day = t_today.getDate().toString().padStart(2, '0');
-            const today_date_han = `${t_month}월 ${t_day}일`;
-
-            const waitingTime = '{{ waiting_time }}';
-            const waitingMatch = waitingTime.match(/(\d{2})시\s*(\d{2})분/);
-            const waitingTotal = waitingMatch ? (parseInt(waitingMatch[1], 10) * 60 + parseInt(waitingMatch[2], 10)) : -1;
             var t_total = (t_today.getHours() * 60) + t_today.getMinutes();
-            var sameDay = '{{ waiting_date }}' == today_date_han;
-            var morning = sameDay && t_total >= 390 && t_total < 550 && waitingTotal >= 390 && waitingTotal < 690;
-            var afternoon = sameDay && t_total >= 690 && t_total < 850 && waitingTotal >= 690;
+            var allowMorning = {{ notice_am|yesno:"true,false" }};
+            var allowAfternoon = {{ notice_pm|yesno:"true,false" }};
+            var noticePeriod = '{{ notice_period }}';
+            var morning = allowMorning && noticePeriod === 'am' && t_total >= 390 && t_total < 550;
+            var afternoon = allowAfternoon && noticePeriod === 'pm' && t_total >= 690 && t_total < 850;
             if (morning || afternoon) {
                 $('#waiting_num_notice').show();
             }

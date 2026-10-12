@@ -1,11 +1,20 @@
 import datetime
+from unittest.mock import patch
 
 from django.contrib.auth.models import User
 from django.db.models import Q
 from django.test import TestCase
 
-from articleapp.models import KioskScreen, WaitingBreak, WaitingOverride
-from articleapp.waiting_utils import is_legal_holiday, normalize_birth_date, tablet_screen_off, waiting_gate
+from articleapp.models import KioskScreen, Waiting, WaitingBreak, WaitingOverride, WaitingPatient
+from articleapp.waiting_utils import (
+    homepage_waiting,
+    is_legal_holiday,
+    normalize_birth_date,
+    notice_sessions,
+    tablet_screen_off,
+    waiting_gate,
+    waiting_notice_visible,
+)
 from superapp.views import kiosk_screen_mode
 from bookingapp.models import Booking
 from profileapp.models import Profile
@@ -305,3 +314,80 @@ class NormalizeBirthDateTests(TestCase):
         self.assertIsNone(normalize_birth_date('620431', self.today))
         self.assertIsNone(normalize_birth_date('19000101', self.today))
         self.assertIsNone(normalize_birth_date('12345', self.today))
+
+
+class WaitingNoticeTests(TestCase):
+    def test_saturday_afternoon_hidden(self):
+        now = dt(2026, 10, 10, 12, 48)
+        self.assertEqual(notice_sessions(now), {'am'})
+        self.assertFalse(waiting_notice_visible(now, dt(2026, 10, 10, 12, 0)))
+
+    def test_saturday_morning_shown(self):
+        now = dt(2026, 10, 10, 7, 10)
+        self.assertTrue(waiting_notice_visible(now, dt(2026, 10, 10, 6, 40)))
+
+    def test_wednesday_morning_hidden_afternoon_shown(self):
+        morning = dt(2026, 10, 7, 7, 30)
+        self.assertEqual(notice_sessions(morning), {'pm'})
+        self.assertFalse(waiting_notice_visible(morning, dt(2026, 10, 7, 7, 0)))
+        afternoon = dt(2026, 10, 7, 12, 0)
+        self.assertTrue(waiting_notice_visible(afternoon, dt(2026, 10, 7, 11, 40)))
+
+    def test_sunday_and_holiday_hidden_unless_opened(self):
+        sunday = dt(2026, 10, 11, 7, 30)
+        self.assertFalse(waiting_notice_visible(sunday, dt(2026, 10, 11, 7, 0)))
+        holiday = dt(2026, 9, 25, 7, 30)
+        self.assertFalse(waiting_notice_visible(holiday, dt(2026, 9, 25, 7, 0)))
+        WaitingOverride.objects.create(visit_date=sunday.date(), mode='open')
+        self.assertTrue(waiting_notice_visible(sunday, dt(2026, 10, 11, 7, 0)))
+
+    def test_closed_override_hides_weekday(self):
+        thursday = dt(2026, 10, 8, 7, 30)
+        self.assertTrue(waiting_notice_visible(thursday, dt(2026, 10, 8, 7, 0)))
+        WaitingOverride.objects.create(visit_date=thursday.date(), mode='closed')
+        self.assertFalse(waiting_notice_visible(thursday, dt(2026, 10, 8, 7, 0)))
+
+    def test_homepage_hides_saturday_afternoon_card(self):
+        Waiting.objects.create(id=1, waiting_num=2)
+        Waiting.objects.filter(pk=1).update(added_on_datetime=dt(2026, 10, 10, 12, 0))
+        with patch('articleapp.views.local_now', return_value=dt(2026, 10, 10, 12, 48)):
+            page = self.client.get('/')
+        self.assertContains(page, 'var allowAfternoon = false;')
+        self.assertContains(page, "id='waiting_num_notice' class=\"alert-card waiting-card\" style=\"display: none;\"")
+
+    def _patient(self, when, period, name):
+        WaitingPatient.objects.create(
+            real_name=name,
+            birth_date='19900101',
+            visit_date=when.date(),
+            period=period,
+        )
+
+    def test_morning_count_switches_to_afternoon_tablet_count(self):
+        morning = dt(2026, 10, 12, 7, 20)
+        afternoon = dt(2026, 10, 12, 12, 30)
+        self._patient(morning, 'am', '오전')
+        self.assertEqual(homepage_waiting(morning, morning, 1)['number'], 1)
+        self.assertEqual(homepage_waiting(morning, morning, 1)['period'], 'am')
+        self.assertFalse(homepage_waiting(afternoon, morning, 1)['visible'])
+        for name in ('오후1', '오후2', '오후3', '오후4'):
+            self._patient(afternoon, 'pm', name)
+        shown = homepage_waiting(afternoon, dt(2026, 10, 12, 12, 40), 0)
+        self.assertTrue(shown['visible'])
+        self.assertEqual(shown['period'], 'pm')
+        self.assertEqual(shown['number'], 4)
+
+    def test_homepage_shows_afternoon_tablet_count_over_manual_zero(self):
+        Waiting.objects.create(id=1, waiting_num=0)
+        Waiting.objects.filter(pk=1).update(added_on_datetime=dt(2026, 10, 12, 12, 10))
+        afternoon = dt(2026, 10, 12, 12, 30)
+        for name in ('오후1', '오후2', '오후3', '오후4'):
+            self._patient(afternoon, 'pm', name)
+        with patch('articleapp.views.local_now', return_value=afternoon):
+            page = self.client.get('/')
+        self.assertContains(page, 'class="waiting-number">4')
+        self.assertContains(page, "var noticePeriod = 'pm';")
+        self.assertNotContains(
+            page,
+            "id='waiting_num_notice' class=\"alert-card waiting-card\" style=\"display: none;\"",
+        )

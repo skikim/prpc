@@ -119,6 +119,86 @@ def current_waiting_period(now=None):
     return waiting_gate(now)['period']
 
 
+def local_now():
+    return datetime.datetime.now()
+
+
+def notice_sessions(now=None):
+    now = now or datetime.datetime.now()
+    weekday = now.weekday()
+    override = WaitingOverride.objects.filter(visit_date=now.date()).first()
+    if override and override.mode == 'closed':
+        return set()
+    opened = bool(override and override.mode == 'open')
+    if not opened and is_legal_holiday(now.date()):
+        return set()
+    if opened and weekday == 6:
+        weekday = 0
+    elif weekday == 6:
+        return set()
+    if weekday == 2:
+        return {'pm'}
+    if weekday == 5:
+        return {'am'}
+    return {'am', 'pm'}
+
+
+def waiting_notice_visible(now, recorded_at):
+    if not recorded_at or recorded_at.date() != now.date():
+        return False
+    sessions = notice_sessions(now)
+    total = now.hour * 60 + now.minute
+    recorded = recorded_at.hour * 60 + recorded_at.minute
+    morning = (
+        'am' in sessions
+        and AM_START <= total < AM_END + 10
+        and AM_START <= recorded < PM_START
+    )
+    afternoon = (
+        'pm' in sessions
+        and PM_START <= total < PM_END + 10
+        and recorded >= PM_START
+    )
+    return morning or afternoon
+
+
+def active_notice_period(now):
+    sessions = notice_sessions(now)
+    total = now.hour * 60 + now.minute
+    if 'am' in sessions and AM_START <= total < AM_END + 10:
+        return 'am'
+    if 'pm' in sessions and PM_START <= total < PM_END + 10:
+        return 'pm'
+    return None
+
+
+def homepage_waiting(now, recorded_at, stored_num):
+    period = active_notice_period(now)
+    hidden = {'visible': False, 'number': 0, 'period': '', 'clock': None}
+    if not period:
+        return hidden
+    live = waiting_count(now.date(), period)
+    if live:
+        latest = WaitingPatient.objects.filter(
+            visit_date=now.date(),
+            period=period,
+        ).order_by('-created_at').first()
+        return {
+            'visible': True,
+            'number': min(live, MAX_WAITING),
+            'period': period,
+            'clock': latest.created_at if latest else recorded_at,
+        }
+    if waiting_notice_visible(now, recorded_at):
+        return {
+            'visible': True,
+            'number': 0 if stored_num is None else stored_num,
+            'period': period,
+            'clock': recorded_at,
+        }
+    return hidden
+
+
 def period_label(period):
     if period == 'am':
         return '오전'
