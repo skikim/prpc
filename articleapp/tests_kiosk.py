@@ -337,9 +337,12 @@ class TabletScreenOffTests(TestCase):
         self.assertTrue(tablet_screen_off(datetime.datetime(2026, 1, 1, 10, 0)))
 
     def test_wednesday_hours_stay_when_the_day_is_open(self):
-        self.assertTrue(tablet_screen_off(datetime.datetime(2026, 10, 7, 10, 0)))
+        self.assertTrue(tablet_screen_off(datetime.datetime(2026, 10, 7, 9, 59)))
+        self.assertFalse(tablet_screen_off(datetime.datetime(2026, 10, 7, 10, 0)))
         self.assertFalse(tablet_screen_off(datetime.datetime(2026, 10, 7, 15, 0)))
         self.assertTrue(tablet_screen_off(datetime.datetime(2026, 10, 7, 21, 0)))
+        self.assertTrue(tablet_screen_off(datetime.datetime(2026, 10, 8, 4, 59)))
+        self.assertFalse(tablet_screen_off(datetime.datetime(2026, 10, 8, 5, 0)))
 
 
 class NormalizeBirthDateTests(TestCase):

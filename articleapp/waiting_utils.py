@@ -65,8 +65,8 @@ def tablet_screen_off(now=None):
         return True
     minutes = now.hour * 60 + now.minute
     if now.weekday() == 2:
-        return minutes < 11 * 60 or minutes >= 20 * 60 + 30
-    return minutes < 6 * 60 or minutes >= 18 * 60
+        return minutes < 10 * 60 or minutes >= 20 * 60 + 30
+    return minutes < 5 * 60 or minutes >= 18 * 60
 
 
 def waiting_gate(now=None):

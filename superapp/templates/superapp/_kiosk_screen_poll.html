@@ -7,9 +7,9 @@
             if (serverScreenOff === false) return false;
             var minutes = now.getHours() * 60 + now.getMinutes();
             if (now.getDay() === 3) {
-                return minutes < 11 * 60 || minutes >= 20 * 60 + 30;
+                return minutes < 10 * 60 || minutes >= 20 * 60 + 30;
             }
-            return minutes < 6 * 60 || minutes >= 18 * 60;
+            return minutes < 5 * 60 || minutes >= 18 * 60;
         }
         function turnScreenOffAtNight() {
             try {
