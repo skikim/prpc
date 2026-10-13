@@ -90,6 +90,37 @@
     if (current && current.id === id) localStorage.removeItem(LOCK_KEY);
   }
 
+  function markEl() {
+    return document.getElementById('prpc-backup-mark');
+  }
+
+  function setMark(state) {
+    const mark = markEl();
+    if (!mark) return;
+    if (state === 'off') {
+      mark.hidden = true;
+      mark.textContent = '';
+      return;
+    }
+    mark.hidden = false;
+    if (state === 'ok') {
+      mark.style.color = '#067647';
+      mark.textContent = '✓';
+      mark.title = '백업 폴더 권한이 있습니다';
+      mark.setAttribute('aria-label', '백업 폴더 권한이 있습니다');
+      return;
+    }
+    mark.style.color = '#b42318';
+    mark.textContent = '!';
+    mark.title = '폴더 권한을 다시 허용해야 합니다';
+    mark.setAttribute('aria-label', '폴더 권한을 다시 허용해야 합니다');
+  }
+
+  function permissionAlert(message) {
+    setMark('need');
+    if (!markEl()) showNotice(message, true);
+  }
+
   function showNotice(message, link) {
     let box = document.getElementById('prpc-backup-notice');
     if (!box) {
@@ -193,16 +224,17 @@
       }
       if (!force && !config.enabled) {
         hideNotice();
+        setMark('off');
         return;
       }
       if (!window.showDirectoryPicker) {
-        showNotice('이 브라우저는 폴더 저장을 지원하지 않습니다. Chrome 또는 Edge를 사용해 주세요.', true);
+        permissionAlert('이 브라우저는 폴더 저장을 지원하지 않습니다. Chrome 또는 Edge를 사용해 주세요.');
         return;
       }
       return getHandle().then(function (handle) {
         cachedHandle = handle;
         if (!handle) {
-          showNotice('백업 폴더가 선택되지 않았습니다.', true);
+          permissionAlert('백업 폴더가 선택되지 않았습니다.');
           return;
         }
         const query = handle.queryPermission
@@ -210,9 +242,10 @@
           : Promise.resolve('granted');
         return query.then(function (perm) {
           if (perm !== 'granted') {
-            showNotice('백업 폴더 권한이 필요합니다.', true);
+            permissionAlert('백업 폴더 권한이 필요합니다.');
             return;
           }
+          setMark(config.enabled || force ? 'ok' : 'off');
           if (!force) {
             const last = Number(localStorage.getItem(LAST_KEY) || '0');
             const interval = Math.max(5, Number(config.interval_minutes) || 10) * 60000;
@@ -250,14 +283,29 @@
     }).then(refreshPanel).catch(function () {});
   }
 
+  function afterGrant(perm) {
+    if (perm === 'granted') {
+      setMark('ok');
+      hideNotice();
+      backup(false);
+    } else if (markEl()) {
+      setMark('need');
+    }
+    if (panel) return refreshPanel();
+  }
+
   function grantPermission() {
     if (cachedHandle && cachedHandle.requestPermission) {
-      cachedHandle.requestPermission({ mode: 'readwrite' }).then(function () {
-        return refreshPanel();
-      }).catch(function () {});
+      cachedHandle.requestPermission({ mode: 'readwrite' }).then(afterGrant).catch(function () {});
       return;
     }
-    chooseFolder();
+    if (!window.showDirectoryPicker) {
+      permissionAlert('이 브라우저는 폴더 저장을 지원하지 않습니다. Chrome 또는 Edge를 사용해 주세요.');
+      return;
+    }
+    window.showDirectoryPicker({ mode: 'readwrite' }).then(function (handle) {
+      return saveHandle(handle).then(function () { return afterGrant('granted'); });
+    }).catch(function () {});
   }
 
   function backupNow() {
@@ -325,6 +373,8 @@
   if (pickButton) pickButton.addEventListener('click', chooseFolder);
   if (grantButton) grantButton.addEventListener('click', grantPermission);
   if (nowButton) nowButton.addEventListener('click', backupNow);
+  const mark = markEl();
+  if (mark) mark.addEventListener('click', grantPermission);
   if (panel) refreshPanel();
   if (auto) {
     window.setTimeout(function () { backup(false); }, 1500);

@@ -336,6 +336,8 @@ class BackupTests(TestCase):
         week2 = self.client.get('/supers/supercreate2/')
         self.assertContains(week1, 'backup.js')
         self.assertContains(week2, 'backup.js')
+        self.assertContains(week1, 'id="prpc-backup-mark"')
+        self.assertContains(week2, 'id="prpc-backup-mark"')
         response = self.client.get('/supers/backup/export/')
         self.assertEqual(response.status_code, 200)
         self.assertIn('spreadsheet', response['Content-Type'])

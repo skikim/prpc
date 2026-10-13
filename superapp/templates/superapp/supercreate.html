@@ -5,7 +5,7 @@
     {% if user.is_superuser %}
         <div>
             <div style="margin-top: 8rem; margin-bottom: 2rem; text-align: center">
-                <h2>[관리자 페이지 1주차]<a href="{% url 'searchapp:searchpage' %}"><span
+                <h2>[관리자 페이지 1주차]<button type="button" id="prpc-backup-mark" hidden aria-label="백업 폴더 권한" style="border:0;background:none;padding:0 0.15rem 0 0.35rem;font-size:0.9rem;line-height:1;vertical-align:1px;cursor:pointer;"></button><a href="{% url 'searchapp:searchpage' %}"><span
                         style="font-size: 0.8rem; margin-right: 1rem">환자검색</span></a></h2>
             </div>
 
