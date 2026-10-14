@@ -2,27 +2,76 @@
     (function() {
         var statusUrl = "{% url 'superapp:kiosk_status' %}";
         var serverScreenOff = null;
-        function shouldTurnScreenOff(now) {
-            if (serverScreenOff === true) return true;
-            if (serverScreenOff === false) return false;
+        var serverAnsweredAt = 0;
+        var wakeGeneration = 0;
+        var screenWasOn = false;
+        var freshMs = 15000;
+
+        function localScreenOff(now) {
             var minutes = now.getHours() * 60 + now.getMinutes();
             if (now.getDay() === 3) {
                 return minutes < 10 * 60 || minutes >= 20 * 60 + 30;
             }
             return minutes < 5 * 60 || minutes >= 18 * 60;
         }
+
+        function dropStaleAnswer() {
+            wakeGeneration += 1;
+            serverScreenOff = null;
+            serverAnsweredAt = 0;
+        }
+
+        function screenIsOn() {
+            try {
+                if (window.fully && typeof fully.getScreenOn === 'function') return fully.getScreenOn() === true;
+            } catch (e) {}
+            return true;
+        }
+
+        function noteWake() {
+            var on = screenIsOn();
+            if (on && !screenWasOn) dropStaleAnswer();
+            screenWasOn = on;
+        }
+
+        function shouldTurnScreenOff(now) {
+            if (localScreenOff(now)) return true;
+            if (serverScreenOff !== true) return false;
+            return Date.now() - serverAnsweredAt < freshMs;
+        }
+
         function turnScreenOffAtNight() {
+            noteWake();
             try {
                 if (!shouldTurnScreenOff(new Date())) return;
-                if (window.fully && typeof fully.turnScreenOff === 'function') fully.turnScreenOff();
+                if (window.fully && typeof fully.turnScreenOff === 'function') {
+                    fully.turnScreenOff();
+                    screenWasOn = false;
+                    dropStaleAnswer();
+                }
             } catch (e) {}
         }
+
+        window.kioskOnScreenOn = function() {
+            screenWasOn = false;
+            dropStaleAnswer();
+        };
+
         function pollScreen() {
+            var generation = wakeGeneration;
             turnScreenOffAtNight();
             fetch(statusUrl, {credentials: 'same-origin', cache: 'no-store'})
                 .then(function(response) { return response.json(); })
                 .then(function(data) {
-                    if (typeof data.screen_off === 'boolean') serverScreenOff = data.screen_off;
+                    noteWake();
+                    if (generation !== wakeGeneration) {
+                        setTimeout(pollScreen, 3000);
+                        return;
+                    }
+                    if (typeof data.screen_off === 'boolean') {
+                        serverScreenOff = data.screen_off;
+                        serverAnsweredAt = Date.now();
+                    }
                     turnScreenOffAtNight();
                     var nextPath = data.url ? data.url.split('?')[0].replace(/\/+$/, '') : '';
                     var herePath = location.pathname.replace(/\/+$/, '');
@@ -33,6 +82,10 @@
                     setTimeout(pollScreen, 3000);
                 })
                 .catch(function() { setTimeout(pollScreen, 5000); });
+        }
+
+        if (window.fully && typeof fully.bind === 'function') {
+            fully.bind('screenOn', 'if (window.kioskOnScreenOn) window.kioskOnScreenOn();');
         }
         turnScreenOffAtNight();
         setInterval(turnScreenOffAtNight, 3000);
