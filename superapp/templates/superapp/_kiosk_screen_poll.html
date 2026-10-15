@@ -1,11 +1,13 @@
 <script>
     (function() {
         var statusUrl = "{% url 'superapp:kiosk_status' %}";
-        var serverScreenOff = null;
-        var serverAnsweredAt = 0;
-        var wakeGeneration = 0;
-        var screenWasOn = false;
-        var freshMs = 15000;
+        var closedDay = false;
+        var generation = 0;
+        var screenWasOn = true;
+        var screenOff = false;
+        var wakeAt = 0;
+        var wakeGraceUntil = 0;
+        var GRACE_MS = 20000;
 
         function localScreenOff(now) {
             var minutes = now.getHours() * 60 + now.getMinutes();
@@ -15,63 +17,73 @@
             return minutes < 5 * 60 || minutes >= 18 * 60;
         }
 
-        function dropStaleAnswer() {
-            wakeGeneration += 1;
-            serverScreenOff = null;
-            serverAnsweredAt = 0;
+        function beginWake() {
+            generation += 1;
+            closedDay = false;
+            screenOff = false;
+            screenWasOn = true;
+            wakeAt = Date.now();
+            wakeGraceUntil = wakeAt + GRACE_MS;
         }
 
         function screenIsOn() {
             try {
                 if (window.fully && typeof fully.getScreenOn === 'function') return fully.getScreenOn() === true;
             } catch (e) {}
-            return true;
+            return !screenOff;
         }
 
         function noteWake() {
             var on = screenIsOn();
-            if (on && !screenWasOn) dropStaleAnswer();
+            if (on && !screenWasOn) beginWake();
             screenWasOn = on;
         }
 
         function shouldTurnScreenOff(now) {
+            if (Date.now() < wakeGraceUntil) return false;
             if (localScreenOff(now)) return true;
-            if (serverScreenOff !== true) return false;
-            return Date.now() - serverAnsweredAt < freshMs;
+            return closedDay === true;
+        }
+
+        function turnScreenOffNow() {
+            generation += 1;
+            closedDay = false;
+            screenWasOn = false;
+            screenOff = true;
+            try {
+                if (window.fully && typeof fully.turnScreenOff === 'function') fully.turnScreenOff();
+            } catch (e) {}
         }
 
         function turnScreenOffAtNight() {
             noteWake();
+            if (screenOff) return;
             try {
                 if (!shouldTurnScreenOff(new Date())) return;
-                if (window.fully && typeof fully.turnScreenOff === 'function') {
-                    fully.turnScreenOff();
-                    screenWasOn = false;
-                    dropStaleAnswer();
-                }
+                turnScreenOffNow();
             } catch (e) {}
         }
 
         window.kioskOnScreenOn = function() {
-            screenWasOn = false;
-            dropStaleAnswer();
+            beginWake();
+            pollScreen();
         };
 
         function pollScreen() {
-            var generation = wakeGeneration;
+            if (screenOff) return;
+            var myGeneration = generation;
+            var startedAt = Date.now();
             turnScreenOffAtNight();
+            if (screenOff) return;
             fetch(statusUrl, {credentials: 'same-origin', cache: 'no-store'})
                 .then(function(response) { return response.json(); })
                 .then(function(data) {
                     noteWake();
-                    if (generation !== wakeGeneration) {
-                        setTimeout(pollScreen, 3000);
+                    if (screenOff || myGeneration !== generation || startedAt < wakeAt) {
+                        if (!screenOff) setTimeout(pollScreen, 3000);
                         return;
                     }
-                    if (typeof data.screen_off === 'boolean') {
-                        serverScreenOff = data.screen_off;
-                        serverAnsweredAt = Date.now();
-                    }
+                    if (typeof data.closed_day === 'boolean') closedDay = data.closed_day;
                     turnScreenOffAtNight();
                     var nextPath = data.url ? data.url.split('?')[0].replace(/\/+$/, '') : '';
                     var herePath = location.pathname.replace(/\/+$/, '');
@@ -79,9 +91,9 @@
                         location.replace(data.url);
                         return;
                     }
-                    setTimeout(pollScreen, 3000);
+                    if (!screenOff) setTimeout(pollScreen, 3000);
                 })
-                .catch(function() { setTimeout(pollScreen, 5000); });
+                .catch(function() { if (!screenOff) setTimeout(pollScreen, 5000); });
         }
 
         if (window.fully && typeof fully.bind === 'function') {

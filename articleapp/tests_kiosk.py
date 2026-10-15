@@ -11,6 +11,7 @@ from articleapp.waiting_utils import (
     is_legal_holiday,
     normalize_birth_date,
     notice_sessions,
+    tablet_closed_day,
     tablet_screen_off,
     waiting_gate,
     waiting_notice_visible,
@@ -126,7 +127,10 @@ class KioskAccessTests(TestCase):
         self.assertContains(waiting, 'fully.turnScreenOff')
         self.assertContains(waiting, '20 * 60 + 30')
         self.assertContains(waiting, 'kioskOnScreenOn')
+        self.assertContains(waiting, 'closed_day')
+        self.assertContains(waiting, 'wakeGraceUntil')
         self.assertNotContains(waiting, 'if (serverScreenOff === true) return true;')
+        self.assertNotContains(waiting, 'turnScreenOff(true)')
         self.assertContains(tablet, 'fully.turnScreenOff')
         self.assertEqual(self.client.get('/supers/tablet2/').status_code, 200)
         self.assertEqual(self.client.get('/supers/tablet3/').status_code, 200)
@@ -320,6 +324,7 @@ class KioskDailyResetTests(TestCase):
         self.assertEqual(status.json()['mode'], 'wait')
         self.assertEqual(status.json()['url'], '/supers/waiting_pt/')
         self.assertIn('screen_off', status.json())
+        self.assertIn('closed_day', status.json())
 
 
 class TabletScreenOffTests(TestCase):
@@ -348,6 +353,8 @@ class TabletScreenOffTests(TestCase):
         self.assertTrue(tablet_screen_off(datetime.datetime(2026, 10, 7, 21, 0)))
         self.assertTrue(tablet_screen_off(datetime.datetime(2026, 10, 8, 4, 59)))
         self.assertFalse(tablet_screen_off(datetime.datetime(2026, 10, 8, 5, 0)))
+        self.assertFalse(tablet_closed_day(datetime.datetime(2026, 10, 8, 6, 0)))
+        self.assertTrue(tablet_closed_day(datetime.datetime(2026, 10, 11, 10, 0)))
 
 
 class NormalizeBirthDateTests(TestCase):

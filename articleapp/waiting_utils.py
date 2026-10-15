@@ -59,9 +59,14 @@ def _reception_closed_day(day):
     return day.weekday() == 6 or is_legal_holiday(day)
 
 
+def tablet_closed_day(now=None):
+    now = now or datetime.datetime.now()
+    return _reception_closed_day(now.date())
+
+
 def tablet_screen_off(now=None):
     now = now or datetime.datetime.now()
-    if _reception_closed_day(now.date()):
+    if tablet_closed_day(now):
         return True
     minutes = now.hour * 60 + now.minute
     if now.weekday() == 2:

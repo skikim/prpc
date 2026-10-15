@@ -31,6 +31,7 @@ from articleapp.waiting_utils import (
     waiting_board,
     waiting_count,
     waiting_gate,
+    tablet_closed_day,
     tablet_screen_off,
 )
 import requests
@@ -1035,6 +1036,7 @@ def kiosk_status(request):
         'mode': mode,
         'url': reverse(KIOSK_MODES[mode][0]),
         'screen_off': tablet_screen_off(),
+        'closed_day': tablet_closed_day(),
     })
     response['Cache-Control'] = 'no-store'
     return response
