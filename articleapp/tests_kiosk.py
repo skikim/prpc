@@ -135,6 +135,25 @@ class KioskAccessTests(TestCase):
         self.assertEqual(self.client.get('/supers/tablet2/').status_code, 200)
         self.assertEqual(self.client.get('/supers/tablet3/').status_code, 200)
 
+    def test_tablet_approval_overlay_shows_korean_datetime(self):
+        self.client.login(username='tablet', password='pass1234')
+        page = self.client.get('/supers/tablet/')
+        self.assertContains(page, 'id="tablet-overlay-date"')
+        self.assertContains(page, 'id="tablet-overlay-time"')
+        self.assertContains(page, 'koreanDateLabel(selectedDate)')
+        self.assertContains(page, "koreanDateLabel('")
+        self.assertContains(page, ', true)')
+        self.assertContains(page, 'koreanTimeLabel(selected_time)')
+        self.assertContains(page, 'tablet-confirm-label')
+        self.assertContains(page, 'id="booking_date"')
+        self.assertContains(page, 'id="booking_time"')
+        self.assertContains(page, 'koreanTimeLabel(selectedTime)')
+        self.assertContains(page, ', 4000,')
+        self.assertContains(page, '#1d4ed8')
+        self.assertContains(page, 'background: #f8fafc;')
+        self.assertContains(page, "finishAndReload('선택이 취소되었습니다. 다시 선택해 주세요.', '', 2000)")
+        self.assertContains(page, '}, 2000);')
+
     def test_tablet_user_can_open_kiosk_pages_only(self):
         self.client.login(username='tablet', password='pass1234')
         self.assertEqual(self.client.get('/supers/waiting_pt/').status_code, 200)

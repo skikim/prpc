@@ -13,22 +13,56 @@
         position: fixed;
         inset: 0;
         z-index: 2000;
-        background: rgba(16, 185, 129, 0.95);
-        color: #fff;
+        background: #f8fafc;
         align-items: center;
         justify-content: center;
         text-align: center;
-        padding: 2rem;
+        padding: 1.5rem;
     }
     #tablet-overlay.show {
         display: flex;
     }
-    #tablet-overlay p {
-        color: #fff !important;
-        -webkit-text-fill-color: #fff !important;
+    #tablet-overlay,
+    #tablet-overlay * {
+        color: #1d4ed8 !important;
+        -webkit-text-fill-color: #1d4ed8 !important;
+    }
+    .tablet-overlay-card {
+        width: min(100%, 40rem);
+        background: #fff;
+        border: 3px solid #1d4ed8;
+        border-radius: 20px;
+        box-shadow: 0 20px 25px -5px rgba(29, 78, 216, 0.12);
+        padding: 2.25rem 1.5rem;
+    }
+    #tablet-overlay-text {
         font-size: 2rem;
-        font-weight: 700;
+        font-weight: 800;
+        line-height: 1.4;
         margin: 0;
+        word-break: keep-all;
+    }
+    #tablet-overlay.approved #tablet-overlay-text {
+        margin-bottom: 1.25rem;
+    }
+    #tablet-overlay-date,
+    #tablet-overlay-time {
+        font-weight: 900;
+        line-height: 1.2;
+        margin: 0;
+        letter-spacing: -0.02em;
+        word-break: keep-all;
+    }
+    #tablet-overlay-date {
+        font-size: clamp(2.6rem, 8vw, 3.6rem);
+        margin-bottom: 0.75rem;
+    }
+    #tablet-overlay-time {
+        font-size: clamp(3rem, 10vw, 4.5rem);
+    }
+    #tablet-overlay-date[hidden],
+    #tablet-overlay-time[hidden] {
+        display: none !important;
     }
     @keyframes tablet-sparkle {
         0%, 100% {
@@ -81,8 +115,97 @@
         padding: 0.85rem 1rem;
         margin-bottom: 1rem;
     }
+    #modal_post .tablet-confirm-dialog {
+        max-width: 36rem;
+    }
+    #modal_post .modal-content {
+        border: none;
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: 0 20px 25px -5px rgba(29, 78, 216, 0.18);
+    }
+    #modal_post .modal-header {
+        background: #1d4ed8;
+        border-bottom: none;
+        padding: 1.1rem 1.25rem;
+    }
+    #modal_post .modal-title {
+        color: #fff !important;
+        -webkit-text-fill-color: #fff !important;
+        font-size: 1.35rem;
+        font-weight: 800;
+    }
+    #modal_post .btn-close {
+        filter: invert(1) grayscale(1) brightness(2);
+    }
+    #modal_post .modal-body {
+        padding: 1.25rem 1.25rem 1rem;
+    }
+    #modal_post .tablet-confirm-block {
+        background: #f8fafc;
+        border: 2px solid #dbeafe;
+        border-radius: 14px;
+        padding: 0.85rem 1rem;
+        margin-bottom: 0.75rem;
+    }
+    #modal_post .tablet-confirm-label {
+        color: #64748b !important;
+        -webkit-text-fill-color: #64748b !important;
+        font-size: 0.95rem !important;
+        font-weight: 700;
+        margin: 0 0 0.25rem;
+    }
+    #booking_date,
+    #booking_time {
+        color: #1d4ed8 !important;
+        -webkit-text-fill-color: #1d4ed8 !important;
+        font-weight: 900 !important;
+        line-height: 1.25;
+        margin: 0;
+        letter-spacing: -0.02em;
+        word-break: keep-all;
+    }
+    #booking_date {
+        font-size: clamp(1.7rem, 5vw, 2.2rem) !important;
+    }
+    #booking_time {
+        font-size: clamp(2.1rem, 6.5vw, 2.8rem) !important;
+    }
+    #modal_post .tablet-confirm-note {
+        color: #9a3412 !important;
+        -webkit-text-fill-color: #9a3412 !important;
+        font-size: 0.95rem !important;
+        font-weight: 700;
+        margin: 0.35rem 0 0;
+        word-break: keep-all;
+    }
+    #modal_post .modal-footer {
+        border-top: 1px solid #e2e8f0;
+        padding: 0.9rem 1.25rem 1.15rem;
+        gap: 0.6rem;
+    }
+    #modal_post .tablet-confirm-close,
+    #modal_post .tablet-confirm-submit {
+        min-width: 6.5rem;
+        min-height: 3rem;
+        font-size: 1.15rem !important;
+        font-weight: 800;
+        border-radius: 12px;
+    }
+    #modal_post .tablet-confirm-submit {
+        background: #1d4ed8 !important;
+        border-color: #1d4ed8 !important;
+        color: #fff !important;
+        -webkit-text-fill-color: #fff !important;
+    }
 </style>
-<div id="tablet-overlay"><p id="tablet-overlay-text"></p></div>
+<div id="tablet-overlay">
+    <div class="tablet-overlay-card">
+        <p id="tablet-overlay-text"></p>
+        <p id="tablet-overlay-date" hidden></p>
+        <p id="tablet-overlay-time" hidden></p>
+    </div>
+</div>
     <div>
         <div class="hero-section" style="padding: 2rem 0; margin-top: 4rem; margin-bottom: 2rem;">
             <div class="container hero-content text-center">
@@ -114,21 +237,27 @@
             <input class="date" type="hidden" id="date" name="date" value="{{ target_date }}" required/>
             <input class="time" type="hidden" id="time" name="time" value="" required/>
 
-            <div class="modal" id="modal_post" tabindex="-1">
-                <div class="modal-dialog">
+            <div class="modal fade" id="modal_post" tabindex="-1">
+                <div class="modal-dialog modal-dialog-centered tablet-confirm-dialog">
                     <div class="modal-content">
                         <div class="modal-header">
                             <h5 class="modal-title">예약 확인</h5>
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div class="modal-body">
-                            <p id="booking_date" style="font-weight: bold; font-size: 1.2rem"></p>
-                            <p id="booking_time" style="font-weight: bold; font-size: 1.2rem"></p>
-                            <p style="color: darkred">- 아래 승인 단추를 누르면 선택한 시간이 직원에게 전달됩니다.</p>
+                            <div class="tablet-confirm-block">
+                                <p class="tablet-confirm-label">예약날짜</p>
+                                <p id="booking_date"></p>
+                            </div>
+                            <div class="tablet-confirm-block">
+                                <p class="tablet-confirm-label">예약시간</p>
+                                <p id="booking_time"></p>
+                            </div>
+                            <p class="tablet-confirm-note">아래 요청 단추를 누르면 선택한 시간이 직원에게 전달됩니다.</p>
                         </div>
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
-                            <button type="submit" class="btn btn-primary">승인</button>
+                            <button type="button" class="btn btn-secondary tablet-confirm-close" data-bs-dismiss="modal">닫기</button>
+                            <button type="submit" class="btn btn-primary tablet-confirm-submit">요청</button>
                         </div>
                     </div>
                 </div>
@@ -186,8 +315,8 @@
                 modal.show();
                 document.getElementById('date').value = '{{ target_date }}';
                 document.getElementById('time').value = selected_time;
-                document.getElementById('booking_date').innerHTML = '예약날짜 :  {{ target_date }} ({{ target_weekday }})';
-                document.getElementById('booking_time').innerHTML = '예약시간 :  ' + selected_time;
+                document.getElementById('booking_date').textContent = koreanDateLabel('{{ target_date }}', true);
+                document.getElementById('booking_time').textContent = koreanTimeLabel(selected_time);
             }
         }
         function input_objects(){
@@ -218,21 +347,53 @@
         const selectedDate = '{{ selected_date }}';
         const selectedTime = '{{ selected_time }}';
         let finished = false;
-        function showOverlay(text) {
-            document.getElementById('tablet-overlay-text').innerText = text;
-            document.getElementById('tablet-overlay').classList.add('show');
+        function koreanDateLabel(isoDate, withYear) {
+            var parts = (isoDate || '').split('-');
+            if (parts.length !== 3) return '';
+            var year = parseInt(parts[0], 10);
+            var month = parseInt(parts[1], 10);
+            var day = parseInt(parts[2], 10);
+            if (!year || !month || !day) return '';
+            var date = new Date(year, month - 1, day);
+            var weekdays = ['일', '월', '화', '수', '목', '금', '토'];
+            var label = month + '월 ' + day + '일 (' + weekdays[date.getDay()] + ')';
+            if (withYear) return year + '년 ' + label;
+            return label;
         }
-        function finishAndReload(text, highlightTime) {
+        function koreanTimeLabel(hhmm) {
+            var parts = (hhmm || '').split(':');
+            if (parts.length < 2) return '';
+            var hour = parseInt(parts[0], 10);
+            var minute = parseInt(parts[1], 10);
+            if (isNaN(hour) || isNaN(minute)) return '';
+            var period = hour < 12 ? '오전' : '오후';
+            var displayHour = hour % 12 || 12;
+            if (minute === 0) return period + ' ' + displayHour + '시';
+            return period + ' ' + displayHour + '시 ' + minute + '분';
+        }
+        function showOverlay(text, dateText, timeText) {
+            var overlay = document.getElementById('tablet-overlay');
+            document.getElementById('tablet-overlay-text').innerText = text;
+            var dateEl = document.getElementById('tablet-overlay-date');
+            var timeEl = document.getElementById('tablet-overlay-time');
+            dateEl.innerText = dateText || '';
+            timeEl.innerText = timeText || '';
+            dateEl.hidden = !dateText;
+            timeEl.hidden = !timeText;
+            overlay.classList.toggle('approved', Boolean(dateText || timeText));
+            overlay.classList.add('show');
+        }
+        function finishAndReload(text, highlightTime, delay, dateText, timeText) {
             if (finished) return;
             finished = true;
-            showOverlay(text);
+            showOverlay(text, dateText, timeText);
             setTimeout(function() {
                 var next = "{{ tablet_page_url }}";
                 if (highlightTime) {
                     next += '?highlight=' + encodeURIComponent(highlightTime);
                 }
                 location.href = next;
-            }, 2000);
+            }, delay);
         }
         function pollStatus() {
             if (finished) return;
@@ -241,9 +402,9 @@
                 .then(function(response) { return response.json(); })
                 .then(function(data) {
                     if (data.state === 'approved') {
-                        finishAndReload('예약이 승인되었습니다.', selectedTime);
+                        finishAndReload('예약이 승인되었습니다.', selectedTime, 4000, koreanDateLabel(selectedDate), koreanTimeLabel(selectedTime));
                     } else if (data.state === 'cleared') {
-                        finishAndReload('선택이 취소되었습니다. 다시 선택해 주세요.');
+                        finishAndReload('선택이 취소되었습니다. 다시 선택해 주세요.', '', 2000);
                     } else {
                         setTimeout(pollStatus, 2000);
                     }
