@@ -725,6 +725,50 @@
 
         waiting_inform_2();
 
+        (function() {
+            var statusUrl = "{% url 'articleapp:waiting_status' %}";
+            var etag = '';
+            function inNoticeWindow() {
+                var total = (new Date().getHours() * 60) + new Date().getMinutes();
+                return (total >= 390 && total < 550) || (total >= 690 && total < 850);
+            }
+            function cardVisible() {
+                var card = document.getElementById('waiting_num_notice');
+                return card && card.style.display !== 'none';
+            }
+            function applyWaiting(data) {
+                var card = document.getElementById('waiting_num_notice');
+                if (!card) return;
+                if (!data.visible) {
+                    card.style.display = 'none';
+                    return;
+                }
+                var number = card.querySelector('.waiting-number');
+                var clock = card.querySelector('.alert-card-datetime');
+                if (number) number.textContent = data.number;
+                if (clock) clock.textContent = data.clock;
+                card.style.display = '';
+            }
+            function pollWaiting() {
+                if (document.hidden || (!inNoticeWindow() && !cardVisible())) return;
+                var headers = {};
+                if (etag) headers['If-None-Match'] = etag;
+                fetch(statusUrl, {headers: headers, cache: 'no-store', credentials: 'same-origin'})
+                    .then(function(response) {
+                        var next = response.headers.get('ETag');
+                        if (next) etag = next;
+                        if (response.status === 304 || !response.ok) return null;
+                        return response.json();
+                    })
+                    .then(function(data) { if (data) applyWaiting(data); })
+                    .catch(function() {});
+            }
+            setInterval(pollWaiting, 60000);
+            document.addEventListener('visibilitychange', function() {
+                if (!document.hidden) pollWaiting();
+            });
+        })();
+
         function modal_close_1() {
             $('#modal_inform').hide();
         }

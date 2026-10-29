@@ -177,6 +177,25 @@ def active_notice_period(now):
     return None
 
 
+def waiting_clock_text(clock):
+    if not clock:
+        return ''
+    period = '오전' if clock.hour < 12 else '오후'
+    hour12 = clock.hour % 12 or 12
+    return f'{period} {hour12}시 {clock.minute}분 기준'
+
+
+def homepage_waiting_payload(now=None):
+    now = now or local_now()
+    waiting, _ = Waiting.objects.get_or_create(id=1)
+    display = homepage_waiting(now, waiting.added_on_datetime, waiting.waiting_num)
+    return {
+        'visible': bool(display['visible']),
+        'number': display['number'],
+        'clock': waiting_clock_text(display['clock']) if display['visible'] else '',
+    }
+
+
 def homepage_waiting(now, recorded_at, stored_num):
     period = active_notice_period(now)
     hidden = {'visible': False, 'number': 0, 'period': '', 'clock': None}

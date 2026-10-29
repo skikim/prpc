@@ -469,3 +469,25 @@ class WaitingNoticeTests(TestCase):
             page,
             "id='waiting_num_notice' class=\"alert-card waiting-card\" style=\"display: none;\"",
         )
+
+    def test_waiting_status_returns_live_count_and_304(self):
+        afternoon = dt(2026, 10, 12, 12, 30)
+        Waiting.objects.create(id=1, waiting_num=0)
+        Waiting.objects.filter(pk=1).update(added_on_datetime=dt(2026, 10, 12, 12, 10))
+        for name in ('오후1', '오후2'):
+            self._patient(afternoon, 'pm', name)
+        WaitingPatient.objects.filter(visit_date=afternoon.date(), period='pm').update(created_at=afternoon)
+        with patch('articleapp.views.local_now', return_value=afternoon):
+            first = self.client.get('/articles/waiting_status/')
+            second = self.client.get(
+                '/articles/waiting_status/',
+                HTTP_IF_NONE_MATCH=first['ETag'],
+            )
+        self.assertEqual(first.status_code, 200)
+        self.assertEqual(first.json(), {
+            'visible': True,
+            'number': 2,
+            'clock': '오후 12시 30분 기준',
+        })
+        self.assertEqual(second.status_code, 304)
+        self.assertEqual(second['ETag'], first['ETag'])

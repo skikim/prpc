@@ -1,5 +1,8 @@
 from django.contrib.auth.decorators import login_required, user_passes_test
-from django.http import HttpResponse, HttpResponseRedirect
+import hashlib
+import json
+
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
@@ -8,7 +11,7 @@ from django.views.generic import CreateView, UpdateView
 from articleapp.decorators import staff_required
 from articleapp.forms import WaitingCreationForm
 from articleapp.models import Waiting, Holiday
-from articleapp.waiting_utils import homepage_waiting, local_now, notice_sessions
+from articleapp.waiting_utils import homepage_waiting, homepage_waiting_payload, local_now, notice_sessions, waiting_clock_text
 from noteapp.models import Note
 import datetime
 from superapp.utils import send_discord_message
@@ -118,15 +121,26 @@ def delete_holiday_message(request, holiday_message_id):
 #     template_name = 'articleapp/holiday_create.html'
 
 
+def waiting_status(request):
+    payload = homepage_waiting_payload(local_now())
+    encoded = json.dumps(payload, separators=(',', ':'), ensure_ascii=False, sort_keys=True).encode('utf-8')
+    etag = '"' + hashlib.sha1(encoded).hexdigest() + '"'
+    if request.META.get('HTTP_IF_NONE_MATCH') == etag:
+        response = HttpResponse(status=304)
+    else:
+        response = JsonResponse(payload)
+    response['ETag'] = etag
+    response['Cache-Control'] = 'private, no-cache'
+    return response
+
+
 def index(request):
     holiday_messages = Holiday.objects.all()
     waiting, created = Waiting.objects.get_or_create(id=1)
     waiting_date = waiting.added_on_datetime.strftime('%m월 %d일')
     waiting_time = waiting.added_on_datetime.strftime('%H시 %M분')
     clock = waiting.added_on_datetime
-    period = '오전' if clock.hour < 12 else '오후'
-    hour12 = clock.hour % 12 or 12
-    waiting_clock = f'{period} {hour12}시 {clock.minute}분 기준'
+    waiting_clock = waiting_clock_text(clock)
     now = local_now()
     sessions = notice_sessions(now)
     notice_am = 'am' in sessions
@@ -136,10 +150,7 @@ def index(request):
     waiting_display_num = display['number']
     notice_period = display['period']
     if display['clock']:
-        clock = display['clock']
-        period = '오전' if clock.hour < 12 else '오후'
-        hour12 = clock.hour % 12 or 12
-        waiting_clock = f'{period} {hour12}시 {clock.minute}분 기준'
+        waiting_clock = waiting_clock_text(display['clock'])
     if request.user.is_authenticated:
         notes = Note.objects.filter(recipient=request.user)
         notes_count = notes.count()
