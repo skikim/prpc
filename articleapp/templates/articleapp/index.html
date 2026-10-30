@@ -210,6 +210,13 @@
         font-weight: 500;
         margin-bottom: 0;
     }
+    .waiting-refresh-note {
+        margin: 0.45rem 0 0;
+        font-size: 0.75rem;
+        font-weight: 400;
+        color: #94a3b8;
+        line-height: 1.4;
+    }
     
     /* 반응형 조정 */
     @media (max-width: 767px) {
@@ -299,6 +306,7 @@
                         <span class="waiting-total">/ 4명</span>
                     </div>
                     <p class="alert-card-datetime">{{ waiting_clock }}</p>
+                    <p class="waiting-refresh-note">새로고침하지 않아도 1분마다 바뀝니다</p>
                 </div>
             </div>
 
