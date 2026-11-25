@@ -129,6 +129,11 @@ class KioskAccessTests(TestCase):
         self.assertContains(waiting, 'kioskOnScreenOn')
         self.assertContains(waiting, 'closed_day')
         self.assertContains(waiting, 'wakeGraceUntil')
+        self.assertContains(waiting, 'startPollingNow')
+        self.assertContains(waiting, 'clearPollTimer')
+        self.assertContains(waiting, 'visibilitychange')
+        self.assertContains(waiting, 'hasActivePoll')
+        self.assertContains(waiting, '(data.message || \'\') !== pageMessage')
         self.assertNotContains(waiting, 'if (serverScreenOff === true) return true;')
         self.assertNotContains(waiting, 'turnScreenOff(true)')
         self.assertContains(tablet, 'fully.turnScreenOff')
@@ -160,7 +165,12 @@ class KioskAccessTests(TestCase):
         self.assertEqual(self.client.get('/supers/tablet/').status_code, 200)
         locked = self.client.get('/supers/supercreate/', follow=False)
         self.assertEqual(locked.status_code, 302)
-        self.assertIn('/supers/tablet/', locked.url)
+        self.assertIn('/supers/kiosk/', locked.url)
+
+    def test_tablet_login_redirects_to_kiosk(self):
+        resp = self.client.post('/accounts/login/', {'username': 'tablet', 'password': 'pass1234'}, follow=False)
+        self.assertEqual(resp.status_code, 302)
+        self.assertIn('/supers/kiosk/', resp.url)
 
     def test_kiosk_follows_superuser_screen(self):
         self.client.login(username='tablet', password='pass1234')
@@ -194,7 +204,7 @@ class KioskAccessTests(TestCase):
         self.assertRedirects(booking, '/supers/tablet/', fetch_redirect_response=False)
         blocked = self.client.post('/supers/waiting_list/', {'kiosk_mode': 'wait'})
         self.assertEqual(blocked.status_code, 302)
-        self.assertIn('/supers/tablet/', blocked.url)
+        self.assertIn('/supers/kiosk/', blocked.url)
         self.assertEqual(self.client.get('/supers/kiosk/status/').json()['mode'], 'book')
 
     def test_week_screens_open_booking_calendars(self):
@@ -315,18 +325,32 @@ class KioskDailyResetTests(TestCase):
         return screen
 
     def test_before_18_keeps_manual_screen(self):
-        self.set_changed_at(datetime.datetime(2026, 9, 30, 17, 0))
-        self.assertEqual(kiosk_screen_mode(datetime.datetime(2026, 9, 30, 17, 59)), 'book')
+        self.set_changed_at(datetime.datetime(2026, 9, 29, 17, 0))
+        self.assertEqual(kiosk_screen_mode(datetime.datetime(2026, 9, 29, 17, 59)), 'book')
 
     def test_at_18_resets_to_wait(self):
-        self.set_changed_at(datetime.datetime(2026, 9, 30, 17, 0))
-        self.assertEqual(kiosk_screen_mode(datetime.datetime(2026, 9, 30, 18, 0)), 'wait')
+        self.set_changed_at(datetime.datetime(2026, 9, 29, 17, 0))
+        self.assertEqual(kiosk_screen_mode(datetime.datetime(2026, 9, 29, 18, 0)), 'wait')
         self.assertEqual(KioskScreen.objects.get(pk=1).mode, 'wait')
 
     def test_manual_change_after_18_sticks_until_next_day(self):
-        self.set_changed_at(datetime.datetime(2026, 9, 30, 18, 10))
-        self.assertEqual(kiosk_screen_mode(datetime.datetime(2026, 9, 30, 19, 0)), 'book')
-        self.assertEqual(kiosk_screen_mode(datetime.datetime(2026, 10, 1, 7, 0)), 'wait')
+        self.set_changed_at(datetime.datetime(2026, 9, 29, 18, 10))
+        self.assertEqual(kiosk_screen_mode(datetime.datetime(2026, 9, 29, 19, 0)), 'book')
+        self.assertEqual(kiosk_screen_mode(datetime.datetime(2026, 9, 30, 7, 0)), 'wait')
+        self.set_changed_at(datetime.datetime(2026, 9, 29, 18, 10))
+        self.assertEqual(kiosk_screen_mode(datetime.datetime(2026, 9, 30, 11, 30)), 'wait')
+
+    def test_wednesday_resets_at_2030_not_1800(self):
+        self.set_changed_at(datetime.datetime(2026, 9, 30, 17, 0))
+        self.assertEqual(kiosk_screen_mode(datetime.datetime(2026, 9, 30, 18, 0)), 'book')
+        self.assertEqual(kiosk_screen_mode(datetime.datetime(2026, 9, 30, 20, 29)), 'book')
+        self.assertEqual(kiosk_screen_mode(datetime.datetime(2026, 9, 30, 20, 30)), 'wait')
+        self.assertEqual(KioskScreen.objects.get(pk=1).mode, 'wait')
+
+    def test_wednesday_manual_change_after_2030_resets_next_day(self):
+        self.set_changed_at(datetime.datetime(2026, 9, 30, 20, 40))
+        self.assertEqual(kiosk_screen_mode(datetime.datetime(2026, 9, 30, 21, 0)), 'book')
+        self.assertEqual(kiosk_screen_mode(datetime.datetime(2026, 10, 1, 6, 30)), 'wait')
 
     def test_status_poll_applies_missed_reset(self):
         tablet = User.objects.create_user('tablet-reset', password='pass1234')

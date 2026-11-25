@@ -988,10 +988,13 @@ KIOSK_MODES = {
 
 
 def kiosk_reset_boundary(now):
-    boundary = now.replace(hour=18, minute=0, second=0, microsecond=0)
-    if now < boundary:
-        boundary -= timedelta(days=1)
-    return boundary
+    if now.weekday() == 2:
+        closing = now.replace(hour=20, minute=30, second=0, microsecond=0)
+    else:
+        closing = now.replace(hour=18, minute=0, second=0, microsecond=0)
+    if now >= closing:
+        return closing
+    return now.replace(hour=0, minute=0, second=0, microsecond=0)
 
 
 def kiosk_screen_mode(now=None):
@@ -1101,6 +1104,7 @@ def waiting_pt(request):
         'gate_message': mark_safe(
             escape(gate['message']).replace('자동으로', '<strong>자동으로</strong>').replace('\n', '<br>')
         ),
+        'gate_message_raw': gate['message'],
         'done': request.GET.get('done'),
         'board': waiting_board(today, period) if period else [],
         'preview': False,
@@ -1120,6 +1124,7 @@ def waiting_pt_preview(request, n):
         'closed': False,
         'can_input': False,
         'gate_message': '',
+        'gate_message_raw': '',
         'done': str(n),
         'board': [],
         'preview': True,

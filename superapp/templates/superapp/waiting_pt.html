@@ -464,6 +464,7 @@
         }
     }
     var pageCanInput = {{ can_input|yesno:"true,false" }};
+    var pageMessage = '{{ gate_message_raw|default:""|escapejs }}';
     function pollWaiting() {
         if (done || document.getElementById('wait-overlay').classList.contains('show')) {
             return;
@@ -472,10 +473,13 @@
             setTimeout(pollWaiting, 5000);
             return;
         }
-        fetch("{% url 'superapp:waiting_pt_status' %}", {credentials: 'same-origin'})
-            .then(function(response) { return response.json(); })
+        fetch("{% url 'superapp:waiting_pt_status' %}", {credentials: 'same-origin', cache: 'no-store'})
+            .then(function(response) {
+                if (!response.ok) throw new Error('status ' + response.status);
+                return response.json();
+            })
             .then(function(data) {
-                if ((data.period || '') !== pagePeriod || data.closed !== pageClosed || data.can_input !== pageCanInput) {
+                if ((data.period || '') !== pagePeriod || data.closed !== pageClosed || data.can_input !== pageCanInput || (data.message || '') !== pageMessage) {
                     location.href = "{% url 'superapp:waiting_pt' %}";
                     return;
                 }

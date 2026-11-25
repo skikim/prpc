@@ -37,5 +37,5 @@ class TabletKioskMiddleware:
                 or path.startswith('/static/')
                 or path.startswith('/accounts/logout/')
             ):
-                return redirect('superapp:tablet')
+                return redirect('superapp:kiosk')
         return self.get_response(request)

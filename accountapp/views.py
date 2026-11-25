@@ -46,7 +46,7 @@ class CustomLoginView(LoginView):
 
     def get_success_url(self):
         if is_tablet_user(self.request.user):
-            return reverse('superapp:tablet')
+            return reverse('superapp:kiosk')
         return super().get_success_url()
 
 

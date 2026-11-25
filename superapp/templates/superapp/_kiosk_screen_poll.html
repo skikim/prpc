@@ -5,9 +5,21 @@
         var generation = 0;
         var screenWasOn = true;
         var screenOff = false;
+        var offAt = 0;
+        var offRequestedAt = 0;
         var wakeAt = 0;
         var wakeGraceUntil = 0;
+        var pollTimer = null;
+        var pollInFlight = false;
+        var pollStartedAt = 0;
         var GRACE_MS = 20000;
+        var OFF_SETTLE_MS = 2000;
+        var OFF_SYNC_TIMEOUT_MS = 10000;
+        var POLL_STALE_MS = 15000;
+
+        function hasActivePoll() {
+            return pollInFlight && (Date.now() - pollStartedAt < POLL_STALE_MS);
+        }
 
         function localScreenOff(now) {
             var minutes = now.getHours() * 60 + now.getMinutes();
@@ -17,26 +29,69 @@
             return minutes < 5 * 60 || minutes >= 18 * 60;
         }
 
+        function hasFullyScreenApi() {
+            return Boolean(window.fully && typeof fully.getScreenOn === 'function');
+        }
+
+        function clearPollTimer() {
+            if (pollTimer !== null) {
+                clearTimeout(pollTimer);
+                pollTimer = null;
+            }
+        }
+
+        function schedulePoll(delay) {
+            clearPollTimer();
+            if (screenOff) return;
+            pollTimer = setTimeout(function() {
+                pollTimer = null;
+                pollScreen();
+            }, delay);
+        }
+
         function beginWake() {
             generation += 1;
             closedDay = false;
             screenOff = false;
             screenWasOn = true;
+            offRequestedAt = 0;
             wakeAt = Date.now();
             wakeGraceUntil = wakeAt + GRACE_MS;
         }
 
+        function startPollingNow() {
+            clearPollTimer();
+            if (screenOff) return;
+            pollScreen();
+        }
+
         function screenIsOn() {
             try {
-                if (window.fully && typeof fully.getScreenOn === 'function') return fully.getScreenOn() === true;
+                if (hasFullyScreenApi()) return fully.getScreenOn() === true;
             } catch (e) {}
             return !screenOff;
         }
 
         function noteWake() {
+            if (screenOff && Date.now() - offAt < OFF_SETTLE_MS) {
+                return false;
+            }
+            if (screenOff && !hasFullyScreenApi()) {
+                if (!localScreenOff(new Date())) {
+                    beginWake();
+                    startPollingNow();
+                    return true;
+                }
+                return false;
+            }
             var on = screenIsOn();
-            if (on && !screenWasOn) beginWake();
+            if (on && (!screenWasOn || screenOff)) {
+                beginWake();
+                startPollingNow();
+                return true;
+            }
             screenWasOn = on;
+            return false;
         }
 
         function shouldTurnScreenOff(now) {
@@ -46,10 +101,13 @@
         }
 
         function turnScreenOffNow() {
+            clearPollTimer();
             generation += 1;
             closedDay = false;
             screenWasOn = false;
             screenOff = true;
+            offAt = Date.now();
+            offRequestedAt = 0;
             try {
                 if (window.fully && typeof fully.turnScreenOff === 'function') fully.turnScreenOff();
             } catch (e) {}
@@ -59,47 +117,110 @@
             noteWake();
             if (screenOff) return;
             try {
-                if (!shouldTurnScreenOff(new Date())) return;
-                turnScreenOffNow();
+                var now = new Date();
+                if (!shouldTurnScreenOff(now)) {
+                    offRequestedAt = 0;
+                    if (!hasActivePoll() && pollTimer === null) {
+                        if (pollInFlight) {
+                            generation += 1;
+                            pollInFlight = false;
+                        }
+                        startPollingNow();
+                    }
+                    return;
+                }
+                if (!offRequestedAt) {
+                    offRequestedAt = Date.now();
+                    if (!hasActivePoll()) {
+                        if (pollInFlight) {
+                            generation += 1;
+                            pollInFlight = false;
+                        }
+                        startPollingNow();
+                    }
+                    return;
+                }
+                if (Date.now() - offRequestedAt >= OFF_SYNC_TIMEOUT_MS) {
+                    turnScreenOffNow();
+                }
             } catch (e) {}
+        }
+
+        function handleResume() {
+            if (screenOff && Date.now() - offAt < OFF_SETTLE_MS) return;
+            if (hasFullyScreenApi() && !screenIsOn()) return;
+            if (screenOff || !screenWasOn) {
+                beginWake();
+                startPollingNow();
+                return;
+            }
+            if (!hasActivePoll()) {
+                if (pollInFlight) {
+                    generation += 1;
+                    pollInFlight = false;
+                }
+                startPollingNow();
+            }
         }
 
         window.kioskOnScreenOn = function() {
             beginWake();
-            pollScreen();
+            startPollingNow();
         };
 
         function pollScreen() {
             if (screenOff) return;
+            clearPollTimer();
             var myGeneration = generation;
             var startedAt = Date.now();
-            turnScreenOffAtNight();
-            if (screenOff) return;
+            pollInFlight = true;
+            pollStartedAt = startedAt;
             fetch(statusUrl, {credentials: 'same-origin', cache: 'no-store'})
-                .then(function(response) { return response.json(); })
+                .then(function(response) {
+                    if (!response.ok) throw new Error('status ' + response.status);
+                    return response.json();
+                })
                 .then(function(data) {
+                    if (myGeneration === generation) pollInFlight = false;
                     noteWake();
-                    if (screenOff || myGeneration !== generation || startedAt < wakeAt) {
-                        if (!screenOff) setTimeout(pollScreen, 3000);
+                    if (screenOff) return;
+                    if (myGeneration !== generation || startedAt < wakeAt) {
+                        if (!hasActivePoll() && pollTimer === null) schedulePoll(3000);
                         return;
                     }
                     if (typeof data.closed_day === 'boolean') closedDay = data.closed_day;
-                    turnScreenOffAtNight();
                     var nextPath = data.url ? data.url.split('?')[0].replace(/\/+$/, '') : '';
                     var herePath = location.pathname.replace(/\/+$/, '');
                     if (nextPath && herePath !== nextPath) {
                         location.replace(data.url);
                         return;
                     }
-                    if (!screenOff) setTimeout(pollScreen, 3000);
+                    if (shouldTurnScreenOff(new Date())) {
+                        turnScreenOffNow();
+                        return;
+                    }
+                    offRequestedAt = 0;
+                    schedulePoll(3000);
                 })
-                .catch(function() { if (!screenOff) setTimeout(pollScreen, 5000); });
+                .catch(function() {
+                    if (myGeneration === generation) pollInFlight = false;
+                    if (screenOff) return;
+                    if (shouldTurnScreenOff(new Date())) {
+                        turnScreenOffNow();
+                        return;
+                    }
+                    if (!hasActivePoll() && pollTimer === null) schedulePoll(5000);
+                });
         }
 
         if (window.fully && typeof fully.bind === 'function') {
             fully.bind('screenOn', 'if (window.kioskOnScreenOn) window.kioskOnScreenOn();');
         }
-        turnScreenOffAtNight();
+        document.addEventListener('visibilitychange', function() {
+            if (!document.hidden) handleResume();
+        });
+        window.addEventListener('focus', handleResume);
+        window.addEventListener('pageshow', handleResume);
         setInterval(turnScreenOffAtNight, 3000);
         pollScreen();
     })();
