@@ -9,13 +9,20 @@ CHOICES = (
         (3, '3'),
         (4, '4'),
 )
+PERIOD_CHOICES = (('am', '오전'), ('pm', '오후'))
+
+
 class Waiting(models.Model):
     waiting_num = models.IntegerField(null=True, blank=True, choices=CHOICES)
     added_on_datetime = models.DateTimeField(auto_now=True)
+    manual_num = models.IntegerField(null=True, blank=True, choices=CHOICES)
+    manual_date = models.DateField(null=True, blank=True)
+    manual_period = models.CharField(max_length=2, choices=PERIOD_CHOICES, null=True, blank=True)
+    manual_updated_at = models.DateTimeField(null=True, blank=True)
 
 
 class WaitingPatient(models.Model):
-    PERIOD_CHOICES = (('am', '오전'), ('pm', '오후'))
+    PERIOD_CHOICES = PERIOD_CHOICES
     real_name = models.CharField(max_length=16)
     birth_date = models.CharField(max_length=8)
     visit_date = models.DateField()

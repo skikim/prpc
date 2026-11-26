@@ -22,6 +22,7 @@ urlpatterns = [
     path('price/', TemplateView.as_view(template_name='articleapp/price.html'), name='price'),
     path('waiting_status/', waiting_status, name='waiting_status'),
     path('waiting_create/', WaitingCreateView.as_view(), name='waiting_create'),
+    path('waiting_update/', WaitingUpdateView.as_view(), name='waiting_update_default'),
     path('waiting_update/<int:pk>', WaitingUpdateView.as_view(), name='waiting_update'),
     path('holiday_create/', HolidayPageView, name='holiday_create'),
     path('holiday_message_delete/<int:holiday_message_id>/', delete_holiday_message, name='holiday_message_delete'),

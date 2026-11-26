@@ -11,8 +11,10 @@ from articleapp.waiting_utils import (
     is_legal_holiday,
     normalize_birth_date,
     notice_sessions,
+    sync_waiting_count,
     tablet_closed_day,
     tablet_screen_off,
+    waiting_count,
     waiting_gate,
     waiting_notice_visible,
 )
@@ -515,3 +517,190 @@ class WaitingNoticeTests(TestCase):
         })
         self.assertEqual(second.status_code, 304)
         self.assertEqual(second['ETag'], first['ETag'])
+
+
+class ManualWaitingOverrideTests(TestCase):
+    def setUp(self):
+        self.normal = User.objects.create_user('patient-manual', password='pass1234')
+        self.staff = User.objects.create_user('staff-manual', password='pass1234', is_staff=True)
+        self.tablet = User.objects.create_user('tablet-manual', password='pass1234')
+        Profile.objects.create(
+            user=self.tablet,
+            real_name='태블릿',
+            phone_num='010',
+            birth_date='19900101',
+            is_tablet_user=True,
+        )
+
+    def _patient(self, when, period, name):
+        patient = WaitingPatient.objects.create(
+            real_name=name,
+            birth_date='19900101',
+            visit_date=when.date(),
+            period=period,
+        )
+        WaitingPatient.objects.filter(pk=patient.pk).update(created_at=when)
+        return patient
+
+    def test_permissions_and_both_urls(self):
+        self.assertEqual(self.client.get('/articles/waiting_update/').status_code, 302)
+        self.assertEqual(self.client.get('/articles/waiting_update/1').status_code, 302)
+
+        self.client.login(username='patient-manual', password='pass1234')
+        self.assertEqual(self.client.get('/articles/waiting_update/').status_code, 403)
+        self.assertEqual(self.client.get('/articles/waiting_update/1').status_code, 403)
+        self.client.logout()
+
+        self.client.login(username='staff-manual', password='pass1234')
+        with patch('articleapp.views.local_now', return_value=dt(2026, 10, 12, 12, 30)):
+            default_page = self.client.get('/articles/waiting_update/')
+            pk_page = self.client.get('/articles/waiting_update/1')
+        self.assertEqual(default_page.status_code, 200)
+        self.assertEqual(pk_page.status_code, 200)
+        self.assertContains(default_page, '홈 화면 강제 변경')
+
+    @patch('articleapp.views.send_discord_message')
+    def test_manual_override_supersedes_tablet_and_survives_tablet_changes(self, mock_discord):
+        afternoon = dt(2026, 10, 12, 12, 30)
+        for name in ('환자1', '환자2', '환자3'):
+            self._patient(afternoon, 'pm', name)
+        sync_waiting_count(afternoon.date(), 'pm')
+
+        self.client.login(username='staff-manual', password='pass1234')
+        override_time = dt(2026, 10, 12, 12, 35)
+        with patch('articleapp.views.local_now', return_value=override_time):
+            resp = self.client.post('/articles/waiting_update/', {'waiting_num': '1', 'action': 'override'})
+            self.assertRedirects(resp, '/articles/waiting_update/')
+            page = self.client.get('/')
+            status = self.client.get('/articles/waiting_status/')
+
+        self.assertContains(page, 'class="waiting-number">1')
+        self.assertContains(page, '오후 12시 35분 기준')
+        self.assertEqual(status.json(), {
+            'visible': True,
+            'number': 1,
+            'clock': '오후 12시 35분 기준',
+        })
+        mock_discord.assert_called_once()
+
+        # New tablet patient & sync_waiting_count must NOT clear or overwrite manual override
+        self._patient(dt(2026, 10, 12, 12, 40), 'pm', '환자4')
+        sync_waiting_count(afternoon.date(), 'pm')
+        self.assertEqual(waiting_count(afternoon.date(), 'pm'), 4)
+
+        with patch('articleapp.views.local_now', return_value=dt(2026, 10, 12, 12, 41)):
+            after_add = self.client.get('/articles/waiting_status/')
+        self.assertEqual(after_add.json(), {
+            'visible': True,
+            'number': 1,
+            'clock': '오후 12시 35분 기준',
+        })
+
+        # Manual override to 0 also displays 0 even with 4 tablet patients
+        with patch('articleapp.views.local_now', return_value=dt(2026, 10, 12, 12, 42)):
+            self.client.post('/articles/waiting_update/', {'waiting_num': '0', 'action': 'override'})
+            zero_status = self.client.get('/articles/waiting_status/')
+        self.assertEqual(zero_status.json(), {
+            'visible': True,
+            'number': 0,
+            'clock': '오후 12시 42분 기준',
+        })
+
+    @patch('articleapp.views.send_discord_message')
+    def test_manual_override_does_not_affect_tablet_capacity(self, mock_discord):
+        today = datetime.date.today()
+        # Pick an active weekday am/pm datetime using local_now patch for waiting_update,
+        # and verify waiting_count / tablet status remain based on WaitingPatient rows.
+        afternoon = dt(2026, 10, 12, 12, 30)
+        self._patient(afternoon, 'pm', '환자1')
+
+        self.client.login(username='staff-manual', password='pass1234')
+        with patch('articleapp.views.local_now', return_value=afternoon):
+            self.client.post('/articles/waiting_update/', {'waiting_num': '4', 'action': 'override'})
+            home_status = self.client.get('/articles/waiting_status/')
+        self.assertEqual(home_status.json()['number'], 4)
+        self.assertEqual(waiting_count(afternoon.date(), 'pm'), 1)
+
+        # Verify waiting_pt_status uses live WaitingPatient count, not manual_num
+        self._patient(datetime.datetime.combine(today, datetime.time(12, 30)), 'pm', '오늘환자')
+        Waiting.objects.filter(pk=1).update(
+            manual_num=4,
+            manual_date=today,
+            manual_period='pm',
+            manual_updated_at=datetime.datetime.combine(today, datetime.time(12, 35)),
+        )
+        self.client.logout()
+        self.client.login(username='tablet-manual', password='pass1234')
+        with patch('superapp.views.waiting_gate', return_value={'period': 'pm', 'can_input': True, 'message': '', 'period_label': '오후'}):
+            tablet_status = self.client.get('/supers/waiting_pt/status/').json()
+        self.assertEqual(tablet_status['count'], 1)
+        self.assertFalse(tablet_status['closed'])
+        self.assertTrue(tablet_status['can_input'])
+
+    @patch('articleapp.views.send_discord_message')
+    def test_reset_returns_to_live_count_without_leaking_forced_value(self, mock_discord):
+        afternoon = dt(2026, 10, 12, 12, 30)
+        self.client.login(username='staff-manual', password='pass1234')
+
+        # Override when 0 tablet patients exist, then reset -> should hide (not leak forced 3)
+        with patch('articleapp.views.local_now', return_value=afternoon):
+            self.client.post('/articles/waiting_update/', {'waiting_num': '3', 'action': 'override'})
+            self.assertEqual(self.client.get('/articles/waiting_status/').json()['number'], 3)
+            self.client.post('/articles/waiting_update/', {'action': 'reset'})
+            reset_empty = self.client.get('/articles/waiting_status/').json()
+        self.assertFalse(reset_empty['visible'])
+
+        # Override when 2 tablet patients exist, then reset -> returns to 2
+        self._patient(afternoon, 'pm', '환자1')
+        self._patient(dt(2026, 10, 12, 12, 32), 'pm', '환자2')
+        with patch('articleapp.views.local_now', return_value=dt(2026, 10, 12, 12, 35)):
+            self.client.post('/articles/waiting_update/', {'waiting_num': '4', 'action': 'override'})
+            self.assertEqual(self.client.get('/articles/waiting_status/').json()['number'], 4)
+            self.client.post('/articles/waiting_update/', {'action': 'reset'})
+            reset_live = self.client.get('/articles/waiting_status/').json()
+        self.assertEqual(reset_live, {
+            'visible': True,
+            'number': 2,
+            'clock': '오후 12시 32분 기준',
+        })
+
+    @patch('articleapp.views.send_discord_message')
+    def test_override_expires_after_session_and_blocked_outside_window(self, mock_discord):
+        morning = dt(2026, 10, 12, 7, 30)
+        self.client.login(username='staff-manual', password='pass1234')
+
+        with patch('articleapp.views.local_now', return_value=morning):
+            self.client.post('/articles/waiting_update/', {'waiting_num': '4', 'action': 'override'})
+            self.assertEqual(self.client.get('/articles/waiting_status/').json()['number'], 4)
+
+        # After morning window (09:10) -> hidden
+        with patch('articleapp.views.local_now', return_value=dt(2026, 10, 12, 9, 10)):
+            self.assertFalse(self.client.get('/articles/waiting_status/').json()['visible'])
+
+        # Afternoon session starts (11:30) -> morning override expired
+        with patch('articleapp.views.local_now', return_value=dt(2026, 10, 12, 12, 0)):
+            self.assertFalse(self.client.get('/articles/waiting_status/').json()['visible'])
+
+        # Next day morning -> previous day override expired
+        with patch('articleapp.views.local_now', return_value=dt(2026, 10, 13, 7, 30)):
+            self.assertFalse(self.client.get('/articles/waiting_status/').json()['visible'])
+
+        # Posting outside notice window (10:00) is ignored and not stored
+        outside = dt(2026, 10, 12, 10, 0)
+        with patch('articleapp.views.local_now', return_value=outside):
+            resp = self.client.post('/articles/waiting_update/', {'waiting_num': '2', 'action': 'override'}, follow=True)
+            self.assertContains(resp, '안내 시간')
+            self.assertFalse(self.client.get('/articles/waiting_status/').json()['visible'])
+        waiting = Waiting.objects.get(pk=1)
+        self.assertNotEqual(waiting.manual_num, 2)
+
+    @patch('articleapp.views.send_discord_message')
+    def test_invalid_waiting_num_rejected(self, mock_discord):
+        afternoon = dt(2026, 10, 12, 12, 30)
+        self.client.login(username='staff-manual', password='pass1234')
+        with patch('articleapp.views.local_now', return_value=afternoon):
+            for bad in ('', '-1', '5', 'abc'):
+                resp = self.client.post('/articles/waiting_update/', {'waiting_num': bad, 'action': 'override'}, follow=True)
+                self.assertContains(resp, '0부터 4 사이')
+        self.assertIsNone(Waiting.objects.get(pk=1).manual_num)
+        mock_discord.assert_not_called()

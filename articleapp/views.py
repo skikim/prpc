@@ -1,3 +1,4 @@
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required, user_passes_test
 import hashlib
 import json
@@ -11,7 +12,20 @@ from django.views.generic import CreateView, UpdateView
 from articleapp.decorators import staff_required
 from articleapp.forms import WaitingCreationForm
 from articleapp.models import Waiting, Holiday
-from articleapp.waiting_utils import homepage_waiting, homepage_waiting_payload, local_now, notice_sessions, waiting_clock_text
+from articleapp.waiting_utils import (
+    MAX_WAITING,
+    active_manual_override,
+    active_notice_period,
+    clear_manual_waiting_override,
+    homepage_waiting,
+    homepage_waiting_payload,
+    local_now,
+    notice_sessions,
+    period_label,
+    set_manual_waiting_override,
+    waiting_clock_text,
+    waiting_count,
+)
 from noteapp.models import Note
 import datetime
 from superapp.utils import send_discord_message
@@ -66,12 +80,79 @@ class WaitingUpdateView(UpdateView):
     success_url = reverse_lazy('home')
     template_name = 'articleapp/waiting_update.html'
 
-    def form_valid(self, form):
-        response = super().form_valid(form)  # 슈퍼클래스의 form_valid 메소드를 먼저 호출합니다.
-        # waiting_num 값을 사용하여 메시지를 보냅니다.
-        waiting_num = self.object.waiting_num  # self.object를 통해 생성된 Waiting 객체에 액세스합니다.
-        send_discord_message(f"선착순 대기 환자수 : {waiting_num}명")
-        return response
+    def get_object(self, queryset=None):
+        pk = self.kwargs.get(self.pk_url_kwarg)
+        if pk is None or pk == 1:
+            waiting, _ = Waiting.objects.get_or_create(id=1)
+            return waiting
+        return super().get_object(queryset)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        now = local_now()
+        period = active_notice_period(now)
+        live_count = waiting_count(now.date(), period) if period else 0
+        display = homepage_waiting(now, self.object.added_on_datetime, self.object.waiting_num, waiting=self.object)
+        override = active_manual_override(self.object, now)
+        if override is not None:
+            initial_num = override['number']
+        elif display['visible']:
+            initial_num = display['number']
+        else:
+            initial_num = min(live_count, MAX_WAITING)
+        context.update({
+            'period': period,
+            'period_label': period_label(period),
+            'live_count': live_count,
+            'live_display_count': min(live_count, MAX_WAITING),
+            'display': display,
+            'display_clock': waiting_clock_text(display['clock']) if display['visible'] else '',
+            'override_active': override is not None,
+            'override_num': override['number'] if override is not None else None,
+            'override_clock': waiting_clock_text(override['clock']) if override is not None else '',
+            'initial_num': initial_num,
+            'max_waiting': MAX_WAITING,
+            'waiting_choices': range(MAX_WAITING + 1),
+        })
+        return context
+
+    def post(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        now = local_now()
+        action = request.POST.get('action', 'override')
+        if action == 'reset':
+            had_override = active_manual_override(self.object, now) is not None
+            clear_manual_waiting_override(self.object)
+            period = active_notice_period(now)
+            if had_override:
+                if period:
+                    live = min(waiting_count(now.date(), period), MAX_WAITING)
+                    send_discord_message(f"선착순 대기 환자수 자동 복귀 : {live}명")
+                else:
+                    send_discord_message("선착순 대기 환자수 강제 변경 해제")
+            messages.success(request, '강제 변경을 해제하고 태블릿 대기 인원으로 복귀했습니다.')
+            return redirect(request.path)
+
+        raw_num = (request.POST.get('waiting_num') or '').strip()
+        try:
+            waiting_num = int(raw_num)
+        except ValueError:
+            messages.error(request, f'대기 환자수는 0부터 {MAX_WAITING} 사이의 숫자로 입력해 주세요.')
+            return redirect(request.path)
+        if waiting_num < 0 or waiting_num > MAX_WAITING:
+            messages.error(request, f'대기 환자수는 0부터 {MAX_WAITING} 사이의 숫자로 입력해 주세요.')
+            return redirect(request.path)
+
+        if not set_manual_waiting_override(self.object, waiting_num, now=now):
+            messages.warning(
+                request,
+                '현재는 선착순 대기 안내 시간(오전 06:30~09:10, 오후 11:30~14:10)이 아닙니다. 안내 시간 중에 강제 변경을 적용해 주세요.',
+            )
+            return redirect(request.path)
+
+        send_discord_message(f"선착순 대기 환자수(수동 강제 변경) : {waiting_num}명")
+        messages.success(request, f'홈 화면 대기 환자수를 {waiting_num}명으로 강제 변경했습니다.')
+        return redirect(request.path)
 
 
 @login_required
@@ -145,7 +226,7 @@ def index(request):
     sessions = notice_sessions(now)
     notice_am = 'am' in sessions
     notice_pm = 'pm' in sessions
-    display = homepage_waiting(now, waiting.added_on_datetime, waiting.waiting_num)
+    display = homepage_waiting(now, waiting.added_on_datetime, waiting.waiting_num, waiting=waiting)
     waiting_notice = display['visible']
     waiting_display_num = display['number']
     notice_period = display['period']

@@ -1,37 +1,188 @@
-{%  extends 'base.html' %}
+{% extends 'base.html' %}
 {% load bootstrap5 %}
 
 {% block content %}
     {% if user.is_staff %}
-        <div style="text-align: center; max-width: 600px; margin: 6rem auto;">
-            <div style="margin-bottom: 3rem">
-                <h2 style="margin-bottom: 3rem">[관리자 페이지]</h2>
-                <h4>선착순 대기환자 수정</h4>
+        <div class="container" style="max-width: 600px; margin: 6rem auto 3rem;">
+            <div class="text-center mb-4">
+                <h2 class="fw-bold mb-2">[관리자 페이지]</h2>
+                <h4 class="text-muted">홈 화면 선착순 대기환자 강제 변경</h4>
             </div>
-            <form action="{% url 'articleapp:waiting_update' pk=1 %}" method="post">
-                {%  csrf_token %}
-                <div style="margin-bottom: 2rem">
-                    <input name="waiting_num" id="display" value="0" style="text-align:center; width:100px; height:100px; font-size:60px;"><br>
-                    <button style="height: 6rem; " class="btn btn-secondary rounded-pill col-lg-2 mt-4" type="button" id="button" onclick="incrementValue()">환자수변경</button>
+
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags|default:'info' }}{% endif %} text-center">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+
+            <div class="card shadow-sm mb-4">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
+                        <span class="text-muted">현재 안내 시간대</span>
+                        <span class="fw-bold">
+                            {% if period == 'am' %}
+                                오전 (06:30~09:10)
+                            {% elif period == 'pm' %}
+                                오후 (11:30~14:10)
+                            {% else %}
+                                <span class="text-secondary">안내 시간 외</span>
+                            {% endif %}
+                        </span>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
+                        <span class="text-muted">홈 화면 현재 표시</span>
+                        <span class="fw-bold">
+                            {% if display.visible %}
+                                {{ display.number }} / {{ max_waiting }}명
+                                {% if override_active %}
+                                    <span class="badge bg-warning text-dark ms-1">강제 적용 중</span>
+                                {% else %}
+                                    <span class="badge bg-primary ms-1">태블릿 연동</span>
+                                {% endif %}
+                            {% else %}
+                                <span class="text-secondary">표시 안 함</span>
+                            {% endif %}
+                        </span>
+                    </div>
+                    {% if display.visible and display_clock %}
+                        <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
+                            <span class="text-muted">표시 기준 시각</span>
+                            <span>{{ display_clock }}</span>
+                        </div>
+                    {% endif %}
+                    <div class="d-flex justify-content-between align-items-center py-2">
+                        <span class="text-muted">태블릿 실제 접수 인원</span>
+                        <span class="fw-bold">{{ live_count }} / {{ max_waiting }}명</span>
+                    </div>
+                    <p class="text-muted small mb-0 mt-2">
+                        ※ 강제 변경은 홈 화면 표시 숫자에만 적용되며, 태블릿 명단과 접수 가능 인원은 그대로 유지됩니다.
+                    </p>
                 </div>
-                <div><input type="submit" value="입력" class="btn btn-primary rounded-pill col-6 mt-4"></div>
-            </form>
+            </div>
+
+            {% if not period %}
+                <div class="alert alert-secondary text-center">
+                    현재는 선착순 대기 안내 시간(오전 06:30~09:10, 오후 11:30~14:10)이 아닙니다.<br>
+                    안내 시간 중에 홈 화면 대기 환자수를 강제 변경할 수 있습니다.
+                </div>
+            {% endif %}
+
+            <div class="card shadow-sm mb-3">
+                <div class="card-body text-center py-4">
+                    <form method="post">
+                        {% csrf_token %}
+                        <input type="hidden" name="action" value="override">
+                        <div class="mb-3">
+                            <input
+                                type="number"
+                                name="waiting_num"
+                                id="display"
+                                value="{{ initial_num }}"
+                                min="0"
+                                max="{{ max_waiting }}"
+                                readonly
+                                style="text-align:center; width:110px; height:110px; font-size:60px; border:2px solid #cbd5e1; border-radius:16px;"
+                            >
+                        </div>
+
+                        <div class="d-flex justify-content-center gap-2 mb-3">
+                            {% for num in waiting_choices %}
+                                <button
+                                    type="button"
+                                    class="btn btn-outline-primary quick-num-btn"
+                                    data-num="{{ num }}"
+                                    style="min-width: 52px; height: 48px; font-size: 1.2rem; font-weight: 700;"
+                                >{{ num }}</button>
+                            {% endfor %}
+                        </div>
+
+                        <div class="mb-3">
+                            <button
+                                style="min-height: 3.4rem;"
+                                class="btn btn-secondary rounded-pill px-4"
+                                type="button"
+                                id="button"
+                                onclick="incrementValue()"
+                            >환자수변경 (+1)</button>
+                        </div>
+
+                        <div>
+                            <button
+                                type="submit"
+                                class="btn btn-primary rounded-pill col-8 py-2 fs-5"
+                                {% if not period %}disabled{% endif %}
+                            >홈 화면 강제 변경</button>
+                        </div>
+                    </form>
+
+                    {% if override_active %}
+                        <hr class="my-4">
+                        <form method="post">
+                            {% csrf_token %}
+                            <input type="hidden" name="action" value="reset">
+                            <button type="submit" class="btn btn-outline-danger rounded-pill col-8 py-2">
+                                태블릿 자동 연동으로 복귀
+                            </button>
+                        </form>
+                        <p class="text-muted small mt-2 mb-0">
+                            자동 복귀를 누르거나 현재 {{ period_label }} 안내 시간이 끝나면 태블릿 대기 인원으로 자동 전환됩니다.
+                        </p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="d-flex justify-content-center gap-2">
+                <a href="{% url 'home' %}" class="btn btn-outline-secondary rounded-pill px-4">홈 화면으로</a>
+                {% if user.is_superuser %}
+                    <a href="{% url 'superapp:waiting_list' %}" class="btn btn-outline-secondary rounded-pill px-4">대기환자 명단</a>
+                {% endif %}
+            </div>
         </div>
 
         <script>
+            var maxWaiting = {{ max_waiting }};
+            function syncQuickButtons() {
+                var current = parseInt(document.getElementById("display").value, 10);
+                document.querySelectorAll(".quick-num-btn").forEach(function(btn) {
+                    var num = parseInt(btn.getAttribute("data-num"), 10);
+                    if (num === current) {
+                        btn.classList.remove("btn-outline-primary");
+                        btn.classList.add("btn-primary");
+                    } else {
+                        btn.classList.remove("btn-primary");
+                        btn.classList.add("btn-outline-primary");
+                    }
+                });
+            }
+
+            function setWaitingValue(val) {
+                var inputElement = document.getElementById("display");
+                inputElement.value = val;
+                syncQuickButtons();
+            }
+
             function incrementValue() {
                 var inputElement = document.getElementById("display");
-                var currentValue = parseInt(inputElement.value);
+                var currentValue = parseInt(inputElement.value, 10);
+                if (isNaN(currentValue)) currentValue = 0;
                 var nextValue = currentValue + 1;
-                if (nextValue > 4) {
+                if (nextValue > maxWaiting) {
                     nextValue = 0;
                 }
-                inputElement.value = nextValue;
+                setWaitingValue(nextValue);
             }
+
+            document.querySelectorAll(".quick-num-btn").forEach(function(btn) {
+                btn.addEventListener("click", function() {
+                    setWaitingValue(parseInt(btn.getAttribute("data-num"), 10));
+                });
+            });
 
             var myButton = document.getElementById("button");
             var lastClickTime = 0;
-            var delay = 500; // milliseconds
+            var delay = 300;
             myButton.addEventListener("click", function(event) {
                 var currentTime = new Date().getTime();
                 if (currentTime - lastClickTime < delay) {
@@ -39,6 +190,8 @@
                 }
                 lastClickTime = currentTime;
             });
+
+            syncQuickButtons();
         </script>
     {% endif %}
 {% endblock %}

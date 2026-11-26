@@ -6,7 +6,7 @@ from articleapp.models import Waiting, Holiday, WaitingPatient
 # Register your models here.
 
 class WaitingAdmin(admin.ModelAdmin):
-    list_display = ('id', 'waiting_num')
+    list_display = ('id', 'waiting_num', 'manual_num', 'manual_date', 'manual_period', 'manual_updated_at')
     search_fields = ['waiting_num']
 
 

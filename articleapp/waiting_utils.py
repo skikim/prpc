@@ -185,10 +185,47 @@ def waiting_clock_text(clock):
     return f'{period} {hour12}시 {clock.minute}분 기준'
 
 
+def active_manual_override(waiting, now=None):
+    if waiting is None or waiting.manual_num is None:
+        return None
+    now = now or local_now()
+    period = active_notice_period(now)
+    if not period:
+        return None
+    if waiting.manual_date != now.date() or waiting.manual_period != period:
+        return None
+    return {
+        'number': min(max(int(waiting.manual_num), 0), MAX_WAITING),
+        'period': period,
+        'clock': waiting.manual_updated_at or waiting.added_on_datetime,
+    }
+
+
+def set_manual_waiting_override(waiting, number, now=None):
+    now = now or local_now()
+    period = active_notice_period(now)
+    if not period:
+        return False
+    waiting.manual_num = min(max(int(number), 0), MAX_WAITING)
+    waiting.manual_date = now.date()
+    waiting.manual_period = period
+    waiting.manual_updated_at = now
+    waiting.save(update_fields=['manual_num', 'manual_date', 'manual_period', 'manual_updated_at'])
+    return True
+
+
+def clear_manual_waiting_override(waiting):
+    waiting.manual_num = None
+    waiting.manual_date = None
+    waiting.manual_period = None
+    waiting.manual_updated_at = None
+    waiting.save(update_fields=['manual_num', 'manual_date', 'manual_period', 'manual_updated_at'])
+
+
 def homepage_waiting_payload(now=None):
     now = now or local_now()
     waiting, _ = Waiting.objects.get_or_create(id=1)
-    display = homepage_waiting(now, waiting.added_on_datetime, waiting.waiting_num)
+    display = homepage_waiting(now, waiting.added_on_datetime, waiting.waiting_num, waiting=waiting)
     return {
         'visible': bool(display['visible']),
         'number': display['number'],
@@ -196,11 +233,20 @@ def homepage_waiting_payload(now=None):
     }
 
 
-def homepage_waiting(now, recorded_at, stored_num):
+def homepage_waiting(now, recorded_at, stored_num, waiting=None):
     period = active_notice_period(now)
-    hidden = {'visible': False, 'number': 0, 'period': '', 'clock': None}
+    hidden = {'visible': False, 'number': 0, 'period': '', 'clock': None, 'manual': False}
     if not period:
         return hidden
+    override = active_manual_override(waiting, now)
+    if override is not None:
+        return {
+            'visible': True,
+            'number': override['number'],
+            'period': period,
+            'clock': override['clock'],
+            'manual': True,
+        }
     live = waiting_count(now.date(), period)
     if live:
         latest = WaitingPatient.objects.filter(
@@ -212,6 +258,7 @@ def homepage_waiting(now, recorded_at, stored_num):
             'number': min(live, MAX_WAITING),
             'period': period,
             'clock': latest.created_at if latest else recorded_at,
+            'manual': False,
         }
     if waiting_notice_visible(now, recorded_at):
         return {
@@ -219,6 +266,7 @@ def homepage_waiting(now, recorded_at, stored_num):
             'number': 0 if stored_num is None else stored_num,
             'period': period,
             'clock': recorded_at,
+            'manual': False,
         }
     return hidden
 
@@ -239,7 +287,7 @@ def sync_waiting_count(visit_date, period):
     count = waiting_count(visit_date, period)
     waiting, _ = Waiting.objects.get_or_create(id=1)
     waiting.waiting_num = min(count, MAX_WAITING)
-    waiting.save()
+    waiting.save(update_fields=['waiting_num', 'added_on_datetime'])
     return count
 
 
