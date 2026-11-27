@@ -5,9 +5,12 @@ from django.db.models import Q
 from django.contrib.auth.models import User
 from datetime import datetime, date, timedelta
 from .models import BookingLog
+from .cleanup import maybe_cleanup_old_booking_logs
 from .decorators import superuser_required, ajax_superuser_required
 from bookingapp.models import Booking
 import json
+
+MAX_SEARCH_LOGS = 5000
 
 
 def _filter_duplicate_logs(logs_queryset):
@@ -135,6 +138,8 @@ def log_list(request):
     """
     로그 목록 조회 (메인 페이지)
     """
+    maybe_cleanup_old_booking_logs()
+
     # 기본 쿼리셋 (최근 2주일)
     end_date = date.today()
     start_date = end_date - timedelta(days=14)
@@ -277,11 +282,12 @@ def log_search_api(request):
                 Q(notes__icontains=keyword)
             )
     
-    # 정렬 (필터링 전)
-    queryset = queryset.order_by('created_at')
-    
+    # 메모리 보호를 위해 최신 MAX_SEARCH_LOGS건 범위로 제한 후 시간순 정렬
+    recent_logs = list(queryset.order_by('-created_at')[:MAX_SEARCH_LOGS])
+    recent_logs.reverse()
+
     # 중복 로그 필터링 적용
-    filtered_logs = _filter_duplicate_logs(queryset)
+    filtered_logs = _filter_duplicate_logs(recent_logs)
     
     # 페이지네이션
     page = int(request.GET.get('page', 1))

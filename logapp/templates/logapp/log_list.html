@@ -231,7 +231,7 @@
                     <div class="row">
                         <div class="col-md-8">
                             <h6 class="text-muted">현재 조회 기간: {{ start_date }} ~ {{ end_date }}</h6>
-                            <small class="text-muted">기본적으로 최근 2주일간의 로그를 표시합니다.</small>
+                            <small class="text-muted">기본적으로 최근 2주일간의 로그를 표시합니다. (90일 이전 로그는 자동으로 정리됩니다.)</small>
                         </div>
                         <div class="col-md-4 text-end">
                             <a href="{% url 'logapp:log_search' %}" class="btn btn-primary">

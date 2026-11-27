@@ -7,6 +7,7 @@ from django.db.models.signals import post_save, post_delete, pre_save
 from django.dispatch import receiver
 from django.contrib.auth.models import User
 from bookingapp.models import Booking
+from .cleanup import maybe_cleanup_old_booking_logs
 from .models import BookingLog
 
 # 스레드 로컬 스토리지로 현재 사용자 정보 저장
@@ -152,6 +153,7 @@ def booking_post_save(sender, instance, created, **kwargs):
             notes=notes,
             booking_rn=instance.booking_rn
         )
+        maybe_cleanup_old_booking_logs()
         
     except Exception as e:
         # 로그 기록 실패 시에도 원본 기능에 영향을 주지 않음

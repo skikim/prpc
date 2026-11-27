@@ -4,7 +4,7 @@ WORKDIR /home/
 
 RUN apt-get update && apt-get install -y --no-install-recommends default-libmysqlclient-dev pkg-config && rm -rf /var/lib/apt/lists/*
 
-RUN echo "testing47"
+RUN echo "testing48"
 
 RUN git clone https://github.com/skikim/prpc.git
 
