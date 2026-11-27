@@ -34,11 +34,14 @@ from articleapp.waiting_utils import (
     tablet_closed_day,
     tablet_screen_off,
 )
+import logging
 import requests
 from noteapp.models import Note
 import os, environ
 from pathlib import Path
 from django.contrib import messages
+
+logger = logging.getLogger(__name__)
 
 
 def delete_approval_messages(user, booking_date, booking_time):
@@ -57,7 +60,7 @@ env = environ.Env(
     # set casting, default value
     DEBUG=(bool, False)
 )
-BASE_DIR = Path(__file__).resolve().parent.parent.parent
+BASE_DIR = Path(__file__).resolve().parent.parent
 environ.Env.read_env(
     env_file=os.path.join(BASE_DIR, '.env')
 )
@@ -77,8 +80,11 @@ def aligo_sms_send(rec, msg_2):
                 'msg': msg_2,  # 문자 내용
                 'msg_type': 'sms',  # 메세지 타입 (SMS, LMS)
                 }
-    send_response = requests.post(send_url, data=sms_data)
-    print(send_response.json())
+    try:
+        send_response = requests.post(send_url, data=sms_data, timeout=5)
+        send_response.raise_for_status()
+    except requests.RequestException:
+        logger.exception('Aligo SMS 전송 실패')
 
 
 @login_required
@@ -136,6 +142,8 @@ def superbooking_past(request):
 
 @login_required
 def superbooking(request):
+    if not request.user.is_superuser:
+        return redirect(reverse('articleapp:index'))
     today_1 = datetime.datetime.today()
     today_2 = today_1 + timedelta(days=1)
     today_3 = today_1 + timedelta(days=2)
@@ -264,6 +272,8 @@ def superbooking(request):
 
 @login_required
 def superbooking2(request):
+    if not request.user.is_superuser:
+        return redirect(reverse('articleapp:index'))
     today_1 = datetime.datetime.today()
     today_8 = today_1 + timedelta(days=7)
     today_9 = today_1 + timedelta(days=8)
@@ -394,6 +404,8 @@ def superbooking2(request):
 
 @login_required
 def superbooking2_1(request):
+    if not request.user.is_superuser:
+        return redirect(reverse('articleapp:index'))
     today_1 = datetime.datetime.today()
     today_16 = today_1 + timedelta(days=15)
     today_17 = today_1 + timedelta(days=16)
@@ -524,6 +536,8 @@ def superbooking2_1(request):
 
 @login_required
 def superbooking2_2(request):
+    if not request.user.is_superuser:
+        return redirect(reverse('articleapp:index'))
     today_1 = datetime.datetime.today()
     today_24 = today_1 + timedelta(days=23)
     today_25 = today_1 + timedelta(days=24)
@@ -724,8 +738,9 @@ def block_online_bookings(request):
             else:
                 messages.error(request, "예약 차단에 실패했습니다.")
                 
-        except Exception as e:
-            messages.error(request, f"예약 차단 중 오류가 발생했습니다: {str(e)}")
+        except Exception:
+            logger.exception('예약 차단 중 오류 발생')
+            messages.error(request, "예약 차단 중 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.")
     
     # 요청이 온 페이지로 리다이렉트
     referer = request.META.get('HTTP_REFERER')
@@ -763,8 +778,9 @@ def unblock_online_bookings(request):
             else:
                 messages.error(request, "예약 차단 해제에 실패했습니다.")
                 
-        except Exception as e:
-            messages.error(request, f"예약 차단 해제 중 오류가 발생했습니다: {str(e)}")
+        except Exception:
+            logger.exception('예약 차단 해제 중 오류 발생')
+            messages.error(request, "예약 차단 해제 중 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.")
     
     # 요청이 온 페이지로 리다이렉트
     referer = request.META.get('HTTP_REFERER')

@@ -254,7 +254,7 @@ def send_discord_message(message, webhook_type=1):
         }
         
         # Discord 웹훅으로 메시지 전송
-        response = requests.post(webhook_url, data=formatted_message)
+        response = requests.post(webhook_url, data=formatted_message, timeout=5)
         
         if response.status_code == 204:  # Discord 웹훅 성공 응답 코드
             logger.info(f"Discord message sent successfully: {message}")

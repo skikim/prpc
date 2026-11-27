@@ -50,7 +50,7 @@ class CustomLoginView(LoginView):
         return super().get_success_url()
 
 
-@method_decorator(account_ownership_required, 'get')
+@method_decorator(has_ownership, 'get')
 class AccountDetailView(DetailView):
     model = User
     # context_object_name = 'target_user'

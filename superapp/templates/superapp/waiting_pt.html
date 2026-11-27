@@ -486,17 +486,35 @@
                 var countEl = document.getElementById('wait-count');
                 if (countEl && data.period) {
                     var label = data.closed ? data.period_label : (data.period_label + ' 대기');
-                    countEl.innerHTML = '<span class="wait-count-label">' + label + '</span><span class="wait-count-num">' + data.count + '</span><span class="wait-count-max">/ {{ max_waiting }}</span>';
+                    countEl.textContent = '';
+                    var labelSpan = document.createElement('span');
+                    labelSpan.className = 'wait-count-label';
+                    labelSpan.textContent = label;
+                    var numSpan = document.createElement('span');
+                    numSpan.className = 'wait-count-num';
+                    numSpan.textContent = String(data.count);
+                    var maxSpan = document.createElement('span');
+                    maxSpan.className = 'wait-count-max';
+                    maxSpan.textContent = '/ {{ max_waiting }}';
+                    countEl.appendChild(labelSpan);
+                    countEl.appendChild(numSpan);
+                    countEl.appendChild(maxSpan);
                 }
                 var boardEl = document.getElementById('wait-board');
                 if (boardEl) {
                     var items = data.board || [];
+                    boardEl.textContent = '';
                     if (!items.length) {
-                        boardEl.innerHTML = '<span class="empty">아직 대기자가 없습니다</span>';
+                        var emptySpan = document.createElement('span');
+                        emptySpan.className = 'empty';
+                        emptySpan.textContent = '아직 대기자가 없습니다';
+                        boardEl.appendChild(emptySpan);
                     } else {
-                        boardEl.innerHTML = items.map(function(item) {
-                            return '<span>' + item.n + '번 ' + item.name + '</span>';
-                        }).join('');
+                        items.forEach(function(item) {
+                            var itemSpan = document.createElement('span');
+                            itemSpan.textContent = item.n + '번 ' + item.name;
+                            boardEl.appendChild(itemSpan);
+                        });
                     }
                 }
                 setTimeout(pollWaiting, 5000);

@@ -1,3 +1,4 @@
+from bs4 import BeautifulSoup, Comment
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, user_passes_test
 import hashlib
@@ -7,9 +8,10 @@ from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
+from django.views.decorators.http import require_POST
 from django.views.generic import CreateView, UpdateView
 
-from articleapp.decorators import staff_required
+from articleapp.decorators import staff_required, superuser_required
 from articleapp.forms import WaitingCreationForm
 from articleapp.models import Waiting, Holiday
 from articleapp.waiting_utils import (
@@ -34,31 +36,76 @@ import re
 # Create your views here.
 
 
+ALLOWED_HOLIDAY_TAGS = {
+    'p', 'br', 'strong', 'b', 'em', 'i', 'u', 's', 'span', 'div',
+    'ul', 'ol', 'li', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
+}
+STRIP_HOLIDAY_TAGS = {
+    'script', 'style', 'iframe', 'object', 'embed', 'svg', 'math',
+    'noscript', 'template', 'head', 'title', 'textarea', 'xmp',
+}
+ALLOWED_CSS_PROPS = {
+    'color', 'background-color', 'font-size', 'font-weight', 'font-style',
+    'text-decoration', 'text-align', 'margin', 'margin-top', 'margin-bottom',
+    'padding', 'padding-left', 'line-height',
+}
+SAFE_CSS_VALUE_RE = re.compile(r'^[#a-zA-Z0-9\s.,()%+-]+$')
+DANGEROUS_CSS_RE = re.compile(r'(?i)(url\s*\(|expression\s*\(|javascript:|vbscript:|behavior:|@import)')
+
+
+def _sanitize_style(style_value):
+    if not style_value:
+        return ''
+    safe_parts = []
+    for decl in str(style_value).split(';'):
+        if ':' not in decl:
+            continue
+        prop, val = decl.split(':', 1)
+        prop = prop.strip().lower()
+        val = val.strip()
+        if prop not in ALLOWED_CSS_PROPS or not val:
+            continue
+        if DANGEROUS_CSS_RE.search(val) or not SAFE_CSS_VALUE_RE.fullmatch(val):
+            continue
+        safe_parts.append(f'{prop}: {val}')
+    return '; '.join(safe_parts)
+
+
 def sanitize_holiday_html(html):
     if not html:
         return html
-    html = re.sub(r'(?is)<script.*?>.*?</script>', '', html)
-    html = re.sub(r'(?is)<iframe.*?>.*?</iframe>', '', html)
-    html = re.sub(r'(?i)\son\w+\s*=', ' ', html)
-    html = re.sub(r'(?i)javascript:', '', html)
-    return html
+    soup = BeautifulSoup(html, 'html.parser')
+    for comment in soup.find_all(string=lambda text: isinstance(text, Comment)):
+        comment.extract()
+    for tag in list(soup.find_all(True)):
+        if tag.parent is None:
+            continue
+        name = (tag.name or '').lower()
+        if name in STRIP_HOLIDAY_TAGS:
+            tag.decompose()
+            continue
+        if name not in ALLOWED_HOLIDAY_TAGS:
+            tag.unwrap()
+            continue
+        clean_attrs = {}
+        if 'style' in tag.attrs:
+            safe_style = _sanitize_style(tag.attrs.get('style'))
+            if safe_style:
+                clean_attrs['style'] = safe_style
+        tag.attrs = clean_attrs
+    return str(soup)
 
 
 has_ownership = [
     login_required, staff_required
 ]
 
+has_superuser = [
+    login_required, superuser_required
+]
+
 
 # Discord 알림 함수는 superapp.utils로 이동되었습니다.
-
-
-# def send_message(msg):
-#     TARGET_URL = 'https://notify-api.line.me/api/notify'
-#     TOKEN = 'xngZHmAg4YXdRgIqMb0Rq9d7jERLOwGe1Es6jd76cJo'		# 내가 발급받은 토큰
-#     headers={'Authorization': 'Bearer ' + TOKEN}
-#     now = datetime.datetime.now()
-#     data={'message': f"[{now.strftime('%Y-%m-%d %H:%M:%S')}] {str(msg)}"}
-#     response = requests.post(TARGET_URL, headers=headers, data=data)
 
 
 @method_decorator(has_ownership, 'get')
@@ -168,6 +215,7 @@ def HolidayPageView(request):
         return redirect('articleapp:index')
 
 
+@method_decorator(has_superuser, name='dispatch')
 class HolidayUpdateView(UpdateView):
     model = Holiday
     fields = ['holiday_message']
@@ -186,6 +234,8 @@ class HolidayUpdateView(UpdateView):
 
 
 @login_required
+@superuser_required
+@require_POST
 def delete_holiday_message(request, holiday_message_id):
     holiday_message = get_object_or_404(Holiday, id=holiday_message_id)
     holiday_message.delete()

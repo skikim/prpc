@@ -207,8 +207,17 @@ document.addEventListener('DOMContentLoaded', function() {
             });
     }
     
+    function escapeHtml(value) {
+        return String(value == null ? '' : value)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#39;');
+    }
+
     function displayResults(data) {
-        resultTitle.innerHTML = `<i class="fas fa-list"></i> 검색 결과 (${data.pagination.total_count}건)`;
+        resultTitle.innerHTML = `<i class="fas fa-list"></i> 검색 결과 (${escapeHtml(data.pagination.total_count)}건)`;
         resultsDiv.style.display = 'block';
         
         if (data.logs.length === 0) {
@@ -243,25 +252,28 @@ document.addEventListener('DOMContentLoaded', function() {
         
         data.logs.forEach(log => {
             const actionBadge = getActionBadge(log.action_type_code, log.action_type);
+            const safeDate = escapeHtml(log.booking_date);
+            const safeTime = escapeHtml(log.booking_time);
+            const detailUrl = `/log/booking/${encodeURIComponent(log.booking_date || '')}/${encodeURIComponent(log.booking_time || '')}/`;
             tableHtml += `
                 <tr>
-                    <td><small>${log.created_at}</small></td>
+                    <td><small>${escapeHtml(log.created_at)}</small></td>
                     <td>${actionBadge}</td>
                     <td>
-                        <strong>${log.booking_date}</strong><br>
-                        <small class="text-muted">${log.booking_time}</small>
+                        <strong>${safeDate}</strong><br>
+                        <small class="text-muted">${safeTime}</small>
                     </td>
-                    <td>${log.user_display || '-'}</td>
-                    <td>${log.modifier_display || '시스템'}</td>
+                    <td>${escapeHtml(log.user_display || '-')}</td>
+                    <td>${escapeHtml(log.modifier_display || '시스템')}</td>
                     <td>
                         ${log.previous_status ? 
-                            `<span class="badge ${getStatusBadgeClass(log.previous_status)}">${log.previous_status}</span> <span class="mx-2" style="color: #333; font-weight: bold;">→</span> ` 
+                            `<span class="badge ${getStatusBadgeClass(log.previous_status)}">${escapeHtml(log.previous_status)}</span> <span class="mx-2" style="color: #333; font-weight: bold;">→</span> ` 
                             : ''}
-                        <span class="badge ${getStatusBadgeClass(log.new_status)}">${log.new_status}</span>
+                        <span class="badge ${getStatusBadgeClass(log.new_status)}">${escapeHtml(log.new_status)}</span>
                     </td>
-                    <td><small>${log.notes ? log.notes.substring(0, 50) : ''}</small></td>
+                    <td><small>${escapeHtml(log.notes ? log.notes.substring(0, 50) : '')}</small></td>
                     <td>
-                        <a href="/log/booking/${log.booking_date}/${log.booking_time}/" class="btn btn-sm btn-outline-secondary">
+                        <a href="${detailUrl}" class="btn btn-sm btn-outline-secondary">
                             <i class="fas fa-calendar"></i>
                         </a>
                     </td>
@@ -277,13 +289,14 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     function getActionBadge(code, display) {
+        const safeDisplay = escapeHtml(display);
         // 액션 표시명에 따라 일관성 있게 색상 지정
         if (display === '예약취소') {
-            return `<span class="badge pastel-cancelled">${display}</span>`;
+            return `<span class="badge pastel-cancelled">${safeDisplay}</span>`;
         } else if (display === '예약요청') {
-            return `<span class="badge pastel-requested">${display}</span>`;  // 노란색
+            return `<span class="badge pastel-requested">${safeDisplay}</span>`;  // 노란색
         } else if (display === '예약승인') {
-            return `<span class="badge pastel-approved">${display}</span>`;   // 붉은색
+            return `<span class="badge pastel-approved">${safeDisplay}</span>`;   // 붉은색
         } else {
             // 기존 코드 방식으로 처리
             const badges = {
@@ -296,7 +309,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 'UNBLOCK': 'pastel-other'
             };
             const badgeClass = badges[code] || 'pastel-other';
-            return `<span class="badge ${badgeClass}">${display}</span>`;
+            return `<span class="badge ${badgeClass}">${safeDisplay}</span>`;
         }
     }
     

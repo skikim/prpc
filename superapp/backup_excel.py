@@ -68,6 +68,18 @@ def profile_of(user):
         return None
 
 
+FORMULA_PREFIXES = ('=', '+', '-', '@', '\t', '\r')
+
+
+def sanitize_excel_value(value):
+    if not value:
+        return value
+    text = str(value)
+    if text[0] in FORMULA_PREFIXES:
+        return "'" + text
+    return text
+
+
 def booking_cell(booking):
     user = booking.user
     profile = profile_of(user)
@@ -161,7 +173,7 @@ def write_sheet(ws, dates, bookings):
                 text, status_fill = ('', None)
                 if booking is not None:
                     text, status_fill = booking_cell(booking)
-                cell.value = text or None
+                cell.value = sanitize_excel_value(text) if text else None
                 cell.font = Font(name='Malgun Gothic', size=9, color='111827')
                 if status_fill:
                     fill = STATUS_FILLS[status_fill]

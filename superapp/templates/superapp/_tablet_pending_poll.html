@@ -15,9 +15,9 @@
         function paintPending(slots) {
             for (var i = 0; i < slots.length; i++) {
                 var cell = findCell(slots[i].date, slots[i].time);
-                if (cell && cell.innerHTML !== '선택중') {
+                if (cell && cell.textContent !== '선택중') {
                     cell.style.backgroundColor = '#E9D5FF';
-                    cell.innerHTML = '선택중';
+                    cell.textContent = '선택중';
                 }
             }
         }

@@ -2,6 +2,7 @@ import datetime
 from datetime import timedelta
 from dateutil.parser import parse
 from django.contrib.auth.decorators import login_required
+from django.db import transaction
 from django.db.models import Q
 from django.http import HttpResponseForbidden
 
@@ -47,6 +48,70 @@ has_ownership = [
 # Discord 알림 함수들은 superapp.utils로 이동되었습니다.
 
 
+MAX_ONLINE_BOOKING_DAYS = 14
+
+
+def _validate_online_booking_date(booking_date):
+    if not booking_date:
+        return None, '올바른 예약 날짜를 선택해 주세요.'
+    try:
+        booking_date_obj = datetime.datetime.strptime(booking_date, '%Y-%m-%d').date()
+    except (TypeError, ValueError):
+        return None, '올바른 예약 날짜를 선택해 주세요.'
+    today = datetime.date.today()
+    if booking_date_obj < today:
+        return None, '지난 날짜는 예약할 수 없습니다.'
+    if booking_date_obj > today + timedelta(days=MAX_ONLINE_BOOKING_DAYS):
+        return None, '온라인 예약은 오늘부터 2주 이내의 날짜만 가능합니다.'
+    return booking_date_obj, None
+
+
+def _reserve_online_slot(user, request_real_name, patient_chart, booking_date, booking_date_obj, booking_time, conflict_message):
+    days_since_sunday = (booking_date_obj.weekday() + 1) % 7
+    week_start = booking_date_obj - timedelta(days=days_since_sunday)
+    week_end = week_start + timedelta(days=6)
+
+    with transaction.atomic():
+        if same_day_slots(user.id, patient_chart, booking_date_obj):
+            return False, '온라인 예약은 하루에 1회만 가능합니다.'
+
+        weekly_bookings = Booking.objects.filter(
+            Q(user=user),
+            Q(booking_date__range=(week_start, week_end)),
+            Q(booking_status='예약승인') | Q(booking_status='예약요청'),
+        )
+        logger.info(f"주2회 예약 체크 - 사용자: {user.username}(ID:{user.id}), 주간범위: {week_start} ~ {week_end}, 기존 예약 수: {weekly_bookings.count()}")
+        if weekly_bookings.count() >= 2:
+            logger.info(f"주2회 예약 제한 - 사용자: {user.username}, 이미 {weekly_bookings.count()}개의 예약 존재")
+            return False, '온라인 예약은 주 2회만 가능합니다.'
+
+        if is_booking_blocked(booking_date, booking_time):
+            logger.info(f"예약 차단됨 - 날짜/시간: {booking_date} {booking_time}")
+            return False, '현재 병원에서 다른 환자의 예약이 진행 중이어서 요청하신 시간의 온라인 예약이 불가능합니다. 잠시 후 다시 시도해 주십시오.'
+
+        selected_booking = Booking.objects.select_for_update().filter(
+            booking_date=booking_date,
+            booking_time=booking_time,
+        ).first()
+        if selected_booking is None or selected_booking.booking_status != '예약가능':
+            status_val = selected_booking.booking_status if selected_booking else '없음'
+            logger.info(f"예약 실패 - 선택된 예약 상태: {status_val}")
+            return False, conflict_message
+
+        selected_booking.delete()
+        new_booking = Booking(
+            booking_date=booking_date,
+            booking_time=booking_time,
+            user=user,
+            booking_status='예약요청',
+        )
+        new_booking.save()
+        logger.info(f"예약 성공 - 새 예약ID: {new_booking.pk}, 사용자: {user.username}, 날짜/시간: {booking_date} {booking_time}")
+
+    send_discord_message_both(f"{request_real_name}님이 {booking_date} {booking_time}의 예약을 요청하셨습니다.")
+    return True, None
+
+
 @login_required
 def booking(request):
     if request.method == 'GET':
@@ -82,60 +147,29 @@ def booking(request):
         booking_date = request.POST.get('date')
         booking_time = request.POST.get('time')
         user = request.user
-        booking_status = '예약요청'
-        # 요청한 날짜가 속한 주의 일요일~토요일 범위 계산
-        booking_date_obj = datetime.datetime.strptime(booking_date, '%Y-%m-%d').date()
-        if booking_date_obj < datetime.date.today():
-            errors.append('지난 날짜는 예약할 수 없습니다.')
+        booking_date_obj, date_error = _validate_online_booking_date(booking_date)
+        if date_error:
+            errors.append(date_error)
             return render(request, 'bookingapp/post_write.html', {'errors': errors})
-        # 일요일을 기준으로 주 시작 계산 (일요일=0, 월요일=1, ..., 토요일=6)
-        days_since_sunday = (booking_date_obj.weekday() + 1) % 7
-        week_start = booking_date_obj - timedelta(days=days_since_sunday)  # 해당 주 일요일
-        week_end = week_start + timedelta(days=6)  # 해당 주 토요일
-        start_date = week_start
-        end_date = week_end
         try:
             request_real_name = request.user.profile.real_name
             patient_chart = chart_key(request.user.profile.chart_num)
-        except:
+        except Exception:
             return redirect(reverse('profileapp:create'))
-            # return redirect(reverse('accountapp:detail', kwargs={'pk': request.user.pk}))
 
-        if same_day_slots(user.id, patient_chart, booking_date_obj):
-            errors.append('온라인 예약은 하루에 1회만 가능합니다.')
-            return render(request, 'bookingapp/post_write.html', {'errors': errors})
-
-        # 디버깅: 주1회 예약 제한 체크 (첫 번째 예약 로직)
-        weekly_bookings = Booking.objects.filter(Q(user=user), Q(booking_date__range=(start_date, end_date)), Q(booking_status='예약승인') | Q(booking_status='예약요청'))
-        logger.info(f"주1회 예약 체크 (첫 번째) - 사용자: {user.username}(ID:{user.id}), 주간범위: {start_date} ~ {end_date}, 기존 예약 수: {weekly_bookings.count()}")
-        for wb in weekly_bookings:
-            logger.info(f"  기존 예약: ID={wb.pk}, 날짜={wb.booking_date}, 시간={wb.booking_time}, 상태={wb.booking_status}")
-        
-        if weekly_bookings.count() < 2:
-            # 예약 차단 확인 로직 추가
-            if is_booking_blocked(booking_date, booking_time):
-                logger.info(f"예약 차단됨 - 날짜/시간: {booking_date} {booking_time}")
-                errors.append('현재 병원에서 다른 환자의 예약이 진행 중이어서 요청하신 시간의 온라인 예약이 불가능합니다. 잠시 후 다시 시도해 주십시오.')
-                return render(request, 'bookingapp/post_write.html', {'errors': errors})
-            
-            selected_booking = Booking.objects.get(booking_date=booking_date, booking_time=booking_time)
-            logger.info(f"선택된 시간대 예약 상태 - 예약ID: {selected_booking.pk}, 상태: {selected_booking.booking_status}, user: {selected_booking.user}")
-            
-            if selected_booking.booking_status == '예약가능':
-                selected_booking.delete()
-                new_booking = Booking(booking_date=booking_date, booking_time=booking_time, user=user, booking_status=booking_status)
-                new_booking.save()
-                logger.info(f"예약 성공 - 새 예약ID: {new_booking.pk}, 사용자: {user.username}, 날짜/시간: {booking_date} {booking_time}")
-                send_discord_message_both(f"{request_real_name}님이 {booking_date} {booking_time}의 예약을 요청하셨습니다.")
-                return redirect(reverse('bookingapp:detail', kwargs={'pk': user.pk}))
-            else:
-                logger.info(f"예약 실패 - 다른 사용자가 먼저 예약함. 선택된 예약 상태: {selected_booking.booking_status}")
-                errors.append('안타깝게도 예약하시는 사이 다른 분이 먼저 예약요청 버튼을 누르셨습니다. 다른 시간대를 선택해서 예약요청해 주세요.')
-                return render(request, 'bookingapp/post_write.html', {'errors': errors})
-        else:
-            logger.info(f"주1회 예약 제한 - 사용자: {user.username}, 이미 {weekly_bookings.count()}개의 예약 존재")
-            errors.append('온라인 예약은 주 2회만 가능합니다.')
-            return render(request, 'bookingapp/post_write.html', {'errors': errors})
+        ok, err = _reserve_online_slot(
+            user,
+            request_real_name,
+            patient_chart,
+            booking_date,
+            booking_date_obj,
+            booking_time,
+            '안타깝게도 예약하시는 사이 다른 분이 먼저 예약요청 버튼을 누르셨습니다. 다른 시간대를 선택해서 예약요청해 주세요.',
+        )
+        if ok:
+            return redirect(reverse('bookingapp:detail', kwargs={'pk': user.pk}))
+        errors.append(err)
+        return render(request, 'bookingapp/post_write.html', {'errors': errors})
     return render(request, 'bookingapp/create.html', context)
 
 
@@ -174,58 +208,29 @@ def booking_2(request):
         booking_date = request.POST.get('date')
         booking_time = request.POST.get('time')
         user = request.user
-        booking_status = '예약요청'
-        # 요청한 날짜가 속한 주의 일요일~토요일 범위 계산
-        booking_date_obj = datetime.datetime.strptime(booking_date, '%Y-%m-%d').date()
-        # 일요일을 기준으로 주 시작 계산 (일요일=0, 월요일=1, ..., 토요일=6)
-        days_since_sunday = (booking_date_obj.weekday() + 1) % 7
-        week_start = booking_date_obj - timedelta(days=days_since_sunday)  # 해당 주 일요일
-        week_end = week_start + timedelta(days=6)  # 해당 주 토요일
-        start_date = week_start
-        end_date = week_end
+        booking_date_obj, date_error = _validate_online_booking_date(booking_date)
+        if date_error:
+            errors.append(date_error)
+            return render(request, 'bookingapp/post_write.html', {'errors': errors})
         try:
             request_real_name = request.user.profile.real_name
             patient_chart = chart_key(request.user.profile.chart_num)
-        except:
+        except Exception:
             return redirect(reverse('profileapp:create'))
-            # return redirect(reverse('accountapp:detail', kwargs={'pk': request.user.pk}))
 
-        if same_day_slots(user.id, patient_chart, booking_date_obj):
-            errors.append('온라인 예약은 하루에 1회만 가능합니다.')
-            return render(request, 'bookingapp/post_write.html', {'errors': errors})
-
-        # 디버깅: 주1회 예약 제한 체크 (두 번째 예약 로직)
-        weekly_bookings_2 = Booking.objects.filter(Q(user=user), Q(booking_date__range=(start_date, end_date)), Q(booking_status='예약승인') | Q(booking_status='예약요청'))
-        logger.info(f"주1회 예약 체크 (두 번째) - 사용자: {user.username}(ID:{user.id}), 주간범위: {start_date} ~ {end_date}, 기존 예약 수: {weekly_bookings_2.count()}")
-        for wb in weekly_bookings_2:
-            logger.info(f"  기존 예약: ID={wb.pk}, 날짜={wb.booking_date}, 시간={wb.booking_time}, 상태={wb.booking_status}")
-
-        if weekly_bookings_2.count() < 2:
-            # 예약 차단 확인 로직 추가
-            if is_booking_blocked(booking_date, booking_time):
-                logger.info(f"예약 차단됨 (두 번째) - 날짜/시간: {booking_date} {booking_time}")
-                errors.append('현재 병원에서 다른 환자의 예약이 진행 중이어서 요청하신 시간의 온라인 예약이 불가능합니다. 잠시 후 다시 시도해 주십시오.')
-                return render(request, 'bookingapp/post_write.html', {'errors': errors})
-            
-            selected_booking = Booking.objects.get(booking_date=booking_date, booking_time=booking_time)
-            logger.info(f"선택된 시간대 예약 상태 (두 번째) - 예약ID: {selected_booking.pk}, 상태: {selected_booking.booking_status}, user: {selected_booking.user}")
-            
-            if selected_booking.booking_status == '예약가능':
-                selected_booking.delete()
-                new_booking = Booking(booking_date=booking_date, booking_time=booking_time, user=user,
-                        booking_status=booking_status)
-                new_booking.save()
-                logger.info(f"예약 성공 (두 번째) - 새 예약ID: {new_booking.pk}, 사용자: {user.username}, 날짜/시간: {booking_date} {booking_time}")
-                send_discord_message_both(f"{request_real_name}님이 {booking_date} {booking_time}의 예약을 요청하셨습니다.")
-                return redirect(reverse('bookingapp:detail', kwargs={'pk': user.pk}))
-            else:
-                logger.info(f"예약 실패 (두 번째) - 다른 사용자가 먼저 예약함. 선택된 예약 상태: {selected_booking.booking_status}")
-                errors.append('예약하시는 동안 다른 분이 먼저 예약요청 버튼을 누르셨습니다. 다른 시간대를 선택해서 예약요청해 주세요.')
-                return render(request, 'bookingapp/post_write.html', {'errors': errors})
-        else:
-            logger.info(f"주1회 예약 제한 (두 번째) - 사용자: {user.username}, 이미 {weekly_bookings_2.count()}개의 예약 존재")
-            errors.append('온라인 예약은 주 2회만 가능합니다.')
-            return render(request, 'bookingapp/post_write.html', {'errors': errors})
+        ok, err = _reserve_online_slot(
+            user,
+            request_real_name,
+            patient_chart,
+            booking_date,
+            booking_date_obj,
+            booking_time,
+            '예약하시는 동안 다른 분이 먼저 예약요청 버튼을 누르셨습니다. 다른 시간대를 선택해서 예약요청해 주세요.',
+        )
+        if ok:
+            return redirect(reverse('bookingapp:detail', kwargs={'pk': user.pk}))
+        errors.append(err)
+        return render(request, 'bookingapp/post_write.html', {'errors': errors})
     return render(request, 'bookingapp/create_2.html', context)
 
 
@@ -263,10 +268,9 @@ class BookingDetailView(DetailView):
 def booking_delete(request, pk):
     current_date = datetime.datetime.now().strftime("%Y-%m-%d")
     current_time = datetime.datetime.now().strftime("%H:%M")
-    booking = Booking.objects.get(pk=pk)
+    booking = get_object_or_404(Booking, pk=pk)
     booking_date = booking.booking_date
     booking_time = booking.booking_time
-    user = ''
     booking_status = '예약가능'
     request_real_name = booking.user.profile.real_name
     request_user_id = booking.user_id
@@ -274,34 +278,33 @@ def booking_delete(request, pk):
         messages.error(request, '지난 예약은 취소할 수 없습니다.')
         return redirect(reverse('bookingapp:detail', kwargs={'pk': booking.user.pk}))
     if request.method == 'POST':
-        # 디버깅: 예약 취소 전 상태 로깅
-        logger.info(f"예약 취소 시작 - 사용자: {request_real_name}(ID:{request_user_id}), 예약ID: {booking.pk}, 날짜/시간: {booking_date} {booking_time}, 상태: {booking.booking_status}")
-        
-        # 예약 취소 시 기존 승인 메시지 삭제
-        delete_approval_messages(booking.user, booking_date, booking_time)
-        
-        booking.delete()
-        logger.info(f"기존 예약 삭제 완료 - 예약ID: {booking.pk}")
-        
+        with transaction.atomic():
+            locked_booking = Booking.objects.select_for_update().filter(pk=pk, user=request.user).first()
+            if locked_booking is None:
+                return redirect(reverse('bookingapp:detail', kwargs={'pk': request.user.pk}))
+            logger.info(f"예약 취소 시작 - 사용자: {request_real_name}(ID:{request_user_id}), 예약ID: {locked_booking.pk}, 날짜/시간: {booking_date} {booking_time}, 상태: {locked_booking.booking_status}")
+
+            delete_approval_messages(locked_booking.user, booking_date, booking_time)
+            locked_booking.delete()
+            logger.info(f"기존 예약 삭제 완료 - 예약ID: {pk}")
+
+            time_format = "%H:%M"
+            booking_time_datetime = datetime.datetime.strptime(booking_time, time_format)
+            current_time_datetime = datetime.datetime.strptime(current_time, time_format)
+            time_diff = booking_time_datetime - current_time_datetime
+
+            if f"{current_date}" == f"{booking_date}" and time_diff < timedelta(hours=2):
+                recipient = User.objects.get(id=request_user_id)
+                sender = User.objects.filter(id=1).first() or User.objects.filter(is_superuser=True).first()
+                if sender:
+                    message = f"{booking_date} {booking_time}의 예약을 {current_date} {current_time}에 취소하셨네요. 가능하면 하루 전에, 늦어도 2시간 전에는 꼭 취소해 주시길 당부드립니다."
+                    Note.objects.create(sender=sender, recipient=recipient, message=message)
+
+            new_booking = Booking(booking_date=booking_date, booking_time=booking_time, booking_status=booking_status)
+            new_booking.save()
+            logger.info(f"새로운 '예약가능' 객체 생성 완료 - 예약ID: {new_booking.pk}, user: {new_booking.user}, 상태: {new_booking.booking_status}")
+
         send_discord_message_both(f"{request_real_name}님이 {booking_date} {booking_time}의 예약을 취소하셨습니다.")
-
-        time_format = "%H:%M"
-        booking_time_datetime = datetime.datetime.strptime(booking_time, time_format)
-        current_time_datetime = datetime.datetime.strptime(current_time, time_format)
-        time_diff = booking_time_datetime - current_time_datetime
-
-        if f"{current_date}" == f"{booking_date}" and time_diff < timedelta(hours=2):
-            recipient_id = request_user_id
-            message = f"{booking_date} {booking_time}의 예약을 {current_date} {current_time}에 취소하셨네요. 가능하면 하루 전에, 늦어도 2시간 전에는 꼭 취소해 주시길 당부드립니다."
-            recipient = User.objects.get(id=recipient_id)
-            # recipient = User.objects.get(id=28)
-            sender = User.objects.get(id=1)
-            note = Note.objects.create(sender=sender, recipient=recipient, message=message)
-
-        # 새로운 '예약가능' 상태 객체 생성
-        new_booking = Booking(booking_date=booking_date, booking_time=booking_time, booking_status=booking_status)
-        new_booking.save()
-        logger.info(f"새로운 '예약가능' 객체 생성 완료 - 예약ID: {new_booking.pk}, user: {new_booking.user}, 상태: {new_booking.booking_status}")
         
         # hidden input으로 전달된 redirect_to 값을 확인하여 리디렉션 결정
         redirect_to = request.POST.get('redirect_to', 'detail')

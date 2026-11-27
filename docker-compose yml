@@ -1,7 +1,7 @@
 version: "3.7"
 services:
  nginx:
-   image: nginx:1.22.0
+   image: nginx:1.26
    networks:
      - network
    volumes:
@@ -17,7 +17,7 @@ services:
      - prpc_container_gunicorn
 
  prpc_container_gunicorn:
-    image: prpc_image:46
+   image: prpc_image:47
    networks:
      - network
    volumes:

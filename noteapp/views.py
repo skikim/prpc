@@ -23,18 +23,20 @@ def send_note(request):
 
 
 @login_required
+@require_POST
 def delete_note(request, note_id):
-    note = get_object_or_404(Note, id=note_id)
-    if request.user == note.recipient:
-        note.delete()
+    note = get_object_or_404(Note, id=note_id, recipient=request.user)
+    note.delete()
     return redirect('noteapp:display_notes')
 
 
+@login_required
 @require_POST
 def delete_note_ajax(request, note_id):
-    note = get_object_or_404(Note, id=note_id)
-    if request.user == note.recipient:
-        note.delete()
+    note = Note.objects.filter(id=note_id, recipient=request.user).first()
+    if note is None:
+        return JsonResponse({"success": False}, status=404)
+    note.delete()
     return JsonResponse({"success": True})
 
 

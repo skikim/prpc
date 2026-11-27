@@ -29,14 +29,22 @@ DEBUG = False
 
 ALLOWED_HOSTS = ['prpc.co.kr','www.prpc.co.kr','13.209.205.199']
 
-# CSRF 설정
+# CSRF 및 세션 쿠키 보안 설정
 CSRF_COOKIE_SECURE = True
+CSRF_COOKIE_SAMESITE = 'Lax'
 SESSION_COOKIE_SECURE = True
+SESSION_COOKIE_HTTPONLY = True
+SESSION_COOKIE_SAMESITE = 'Lax'
 CSRF_TRUSTED_ORIGINS = ['https://prpc.co.kr', 'https://www.prpc.co.kr']
 
-# 보안 설정
+# HTTP 보안 설정
 SECURE_SSL_REDIRECT = True
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+SECURE_HSTS_SECONDS = 31536000
+SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+SECURE_CONTENT_TYPE_NOSNIFF = True
+SECURE_REFERRER_POLICY = 'same-origin'
+X_FRAME_OPTIONS = 'DENY'
 
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
